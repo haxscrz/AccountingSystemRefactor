@@ -1,0 +1,16 @@
+{
+  "tableName": "fs_checkmas",
+  "sourcePath": "FS/CTSI/DATA/CHECKMAS.DBF",
+  "rowCount": 0,
+  "columns": [
+    "J_JV_NO",
+    "J_DATE",
+    "J_CK_NO",
+    "J_PAY_TO",
+    "J_CK_AMT",
+    "J_DESC",
+    "BANK_NO",
+    "SUP_NO"
+  ],
+  "rows": []
+}

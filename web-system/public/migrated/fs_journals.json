@@ -1,0 +1,13 @@
+{
+  "tableName": "fs_journals",
+  "sourcePath": "FS/CTSI/DATA/JOURNALS.DBF",
+  "rowCount": 0,
+  "columns": [
+    "J_JV_NO",
+    "J_DATE",
+    "ACCT_CODE",
+    "J_CK_AMT",
+    "J_D_OR_C"
+  ],
+  "rows": []
+}

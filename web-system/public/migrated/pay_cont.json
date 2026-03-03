@@ -1,0 +1,18 @@
+{
+  "tableName": "pay_cont",
+  "sourcePath": "PAY/OTHR/CONT.DBF",
+  "rowCount": 0,
+  "columns": [
+    "EYERID",
+    "EYEENO",
+    "HDMFID",
+    "LNAME",
+    "FNAME",
+    "MID",
+    "PERCOV",
+    "PERAMT1",
+    "PERAMT2",
+    "PFRAMT"
+  ],
+  "rows": []
+}

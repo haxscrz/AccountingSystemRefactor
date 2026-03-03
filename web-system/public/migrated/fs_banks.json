@@ -1,0 +1,12 @@
+{
+  "tableName": "fs_banks",
+  "sourcePath": "FS/CTSI/DATA/BANKS.DBF",
+  "rowCount": 0,
+  "columns": [
+    "BANK_NO",
+    "BANK_NAME",
+    "BANK_ADDR",
+    "BANK_ACCT"
+  ],
+  "rows": []
+}

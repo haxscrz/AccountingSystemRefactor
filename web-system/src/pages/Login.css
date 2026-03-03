@@ -1,0 +1,110 @@
+/* ═══════════════════════════════════════════════════════
+   LOGIN  — corporate / brutalist
+═══════════════════════════════════════════════════════ */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  background: var(--topbar-bg);
+}
+
+/* Left branding panel */
+.login-container::before {
+  content: '';
+  flex: 1;
+  background:
+    linear-gradient(135deg, var(--topbar-bg) 0%, #0f5b66 100%);
+  display: block;
+  position: relative;
+}
+
+@media (max-width: 700px) {
+  .login-container::before { display: none; }
+}
+
+/* Right form panel */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 3px solid var(--primary);
+  animation: slideRight var(--t-slow) var(--ease-out) both;
+}
+
+.login-brand {
+  padding: 48px 40px 32px;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  background: var(--primary);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-mark::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 3px,
+    rgba(255,255,255,0.2) 3px,
+    rgba(255,255,255,0.2) 6px
+  );
+}
+
+.login-brand h1 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.login-brand p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.login-form {
+  padding: 32px 40px;
+  flex: 1;
+}
+
+.login-form .form-group {
+  margin-bottom: 18px;
+}
+
+.login-button {
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.login-footer {
+  padding: 20px 40px 32px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.login-footer p {
+  margin: 3px 0;
+}
+

@@ -1,0 +1,408 @@
+/* FSJournalEntry.css - Retro DOS Terminal Styling */
+
+.fs-journal-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  background-color: #000033;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+  min-height: 100vh;
+}
+
+.fs-journal-entry .fs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid #0000ff;
+  padding: 10px 15px;
+  background-color: #000055;
+}
+
+.fs-journal-entry .fs-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #ffff00;
+}
+
+.fs-journal-entry .fs-loading {
+  color: #00ff00;
+  font-weight: bold;
+}
+
+/* Message Boxes */
+.fs-journal-entry .fs-message {
+  padding: 10px 15px;
+  border: 2px solid #0000ff;
+  background-color: #000055;
+  color: #ffff00;
+  border-radius: 2px;
+}
+
+.fs-journal-entry .fs-message.error {
+  border-color: #ff0000;
+  background-color: #330000;
+  color: #ff6666;
+}
+
+.fs-journal-entry .fs-message.info {
+  border-color: #00ff00;
+  color: #00ff00;
+}
+
+/* Balance Box */
+.fs-journal-entry .fs-balance-box {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding: 15px;
+  border: 3px solid #0000ff;
+  background-color: #000055;
+}
+
+.fs-journal-entry .fs-balance-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid #0000ff;
+  background-color: #000033;
+  text-align: left;
+}
+
+.fs-journal-entry .fs-balance-item .fs-label {
+  color: #ffff00;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.fs-journal-entry .fs-balance-item .fs-value {
+  color: #00ff00;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: right;
+}
+
+.fs-journal-entry .fs-balance-item.fs-balance {
+  padding: 10px;
+  border: 2px solid #ff0000;
+  background-color: #330000;
+}
+
+.fs-journal-entry .fs-balance-item.fs-balance.balanced {
+  border-color: #00ff00;
+  background-color: #003300;
+}
+
+.fs-journal-entry .fs-balance-item.fs-balance.balanced .fs-value {
+  color: #00ff00;
+}
+
+.fs-journal-entry .fs-balance-item.fs-balance:not(.balanced) .fs-value {
+  color: #ff6666;
+}
+
+/* Main View */
+.fs-journal-entry .fs-main-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Display Section */
+.fs-journal-entry .fs-display-section {
+  border: 2px solid #0000ff;
+  padding: 15px;
+  background-color: #000055;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fs-journal-entry .fs-field-group {
+  display: flex;
+  align-items: center;
+}
+
+.fs-journal-entry .fs-field-group label {
+  width: 180px;
+  color: #ffff00;
+  font-weight: bold;
+  padding-right: 10px;
+  white-space: nowrap;
+}
+
+.fs-journal-entry .fs-display {
+  flex: 1;
+  padding: 4px 8px;
+  background-color: #000033;
+  border: 1px solid #0000ff;
+  color: #00ff00;
+  min-width: 250px;
+}
+
+/* Position Indicator */
+.fs-journal-entry .fs-position-indicator {
+  text-align: right;
+  color: #00ff00;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-top: 1px dashed #0000ff;
+}
+
+/* No Data */
+.fs-journal-entry .fs-no-data {
+  border: 2px solid #0000ff;
+  padding: 30px;
+  text-align: center;
+  background-color: #000055;
+  color: #ffff00;
+}
+
+.fs-journal-entry .fs-no-data p {
+  margin: 10px 0;
+}
+
+/* Menu Buttons */
+.fs-journal-entry .fs-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 15px;
+  border: 2px solid #0000ff;
+  background-color: #000055;
+  justify-content: center;
+}
+
+.fs-journal-entry .fs-btn {
+  padding: 8px 20px;
+  border: 2px outset #0000ff;
+  background-color: #0000aa;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 80px;
+  transition: all 0.2s;
+}
+
+.fs-journal-entry .fs-btn:hover:not(:disabled) {
+  background-color: #0000ff;
+  border-style: inset;
+}
+
+.fs-journal-entry .fs-btn:active:not(:disabled) {
+  border-style: inset;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.fs-journal-entry .fs-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #000055;
+  color: #666666;
+}
+
+.fs-journal-entry .fs-btn-menu {
+  min-width: 65px;
+  padding: 6px 15px;
+}
+
+.fs-journal-entry .fs-btn-quit {
+  background-color: #aa0000;
+  min-width: 65px;
+}
+
+.fs-journal-entry .fs-btn-quit:hover:not(:disabled) {
+  background-color: #ff0000;
+  color: #000000;
+}
+
+.fs-journal-entry .fs-btn-quit.balanced {
+  background-color: #00aa00;
+}
+
+.fs-journal-entry .fs-btn-quit.balanced:hover:not(:disabled) {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+/* Modal */
+.fs-journal-entry .fs-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.fs-journal-entry .fs-modal {
+  background-color: #000055;
+  border: 3px solid #0000ff;
+  padding: 20px;
+  min-width: 400px;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+}
+
+.fs-journal-entry .fs-modal h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #ffff00;
+}
+
+.fs-journal-entry .fs-modal .fs-field-group {
+  margin-bottom: 15px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.fs-journal-entry .fs-modal .fs-field-group label {
+  width: auto;
+  font-size: 14px;
+}
+
+.fs-journal-entry .fs-modal .fs-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #0000ff;
+  background-color: #000033;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+}
+
+.fs-journal-entry .fs-modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.fs-journal-entry .fs-btn-action {
+  background-color: #00aa00;
+}
+
+.fs-journal-entry .fs-btn-action:hover {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+.fs-journal-entry .fs-btn-cancel {
+  background-color: #aa0000;
+}
+
+.fs-journal-entry .fs-btn-cancel:hover {
+  background-color: #ff0000;
+  color: #000000;
+}
+
+/* Editing View */
+.fs-journal-entry .fs-editing-view {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.fs-journal-entry .fs-edit-section {
+  border: 2px solid #0000ff;
+  padding: 20px;
+  background-color: #000055;
+}
+
+.fs-journal-entry .fs-edit-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #ffff00;
+}
+
+.fs-journal-entry .fs-form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fs-journal-entry .fs-form-group label {
+  color: #ffff00;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.fs-journal-entry .fs-form-group label .required {
+  color: #ff6666;
+}
+
+.fs-journal-entry .fs-input {
+  padding: 8px 10px;
+  border: 1px solid #0000ff;
+  background-color: #000033;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+}
+
+.fs-journal-entry .fs-input:focus {
+  outline: none;
+  border-color: #00ff00;
+  background-color: #001100;
+}
+
+.fs-journal-entry select.fs-input {
+  cursor: pointer;
+}
+
+/* Edit Buttons */
+.fs-journal-entry .fs-edit-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 15px;
+  border: 2px solid #0000ff;
+  background-color: #000055;
+}
+
+.fs-journal-entry .fs-btn-save {
+  background-color: #00aa00;
+}
+
+.fs-journal-entry .fs-btn-save:hover:not(:disabled) {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .fs-journal-entry {
+    padding: 10px;
+  }
+
+  .fs-journal-entry .fs-balance-box {
+    grid-template-columns: 1fr;
+  }
+
+  .fs-journal-entry .fs-field-group {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .fs-journal-entry .fs-field-group label {
+    width: auto;
+  }
+
+  .fs-journal-entry .fs-menu {
+    flex-direction: column;
+  }
+
+  .fs-journal-entry .fs-modal {
+    min-width: calc(100% - 40px);
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "tableName": "pay_exmp2007",
+  "sourcePath": "PAY/OTHR/EXMP2007.DBF",
+  "rowCount": 14,
+  "columns": [
+    "STATUS",
+    "PER_EXMPTN",
+    "ADD_EXMPTN"
+  ],
+  "rows": [
+    {
+      "STATUS": "Z",
+      "PER_EXMPTN": 0,
+      "ADD_EXMPTN": 0
+    },
+    {
+      "STATUS": "S0",
+      "PER_EXMPTN": 20000,
+      "ADD_EXMPTN": 0
+    },
+    {
+      "STATUS": "S0*",
+      "PER_EXMPTN": 20000,
+      "ADD_EXMPTN": 0
+    },
+    {
+      "STATUS": "HF*",
+      "PER_EXMPTN": 25000,
+      "ADD_EXMPTN": 0
+    },
+    {
+      "STATUS": "HF0",
+      "PER_EXMPTN": 25000,
+      "ADD_EXMPTN": 0
+    },
+    {
+      "STATUS": "HF1",
+      "PER_EXMPTN": 25000,
+      "ADD_EXMPTN": 8000
+    },
+    {
+      "STATUS": "HF2",
+      "PER_EXMPTN": 25000,
+      "ADD_EXMPTN": 16000
+    },
+    {
+      "STATUS": "HF3",
+      "PER_EXMPTN": 25000,
+      "ADD_EXMPTN": 24000
+    },
+    {
+      "STATUS": "HF4",
+      "PER_EXMPTN": 25000,
+      "ADD_EXMPTN": 32000
+    },
+    {
+      "STATUS": "ME0",
+      "PER_EXMPTN": 32000,
+      "ADD_EXMPTN": 0
+    },
+    {
+      "STATUS": "ME1",
+      "PER_EXMPTN": 32000,
+      "ADD_EXMPTN": 8000
+    },
+    {
+      "STATUS": "ME2",
+      "PER_EXMPTN": 32000,
+      "ADD_EXMPTN": 16000
+    },
+    {
+      "STATUS": "ME3",
+      "PER_EXMPTN": 32000,
+      "ADD_EXMPTN": 24000
+    },
+    {
+      "STATUS": "ME4",
+      "PER_EXMPTN": 32000,
+      "ADD_EXMPTN": 32000
+    }
+  ]
+}

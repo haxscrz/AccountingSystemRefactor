@@ -1,0 +1,255 @@
+{
+  "tableName": "pay_ssstable",
+  "sourcePath": "PAY/OTHR/SSSTABLE.DBF",
+  "rowCount": 30,
+  "columns": [
+    "GREATOREQL",
+    "LESSTHAN",
+    "SALARYCRDT",
+    "EMP_ER_SHR",
+    "EMP_EE_EC",
+    "EMP_EE_SHR"
+  ],
+  "rows": [
+    {
+      "GREATOREQL": 0,
+      "LESSTHAN": 1000,
+      "SALARYCRDT": 0,
+      "EMP_ER_SHR": 0,
+      "EMP_EE_EC": 0,
+      "EMP_EE_SHR": 0
+    },
+    {
+      "GREATOREQL": 1000,
+      "LESSTHAN": 1250,
+      "SALARYCRDT": 1000,
+      "EMP_ER_SHR": 50.7,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 33.3
+    },
+    {
+      "GREATOREQL": 1250,
+      "LESSTHAN": 1750,
+      "SALARYCRDT": 1500,
+      "EMP_ER_SHR": 76,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 50
+    },
+    {
+      "GREATOREQL": 1750,
+      "LESSTHAN": 2250,
+      "SALARYCRDT": 2000,
+      "EMP_ER_SHR": 101.3,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 66.7
+    },
+    {
+      "GREATOREQL": 2250,
+      "LESSTHAN": 2750,
+      "SALARYCRDT": 2500,
+      "EMP_ER_SHR": 126.7,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 83.3
+    },
+    {
+      "GREATOREQL": 2750,
+      "LESSTHAN": 3250,
+      "SALARYCRDT": 3000,
+      "EMP_ER_SHR": 152,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 100
+    },
+    {
+      "GREATOREQL": 3250,
+      "LESSTHAN": 3750,
+      "SALARYCRDT": 3500,
+      "EMP_ER_SHR": 177.3,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 116.7
+    },
+    {
+      "GREATOREQL": 3750,
+      "LESSTHAN": 4250,
+      "SALARYCRDT": 4000,
+      "EMP_ER_SHR": 202.7,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 133.3
+    },
+    {
+      "GREATOREQL": 4250,
+      "LESSTHAN": 4750,
+      "SALARYCRDT": 4500,
+      "EMP_ER_SHR": 228,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 150
+    },
+    {
+      "GREATOREQL": 4750,
+      "LESSTHAN": 5250,
+      "SALARYCRDT": 5000,
+      "EMP_ER_SHR": 253.3,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 166.7
+    },
+    {
+      "GREATOREQL": 5250,
+      "LESSTHAN": 5750,
+      "SALARYCRDT": 5500,
+      "EMP_ER_SHR": 278.7,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 183.3
+    },
+    {
+      "GREATOREQL": 5750,
+      "LESSTHAN": 6250,
+      "SALARYCRDT": 6000,
+      "EMP_ER_SHR": 304,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 200
+    },
+    {
+      "GREATOREQL": 6250,
+      "LESSTHAN": 6750,
+      "SALARYCRDT": 6500,
+      "EMP_ER_SHR": 329.3,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 216.7
+    },
+    {
+      "GREATOREQL": 6750,
+      "LESSTHAN": 7250,
+      "SALARYCRDT": 7000,
+      "EMP_ER_SHR": 354.7,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 233.3
+    },
+    {
+      "GREATOREQL": 7250,
+      "LESSTHAN": 7750,
+      "SALARYCRDT": 7500,
+      "EMP_ER_SHR": 380,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 250
+    },
+    {
+      "GREATOREQL": 7750,
+      "LESSTHAN": 8250,
+      "SALARYCRDT": 8000,
+      "EMP_ER_SHR": 405.3,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 266.7
+    },
+    {
+      "GREATOREQL": 8250,
+      "LESSTHAN": 8750,
+      "SALARYCRDT": 8500,
+      "EMP_ER_SHR": 430.7,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 283.3
+    },
+    {
+      "GREATOREQL": 8750,
+      "LESSTHAN": 9250,
+      "SALARYCRDT": 9000,
+      "EMP_ER_SHR": 456,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 300
+    },
+    {
+      "GREATOREQL": 9250,
+      "LESSTHAN": 9750,
+      "SALARYCRDT": 9500,
+      "EMP_ER_SHR": 481.3,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 316.7
+    },
+    {
+      "GREATOREQL": 9750,
+      "LESSTHAN": 10250,
+      "SALARYCRDT": 10000,
+      "EMP_ER_SHR": 506.7,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 333.3
+    },
+    {
+      "GREATOREQL": 10250,
+      "LESSTHAN": 10750,
+      "SALARYCRDT": 10500,
+      "EMP_ER_SHR": 532,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 350
+    },
+    {
+      "GREATOREQL": 10750,
+      "LESSTHAN": 11250,
+      "SALARYCRDT": 11000,
+      "EMP_ER_SHR": 557.3,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 366.7
+    },
+    {
+      "GREATOREQL": 11250,
+      "LESSTHAN": 11750,
+      "SALARYCRDT": 11500,
+      "EMP_ER_SHR": 582.7,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 383.3
+    },
+    {
+      "GREATOREQL": 11750,
+      "LESSTHAN": 12250,
+      "SALARYCRDT": 12000,
+      "EMP_ER_SHR": 608,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 400
+    },
+    {
+      "GREATOREQL": 12250,
+      "LESSTHAN": 12750,
+      "SALARYCRDT": 12500,
+      "EMP_ER_SHR": 633.3,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 416.7
+    },
+    {
+      "GREATOREQL": 12750,
+      "LESSTHAN": 13250,
+      "SALARYCRDT": 13000,
+      "EMP_ER_SHR": 658.7,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 433.3
+    },
+    {
+      "GREATOREQL": 13250,
+      "LESSTHAN": 13750,
+      "SALARYCRDT": 13500,
+      "EMP_ER_SHR": 684,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 450
+    },
+    {
+      "GREATOREQL": 13750,
+      "LESSTHAN": 14250,
+      "SALARYCRDT": 14000,
+      "EMP_ER_SHR": 709.3,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 466.7
+    },
+    {
+      "GREATOREQL": 14250,
+      "LESSTHAN": 14750,
+      "SALARYCRDT": 14500,
+      "EMP_ER_SHR": 734.7,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 483.3
+    },
+    {
+      "GREATOREQL": 14750,
+      "LESSTHAN": 999999999,
+      "SALARYCRDT": 15000,
+      "EMP_ER_SHR": 760,
+      "EMP_EE_EC": 10,
+      "EMP_EE_SHR": 500
+    }
+  ]
+}

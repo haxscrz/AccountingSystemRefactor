@@ -1,0 +1,13 @@
+{
+  "tableName": "fs_salebook",
+  "sourcePath": "FS/CTSI/DATA/SALEBOOK.DBF",
+  "rowCount": 0,
+  "columns": [
+    "J_JV_NO",
+    "J_DATE",
+    "ACCT_CODE",
+    "J_CK_AMT",
+    "J_D_OR_C"
+  ],
+  "rows": []
+}

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PAY Program - Payroll</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <h1>PAY Payroll System</h1>
+        <p>Payroll UI (legacy menu parity)</p>
+      </div>
+    </div>
+    <div class="meta">
+      <div>Company: CTSI</div>
+      <div>Proposal Mode</div>
+    </div>
+  </header>
+
+  <section class="ribbon">
+    <div class="ribbon-tabs">
+      <button class="active" data-panel="pay-main">Main Menu</button>
+      <button data-panel="pay-file">File Maintenance</button>
+      <button data-panel="pay-query">Query</button>
+      <button data-panel="pay-report">Report Generation</button>
+    </div>
+
+    <div class="ribbon-panel active" id="pay-main">
+      <div class="ribbon-group">
+        <h4>Payroll Type</h4>
+        <span class="ribbon-item">Select Payroll Type</span>
+        <ul class="ribbon-sublist">
+          <li>Regular Employees</li>
+          <li>Casual Employees</li>
+        </ul>
+      </div>
+      <div class="ribbon-group">
+        <h4>Timecard</h4>
+        <span class="ribbon-item">Process Timecard</span>
+        <ul class="ribbon-sublist">
+          <li>Add/Edit Timecard</li>
+          <li>Initialize Timecard</li>
+          <li>Append From Datafile</li>
+        </ul>
+      </div>
+      <div class="ribbon-group">
+        <h4>Processing</h4>
+        <span class="ribbon-item">Compute Payroll</span>
+        <span class="ribbon-item">Post Transactions</span>
+      </div>
+      <div class="ribbon-group">
+        <h4>Year-End</h4>
+        <span class="ribbon-item">Compute 13th Month Pay</span>
+        <span class="ribbon-item">Compute Year-End Tax</span>
+        <span class="ribbon-item">Enter OR/SBR Info</span>
+        <ul class="ribbon-sublist">
+          <li>SSS OR/SBR</li>
+          <li>PAG-IBIG OR/SBR</li>
+        </ul>
+        <span class="ribbon-item muted">Exit to DOS</span>
+      </div>
+    </div>
+
+    <div class="ribbon-panel" id="pay-file">
+      <div class="ribbon-group">
+        <h4>Reindex</h4>
+        <span class="ribbon-item">Reindex Corrupted Files</span>
+        <ul class="ribbon-sublist">
+          <li>Reindex Employee Master File</li>
+          <li>Reindex Timecard File</li>
+          <li>Reindex Department File</li>
+          <li>Reindex Tax Code File</li>
+          <li>Reindex Certification File</li>
+          <li>Reindex All Files Above</li>
+        </ul>
+      </div>
+      <div class="ribbon-group">
+        <h4>Master Data</h4>
+        <span class="ribbon-item">Edit Employee Master File</span>
+        <span class="ribbon-item">Update Employee Rate</span>
+        <span class="ribbon-item">Edit Department File</span>
+        <span class="ribbon-item">Edit Tax Table File</span>
+        <span class="ribbon-item">Edit Systems ID</span>
+      </div>
+      <div class="ribbon-group">
+        <h4>Administration</h4>
+        <span class="ribbon-item">Initialize for a New Year</span>
+        <span class="ribbon-item">Backup Databases</span>
+        <span class="ribbon-item">Edit Database Path</span>
+        <span class="ribbon-item">Edit Employee Number</span>
+        <span class="ribbon-item">Add/Edit Department</span>
+      </div>
+    </div>
+
+    <div class="ribbon-panel" id="pay-query">
+      <div class="ribbon-group">
+        <h4>Query</h4>
+        <span class="ribbon-item">Timecard Query</span>
+        <span class="ribbon-item">View Timecard File</span>
+      </div>
+    </div>
+
+    <div class="ribbon-panel" id="pay-report">
+      <div class="ribbon-group">
+        <h4>Core Reports</h4>
+        <span class="ribbon-item">Timecard Validation</span>
+        <span class="ribbon-item">Payroll Register</span>
+        <span class="ribbon-item">Payroll Slip</span>
+      </div>
+      <div class="ribbon-group">
+        <h4>Deductions</h4>
+        <span class="ribbon-item">Denomination Breakdown</span>
+        <span class="ribbon-item">Deductions Report</span>
+      </div>
+      <div class="ribbon-group">
+        <h4>Monthly Reports</h4>
+        <ul class="ribbon-sublist">
+          <li>Monthly Payroll Recap</li>
+          <li>Monthly SSS/PHIC/EC/PGBG/TAX</li>
+          <li>Monthly SSS/PHIC/EC/PGBG</li>
+          <li>Monthly SSS, PHCI, EC</li>
+          <li>Monthly SSS &amp; EC</li>
+          <li>Monthly Philhealth</li>
+          <li>Monthly Pag-ibig</li>
+          <li>Monthly Tax Withheld</li>
+          <li>Monthly Dept. Summary</li>
+          <li>Monthly Loan Deduction Summary</li>
+          <li>SSS-LMS Diskette Project</li>
+          <li>SSS R-3 Tape Diskette Project</li>
+          <li>HDMF Loan Diskette Project</li>
+          <li>Philhealth Regular RF-1</li>
+        </ul>
+      </div>
+      <div class="ribbon-group">
+        <h4>Quarterly Reports</h4>
+        <ul class="ribbon-sublist">
+          <li>Quarterly SSS, Philhealth &amp; EC</li>
+          <li>Quarterly Pag-ibig Premium</li>
+          <li>Quarterly Withholding Tax</li>
+          <li>Quarterly SSS Loan Payments</li>
+          <li>Quarterly Pag-ibig Loan Payments</li>
+          <li>Quarterly PHIC Remittance (Hard Copy)</li>
+          <li>Quarterly PHIC Remittance (Diskette)</li>
+        </ul>
+      </div>
+      <div class="ribbon-group">
+        <h4>Year-End</h4>
+        <span class="ribbon-item">Year-End Payroll Recap</span>
+        <span class="ribbon-item">Bonus</span>
+        <ul class="ribbon-sublist">
+          <li>Advance Bonus P.Slip/Sht</li>
+          <li>Bonus Pay Sheet</li>
+          <li>Bonus ATM Summary</li>
+          <li>All Pay Slips w/ Summary</li>
+          <li>Selected Pay Slips</li>
+          <li>Pay Slip Summary Only</li>
+          <li>Denomination Breakdown</li>
+        </ul>
+        <span class="ribbon-item">Year-End Tax/Refund</span>
+        <ul class="ribbon-sublist">
+          <li>Tax Reconciliation Report</li>
+          <li>Tax Refund Report</li>
+          <li>Tax Refund Den. Breakdown</li>
+          <li>Tax Refund Slip</li>
+          <li>BIR Tax Withheld Report</li>
+          <li>Individual BIR W2 Form</li>
+          <li>Alpha List</li>
+          <li>Form 1604CF - Schedule 7.3</li>
+          <li>Form 1604CF - Schedule 7.1</li>
+        </ul>
+      </div>
+      <div class="ribbon-group">
+        <h4>Employee &amp; Premiums</h4>
+        <span class="ribbon-item">Employee Master File</span>
+        <ul class="ribbon-sublist">
+          <li>Employee Master List</li>
+          <li>Personal Information</li>
+          <li>Employee Salary Rate</li>
+          <li>Employee Loan Balance</li>
+          <li>Employee VL/SL Balance</li>
+        </ul>
+        <span class="ribbon-item">Premium Payment Certification</span>
+        <ul class="ribbon-sublist">
+          <li>SSS Premium Payment Certification</li>
+          <li>Medicare Prem Payment Certification</li>
+          <li>Pag-ibig Prem Payment Certification</li>
+          <li>All Premiums Payment Certification</li>
+        </ul>
+      </div>
+      <div class="ribbon-group">
+        <h4>Printer</h4>
+        <span class="ribbon-item">Set Printer Font</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="main">
+    <div class="card">
+      <span class="badge">Payroll Dashboard</span>
+      <h2>Payroll Operations Workspace</h2>
+      <p>This layout mirrors the PAY program menus and report sets for stakeholder review.</p>
+      <div class="feature-grid">
+        <div class="feature-tile">Timecard entry, compute payroll, and posting flow.</div>
+        <div class="feature-tile">SSS, PHIC, Pag-ibig, tax, and loan reporting coverage.</div>
+        <div class="feature-tile">Year-end bonus and tax reconciliation options included.</div>
+        <div class="feature-tile">Employee master and certification outputs ready to mirror.</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Operator Console</h2>
+      <p>Designed for fast access and familiar hierarchy.</p>
+      <div class="feature-grid">
+        <div class="feature-tile">Payroll Type: Regular/Casual</div>
+        <div class="feature-tile">Period: Current Month</div>
+        <div class="feature-tile">Status: Read-only preview</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="status-bar">
+    <span>PAY UI only - functions are placeholders</span>
+    <span>Menus derived from PAY.PRG</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

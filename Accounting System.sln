@@ -1,0 +1,32 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web-system", "web-system", "{5FFACDC3-4991-615A-9273-8475F4DD3799}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "server", "server", "{B177EA8B-85D9-29FE-FBFA-6B211FB75FE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountingApi", "web-system\server\AccountingApi\AccountingApi.csproj", "{1C59EDDA-600F-E7E5-3ABF-5079292ADAD6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1C59EDDA-600F-E7E5-3ABF-5079292ADAD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C59EDDA-600F-E7E5-3ABF-5079292ADAD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C59EDDA-600F-E7E5-3ABF-5079292ADAD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C59EDDA-600F-E7E5-3ABF-5079292ADAD6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B177EA8B-85D9-29FE-FBFA-6B211FB75FE5} = {5FFACDC3-4991-615A-9273-8475F4DD3799}
+		{1C59EDDA-600F-E7E5-3ABF-5079292ADAD6} = {B177EA8B-85D9-29FE-FBFA-6B211FB75FE5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F57688DF-D23B-48C3-81E7-5CB26FD97DD1}
+	EndGlobalSection
+EndGlobal

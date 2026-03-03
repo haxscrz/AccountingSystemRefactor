@@ -1,0 +1,12 @@
+{
+  "tableName": "fs_acheckvo",
+  "sourcePath": "FS/CTSI/DATA/Acheckvo.dbf",
+  "rowCount": 0,
+  "columns": [
+    "J_CK_NO",
+    "ACCT_CODE",
+    "J_CK_AMT",
+    "J_D_OR_C"
+  ],
+  "rows": []
+}

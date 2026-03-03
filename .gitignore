@@ -1,0 +1,33 @@
+# Node / frontend
+node_modules/
+dist/
+.vite/
+*.local
+
+# npm cache redirect
+D:/npm-cache/
+
+# .NET / backend
+web-system/server/AccountingApi/bin/
+web-system/server/AccountingApi/obj/
+*.user
+*.suo
+.vs/
+
+# SQLite databases (keep schema, skip data files if desired)
+# *.db        # uncomment to exclude db files
+# *.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

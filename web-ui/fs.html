@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FS Program - Financial Statements</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <h1>FS Accounting System</h1>
+        <p>Financial Statements UI (legacy menu parity)</p>
+      </div>
+    </div>
+    <div class="meta">
+      <div>Company: CTSI</div>
+      <div>Proposal Mode</div>
+    </div>
+  </header>
+
+  <section class="ribbon">
+    <div class="ribbon-tabs">
+      <button class="active" data-panel="fs-main">Main Menu</button>
+      <button data-panel="fs-file">File Maintenance</button>
+      <button data-panel="fs-query">Query</button>
+      <button data-panel="fs-report">Report Generation</button>
+    </div>
+
+    <div class="ribbon-panel active" id="fs-main">
+      <div class="ribbon-group">
+        <h4>Data Entry</h4>
+        <span class="ribbon-item">Enter Cash Disbursement</span>
+        <span class="ribbon-item">Enter Cash Receipts</span>
+        <span class="ribbon-item">Enter Sales Book Journals</span>
+        <span class="ribbon-item">Journal Vouchers</span>
+        <span class="ribbon-item">Enter Purchase Book Journals</span>
+        <span class="ribbon-item">Enter Adjustments</span>
+      </div>
+      <div class="ribbon-group">
+        <h4>Processing</h4>
+        <span class="ribbon-item">Post All Transactions</span>
+        <span class="ribbon-item">Enter Advance CDB</span>
+        <span class="ribbon-item muted">Exit to DOS</span>
+      </div>
+    </div>
+
+    <div class="ribbon-panel" id="fs-file">
+      <div class="ribbon-group">
+        <h4>Reindex</h4>
+        <span class="ribbon-item">Reindex Corrupted Files</span>
+        <ul class="ribbon-sublist">
+          <li>Reindex Accounts File</li>
+          <li>Reindex Transaction File</li>
+          <li>Reindex All Files</li>
+        </ul>
+      </div>
+      <div class="ribbon-group">
+        <h4>Master Files</h4>
+        <span class="ribbon-item">Edit Chart of Accounts</span>
+        <span class="ribbon-item">Edit Group Codes</span>
+        <span class="ribbon-item">Edit Subsidiary Groups</span>
+      </div>
+      <div class="ribbon-group">
+        <h4>Administration</h4>
+        <span class="ribbon-item">Backup Databases</span>
+        <span class="ribbon-item">Month-End Processing</span>
+        <span class="ribbon-item">Transfer Advance CDB</span>
+      </div>
+    </div>
+
+    <div class="ribbon-panel" id="fs-query">
+      <div class="ribbon-group">
+        <h4>Quick View</h4>
+        <span class="ribbon-item">View Spooled File</span>
+        <span class="ribbon-item">Charts of Accounts</span>
+      </div>
+      <div class="ribbon-group">
+        <h4>Transactions</h4>
+        <span class="ribbon-item">Check Disbursement Vouchers</span>
+        <span class="ribbon-item">Cash Receipts Transactions</span>
+        <span class="ribbon-item">Sales Book Journals</span>
+        <span class="ribbon-item">Journal Vouchers</span>
+        <span class="ribbon-item">Purchase Book Journals</span>
+        <span class="ribbon-item">Adjustments</span>
+      </div>
+    </div>
+
+    <div class="ribbon-panel" id="fs-report">
+      <div class="ribbon-group">
+        <h4>Registers</h4>
+        <span class="ribbon-item">Cash Disbursement Voucher</span>
+        <span class="ribbon-item">Cash Disbursement Summary</span>
+        <span class="ribbon-item">Cash Disbursement Summary by Code</span>
+      </div>
+      <div class="ribbon-group">
+        <h4>Journals</h4>
+        <span class="ribbon-item">Cash Receipts Transactions</span>
+        <span class="ribbon-item">Sales Book Journals</span>
+        <span class="ribbon-item">Journal Vouchers</span>
+        <span class="ribbon-item">Purchase Book Journals</span>
+        <span class="ribbon-item">Adjustments</span>
+      </div>
+      <div class="ribbon-group">
+        <h4>Statements</h4>
+        <span class="ribbon-item">Detailed Trial Balance</span>
+        <span class="ribbon-item">Trial Balance</span>
+        <span class="ribbon-item">Income Statement</span>
+        <span class="ribbon-item">Balance Sheet</span>
+      </div>
+      <div class="ribbon-group">
+        <h4>Code Files</h4>
+        <span class="ribbon-item">Code Files</span>
+        <ul class="ribbon-sublist">
+          <li>Chart of Accounts</li>
+          <li>Accounts Grouping</li>
+          <li>Subsidiary Schedule Groups</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="main">
+    <div class="card">
+      <span class="badge">FS Dashboard</span>
+      <h2>Financial Statements Workspace</h2>
+      <p>Classic workflow with a modern layout. This UI mirrors the FS PRG menus and report options.</p>
+      <div class="feature-grid">
+        <div class="feature-tile">Voucher entry, journals, adjustments, and posting.</div>
+        <div class="feature-tile">Monthly close and advance CDB transfer.</div>
+        <div class="feature-tile">Built-in trial balance, income statement, and balance sheet options.</div>
+        <div class="feature-tile">Code file printing for accounts, groups, and schedules.</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Operator Console</h2>
+      <p>Ready for legacy-like keyboard flow and fast ribbon access.</p>
+      <div class="feature-grid">
+        <div class="feature-tile">Company: CTSI</div>
+        <div class="feature-tile">Period: Current Month</div>
+        <div class="feature-tile">Status: Read-only preview</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="status-bar">
+    <span>FS UI only - functions are placeholders</span>
+    <span>Menus derived from ACCTNG.PRG</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
