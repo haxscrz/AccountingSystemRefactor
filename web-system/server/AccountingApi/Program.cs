@@ -31,6 +31,7 @@ builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddScoped<TimecardService>();
 
 builder.Services.AddScoped<DatabaseSeeder>();
+builder.Services.AddScoped<LegacySeedingService>();
 
 builder.Services.AddCors(options =>
 {
@@ -54,7 +55,19 @@ using (var initScope = app.Services.CreateScope())
     // Safe to call every startup — no-op when tables already exist.
     db.Database.EnsureCreated();
 
-    // Seed a default fs_sys_id row so the FS Main Menu works on first boot
+    // Auto-seed from legacy JSON files if the database is empty (fresh clone)
+    if (!db.FSAccounts.Any())
+    {
+        var seeder = initScope.ServiceProvider.GetRequiredService<LegacySeedingService>();
+        var result = seeder.SeedAsync().GetAwaiter().GetResult();
+        var total  = result.Values.Sum();
+        if (total > 0)
+            Console.WriteLine($"[startup] Auto-seeded {total} legacy records across {result.Count} tables.");
+        else
+            Console.WriteLine("[startup] No legacy JSON files found — starting with empty database.");
+    }
+
+    // Ensure fs_sys_id has at least one row (main menu needs it)
     if (!db.FSSysId.Any())
     {
         var now = DateTime.UtcNow;
@@ -69,7 +82,7 @@ using (var initScope = app.Services.CreateScope())
         db.SaveChanges();
     }
 
-    // Seed a default pay_sys_id row so the Payroll module works on first boot
+    // Ensure pay_sys_id has at least one row (payroll module needs it)
     if (!db.PaySysId.Any())
     {
         var now = DateTime.UtcNow;
