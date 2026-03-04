@@ -240,7 +240,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
   }
 
   const handleSaveMaster = async () => {
-    if (!masterForm.jJvNo.trim()) { setMessage('JV No. is required'); return }
+    if (!masterForm.jJvNo.trim()) { setMessage('CDV No. is required'); return }
     if (!masterForm.jCkNo.trim()) { setMessage('Check No. is required'); return }
     if (!masterForm.jPayTo?.trim()) { setMessage('Payee is required'); return }
     setSaving(true)
@@ -493,7 +493,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
               <div className="voucher-header" style={{ marginBottom: '16px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                   <div>
-                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>JV No.</label>
+                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>CDV No.</label>
                     <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd', fontFamily: 'monospace' }}>{currentMaster.jJvNo}</div>
                   </div>
                   <div>
@@ -712,7 +712,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
             <h4>Add New Check — Enter Header Details</h4>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <div className="form-group">
-                <label className="form-label">JV No. <span style={{ color: 'red' }}>*</span></label>
+                <label className="form-label">CDV No. <span style={{ color: 'red' }}>*</span></label>
                 <input type="text" className="form-input" value={masterForm.jJvNo}
                   onChange={e => setMasterForm(f => ({ ...f, jJvNo: e.target.value.toUpperCase() }))} maxLength={8} autoFocus />
               </div>
@@ -764,7 +764,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
             <h4>Edit Check Header</h4>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <div className="form-group">
-                <label className="form-label">JV No.</label>
+                <label className="form-label">CDV No.</label>
                 <input type="text" className="form-input" value={masterForm.jJvNo} disabled />
               </div>
               <div className="form-group">
