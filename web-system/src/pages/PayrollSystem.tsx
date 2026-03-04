@@ -153,118 +153,26 @@ export default function PayrollSystem() {
     ],
 
     // ── REPORT GENERATION ─────────────────────────────────────────────────────
-    // Mirrors PAY.PRG m_main=4 items 1–14 exactly.
+    // Exactly 14 top-level items as shown in the original program.
+    // Items with sub-menus navigate to a report page that renders the sub-options.
     report: [
       {
-        // Items 1–5 in original
-        title: 'Core Reports',
+        title: 'Reports',
         items: [
-          { label: 'Timecard Validation',   onClick: () => navigate('/payroll/reports/timecard-validation') },
-          { label: 'Payroll Register',      onClick: () => navigate('/payroll/reports/register') },
-          { label: 'Payroll Slips',         onClick: () => navigate('/payroll/reports/payslips') },
+          { label: 'Timecard Validation',    onClick: () => navigate('/payroll/reports/timecard-validation') },
+          { label: 'Payroll Register',       onClick: () => navigate('/payroll/reports/register') },
+          { label: 'Payroll Slip',           onClick: () => navigate('/payroll/reports/payslip') },
           { label: 'Denomination Breakdown', onClick: () => navigate('/payroll/reports/denomination') },
-          { label: 'Deductions Report',     onClick: () => navigate('/payroll/reports/deductions') }
-        ]
-      },
-      {
-        // Payroll Slip sub-options (item 3 sub-menu)
-        title: 'Payroll Slip Options',
-        items: [
-          { label: 'All Pay Slips w/ Summary', onClick: () => navigate('/payroll/reports/payslips?mode=all') },
-          { label: 'Selected Pay Slips',       onClick: () => navigate('/payroll/reports/payslips?mode=selected') },
-          { label: 'Pay Slip Summary Only',    onClick: () => navigate('/payroll/reports/payslips?mode=summary') },
-          { label: 'ATM Payroll Summary',      onClick: () => navigate('/payroll/reports/payslips?mode=atm') }
-        ]
-      },
-      {
-        // Item 6 sub-menu (14 sub-items in original)
-        title: 'Monthly Reports',
-        items: [
-          { label: 'Monthly Payroll Recap',          onClick: () => navigate('/payroll/reports/monthly-recap') },
-          { label: 'Monthly SSS/PHIC/EC/PGBG/Tax',   onClick: () => navigate('/payroll/reports/monthly-all') },
-          { label: 'Monthly SSS/PHIC/EC/PGBG',       onClick: () => navigate('/payroll/reports/monthly-pbg') },
-          { label: 'Monthly SSS, PHIC & EC',         onClick: () => navigate('/payroll/reports/monthly-sss') },
-          { label: 'Monthly SSS & EC',               onClick: () => navigate('/payroll/reports/monthly-sss-ec') },
-          { label: 'Monthly Philhealth',             onClick: () => navigate('/payroll/reports/monthly-phic') },
-          { label: 'Monthly Pag-Ibig',               onClick: () => navigate('/payroll/reports/monthly-pagibig') },
-          { label: 'Monthly Tax Withheld',           onClick: () => navigate('/payroll/reports/monthly-tax') },
-          { label: 'Monthly Dept. Summary',          onClick: () => navigate('/payroll/reports/dept-summary') },
-          { label: 'Monthly Loan Deduction Summary', onClick: () => navigate('/payroll/reports/loan-deductions') },
-          { label: 'SSS-LMS Diskette Project',       onClick: () => alert('SSS-LMS Diskette Project') },
-          { label: 'SSS R-3 Tape Diskette Project',  onClick: () => alert('SSS R-3 Tape Diskette Project') },
-          { label: 'HDMF Loan Diskette Project',     onClick: () => alert('HDMF Loan Diskette Project') },
-          { label: 'Philhealth Regular RF-1',        onClick: () => navigate('/payroll/reports/phic-rf1') }
-        ]
-      },
-      {
-        // Item 7 sub-menu (7 sub-items in original) + item 8 (top-level quarterly SSS loan)
-        title: 'Quarterly Reports',
-        items: [
-          { label: 'Quarterly SSS, PHIC & EC',          onClick: () => navigate('/payroll/reports/quarterly-sss') },
-          { label: 'Quarterly Pag-Ibig Premium',        onClick: () => navigate('/payroll/reports/quarterly-pbg') },
-          { label: 'Quarterly Withholding Tax',         onClick: () => navigate('/payroll/reports/quarterly-tax') },
-          { label: 'Quarterly SSS Loan Payments',       onClick: () => navigate('/payroll/reports/quarterly-sss-loan') },
-          { label: 'Quarterly Pag-Ibig Loan Payments',  onClick: () => navigate('/payroll/reports/quarterly-pbg-loan') },
-          { label: 'PHIC Remittance (Hard Copy)',        onClick: () => navigate('/payroll/reports/phic-remittance') },
-          { label: 'PHIC Remittance (Diskette)',         onClick: () => alert('PHIC Quarterly Remittance Diskette') },
-          { label: 'Qtrly SSS Loan – SSS Form',         onClick: () => navigate('/payroll/reports/quarterly-sss-form') }
-        ]
-      },
-      {
-        // Item 9
-        title: 'Year-End Recap',
-        items: [
-          { label: 'Year-End Payroll Recap', onClick: () => navigate('/payroll/reports/yearly-recap') }
-        ]
-      },
-      {
-        // Item 10 sub-menu (5 sub-items in original)
-        title: 'Employee Master File',
-        items: [
-          { label: 'Employee Master List',    onClick: () => navigate('/payroll/reports/employee-list') },
-          { label: 'Personal Information',    onClick: () => navigate('/payroll/reports/personal-info') },
-          { label: 'Employee Salary Rate',    onClick: () => navigate('/payroll/reports/salary-rates') },
-          { label: 'Employee Loan Balance',   onClick: () => navigate('/payroll/reports/loan-balance') },
-          { label: 'Employee VL/SL Balance',  onClick: () => navigate('/payroll/reports/vl-sl-balance') }
-        ]
-      },
-      {
-        // Item 11 sub-menu (7 sub-items in original)
-        title: 'Bonus Reports',
-        items: [
-          { label: 'Advance Bonus P.Slip/Sheet',  onClick: () => navigate('/payroll/reports/bonus-advance') },
-          { label: 'Bonus Pay Sheet',             onClick: () => navigate('/payroll/reports/bonus-sheet') },
-          { label: 'Bonus ATM Summary',           onClick: () => navigate('/payroll/reports/bonus-atm') },
-          { label: 'All Bonus Slips w/ Summary',  onClick: () => navigate('/payroll/reports/bonus-slips?mode=all') },
-          { label: 'Selected Bonus Slips',        onClick: () => navigate('/payroll/reports/bonus-slips?mode=selected') },
-          { label: 'Bonus Slip Summary Only',     onClick: () => navigate('/payroll/reports/bonus-slips?mode=summary') },
-          { label: 'Bonus Denomination Breakdown', onClick: () => navigate('/payroll/reports/bonus-denomination') }
-        ]
-      },
-      {
-        // Item 12 sub-menu (9 sub-items in original)
-        title: 'Year-End Tax / Refund',
-        items: [
-          { label: "Tax Recon – Taxable Income",      onClick: () => navigate('/payroll/reports/tax-recon?type=taxable') },
-          { label: "Tax Recon – Non-Taxable Income",  onClick: () => navigate('/payroll/reports/tax-recon?type=nontaxable') },
-          { label: 'Tax Refund Report',               onClick: () => navigate('/payroll/reports/tax-refund') },
-          { label: 'Tax Refund Den. Breakdown',       onClick: () => navigate('/payroll/reports/tax-refund-den') },
-          { label: 'Tax Refund Slip',                 onClick: () => navigate('/payroll/reports/tax-refund-slip') },
-          { label: 'BIR Tax Withheld Report',         onClick: () => navigate('/payroll/reports/bir-tax-withheld') },
-          { label: 'Individual BIR W2 Form',          onClick: () => navigate('/payroll/reports/w2') },
-          { label: 'Alpha List',                      onClick: () => navigate('/payroll/reports/alpha-list') },
-          { label: 'Form 1604CF – Schedule 7.3',      onClick: () => navigate('/payroll/reports/1604cf-73') },
-          { label: 'Form 1604CF – Schedule 7.1',      onClick: () => navigate('/payroll/reports/1604cf-71') }
-        ]
-      },
-      {
-        // Item 13 sub-menu (4 sub-items in original)
-        title: 'Premium Payment Certification',
-        items: [
-          { label: 'SSS Premium Certification',      onClick: () => navigate('/payroll/reports/premium-cert?type=sss') },
-          { label: 'Medicare Premium Certification', onClick: () => navigate('/payroll/reports/premium-cert?type=med') },
-          { label: 'Pag-Ibig Premium Certification', onClick: () => navigate('/payroll/reports/premium-cert?type=pbg') },
-          { label: 'All Premiums Certification',     onClick: () => navigate('/payroll/reports/premium-cert?type=all') }
+          { label: 'Deductions Report',      onClick: () => navigate('/payroll/reports/deductions') },
+          { label: 'Monthly Reports',        onClick: () => navigate('/payroll/reports/monthly') },
+          { label: 'Quarterly Reports',      onClick: () => navigate('/payroll/reports/quarterly') },
+          { label: 'Qtrly SSS Ln (SSS Form)', onClick: () => navigate('/payroll/reports/quarterly-sss-form') },
+          { label: 'Year-End Payroll Recap', onClick: () => navigate('/payroll/reports/yearly-recap') },
+          { label: 'Employee Master File',   onClick: () => navigate('/payroll/reports/employee-master') },
+          { label: 'Bonus',                  onClick: () => navigate('/payroll/reports/bonus') },
+          { label: 'Year-End Tax/Refund',    onClick: () => navigate('/payroll/reports/year-end-tax') },
+          { label: 'Premium Payment Certif', onClick: () => navigate('/payroll/reports/premium-cert') },
+          { label: 'Set Printer Font',       onClick: () => alert('Set Printer Font') }
         ]
       }
     ]
