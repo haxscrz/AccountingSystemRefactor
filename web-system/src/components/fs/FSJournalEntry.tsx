@@ -36,6 +36,27 @@ const ENDPOINT_MAP: Record<string, string> = {
   adjustment: 'adjustments'
 }
 
+// Auto-generated reference number prefix per journal type
+// Original Clipper field is called "REFERENCE" (space(8)) — user typed freely.
+// Each type is stored in its own separate table, so there is no cross-type collision;
+// these prefixes are just a convenience suggestion to distinguish entries visually.
+const PREFIX_MAP: Record<string, string> = {
+  receipt:    'CR',   // Cash Receipt
+  sales:      'SB',   // Sales Book
+  general:    'JV',   // Journal Voucher
+  purchase:   'PB',   // Purchase Book
+  adjustment: 'AJ'    // Adjustment
+}
+
+// Column header label for the reference number column
+const REFNO_LABEL_MAP: Record<string, string> = {
+  receipt:    'CR No.',
+  sales:      'SB No.',
+  general:    'JV No.',
+  purchase:   'PB No.',
+  adjustment: 'AJ No.'
+}
+
 // Camel-case key from API response to our JournalRecord
 function mapRecord(raw: any): JournalRecord {
   return {
@@ -86,6 +107,8 @@ export default function FSJournalEntry() {
   const journalType = type ?? 'general'
   const endpoint = ENDPOINT_MAP[journalType] ?? 'general'
   const title = JOURNAL_TITLES[journalType] ?? 'Journal Entry'
+  const refPrefix = PREFIX_MAP[journalType] ?? 'JV'
+  const refLabel  = REFNO_LABEL_MAP[journalType] ?? 'Ref. No.'
 
   const [records, setRecords] = useState<JournalRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -120,7 +143,7 @@ export default function FSJournalEntry() {
       const resp = await axios.get(`${API_BASE}/journals/${endpoint}`)
       const data: JournalRecord[] = (resp.data?.data ?? resp.data ?? []).map(mapRecord)
       setRecords(data)
-      const nextJv = `JV${String(data.length + 1).padStart(5, '0')}`
+      const nextJv = `${refPrefix}${String(data.length + 1).padStart(5, '0')}`
       setAddRow(r => ({ ...r, jJvNo: r.jJvNo || nextJv }))
       setMessage('')
     } catch (err: any) {
@@ -163,7 +186,7 @@ export default function FSJournalEntry() {
     setSaving(true)
     try {
       const payload = {
-        jJvNo:    addRow.jJvNo.trim() || `JV${String(records.length + 1).padStart(5, '0')}`,
+        jJvNo:    addRow.jJvNo.trim() || `${refPrefix}${String(records.length + 1).padStart(5, '0')}`,
         jDate:    addRow.jDate,
         acctCode: addRow.acctCode.toUpperCase(),
         jCkAmt:   dv > 0 ? dv : cv,
@@ -320,7 +343,7 @@ export default function FSJournalEntry() {
           </colgroup>
           <thead>
             <tr>
-              <th>JV No.</th>
+              <th>{refLabel}</th>
               <th>Date</th>
               <th>Account Code</th>
               <th style={{ textAlign: 'right', color: '#1e40af' }}>Debit</th>
