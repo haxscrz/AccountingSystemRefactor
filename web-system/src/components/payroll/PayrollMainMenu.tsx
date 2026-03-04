@@ -1,81 +1,94 @@
 interface PayrollMainMenuProps {
-  onSelectType: (type: 'regular' | 'casual') => void
+  payrollType: 'regular' | 'casual'
 }
 
-export default function PayrollMainMenu({ onSelectType }: PayrollMainMenuProps) {
+const TYPE_COLOR = {
+  regular: 'var(--primary)',
+  casual:  'var(--accent)',
+}
+
+const TYPE_LABEL = {
+  regular: 'Regular Employees',
+  casual:  'Casual Employees',
+}
+
+const TYPE_DESC = {
+  regular: 'Monthly salary computation with full statutory benefits.',
+  casual:  'Daily / project-based pay with pro-rated benefits.',
+}
+
+export default function PayrollMainMenu({ payrollType }: PayrollMainMenuProps) {
+  const color = TYPE_COLOR[payrollType]
+
   return (
-    <div className="card" style={{ maxWidth: 900 }}>
-      {/* ── Heading ── */}
-      <div style={{ marginBottom: 20, paddingBottom: 14, borderBottom: '2px solid var(--border)' }}>
-        <h2 style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.02em' }}>
-          Payroll System
-        </h2>
-        <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>
-          Select payroll type to begin. Use the ribbon above for timecard entry, computation, and reports.
-        </p>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 860 }}>
 
-      {/* ── Type selection ── */}
-      <div className="grid-2" style={{ marginBottom: 20 }}>
-        <div
-          className="info-card"
-          onClick={() => onSelectType('regular')}
-          style={{ cursor: 'pointer', borderLeft: '3px solid var(--primary)', transition: 'all var(--t-base)' }}
-          onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-2px)')}
-          onMouseLeave={e => (e.currentTarget.style.transform = '')}
-        >
-          <h4>Regular Employees</h4>
-          <ul className="feature-list" style={{ marginBottom: 14 }}>
-            <li>Monthly salary computation</li>
-            <li>Full benefits coverage (SSS, PHIC, Pag-ibig)</li>
-            <li>13th month pay & leave credits</li>
-            <li>Withholding tax</li>
-          </ul>
-          <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', fontSize: 12 }}>
-            Select Regular →
-          </button>
-        </div>
-
-        <div
-          className="info-card"
-          onClick={() => onSelectType('casual')}
-          style={{ cursor: 'pointer', borderLeft: '3px solid var(--accent)', transition: 'all var(--t-base)' }}
-          onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-2px)')}
-          onMouseLeave={e => (e.currentTarget.style.transform = '')}
-        >
-          <h4>Casual Employees</h4>
-          <ul className="feature-list" style={{ marginBottom: 14 }}>
-            <li>Daily or project-based pay</li>
-            <li>Basic statutory coverage</li>
-            <li>Pro-rated benefits</li>
-            <li>Flexible scheduling</li>
-          </ul>
-          <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', fontSize: 12 }}>
-            Select Casual →
-          </button>
-        </div>
-      </div>
-
-      {/* ── Period info bar ── */}
+      {/* Active session banner */}
       <div style={{
-        display: 'flex', gap: 24, padding: '10px 14px',
-        background: 'var(--background)', border: '1px solid var(--border)',
-        borderRadius: 'var(--radius)', fontSize: 12, flexWrap: 'wrap',
-        borderLeft: '3px solid var(--border-strong)'
+        background: 'var(--surface)',
+        border: `2px solid ${color}`,
+        borderRadius: 'var(--radius)',
+        padding: '18px 22px',
+        display: 'flex', alignItems: 'center', gap: 16,
+        position: 'relative', overflow: 'hidden',
       }}>
-        <div>
-          <span style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: 10, fontWeight: 600, letterSpacing: '0.06em' }}>Period</span>
-          <div style={{ fontWeight: 700, marginTop: 2 }}>February 2026</div>
-        </div>
-        <div>
-          <span style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: 10, fontWeight: 600, letterSpacing: '0.06em' }}>Status</span>
-          <div style={{ fontWeight: 700, marginTop: 2 }}>In Progress</div>
-        </div>
-        <div>
-          <span style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: 10, fontWeight: 600, letterSpacing: '0.06em' }}>Last Posted</span>
-          <div style={{ fontWeight: 700, marginTop: 2 }}>Feb 15, 2026</div>
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0,
+          width: 4, background: color,
+        }} />
+        <div style={{ paddingLeft: 8 }}>
+          <div style={{
+            fontSize: 10, fontWeight: 800, letterSpacing: '0.1em',
+            textTransform: 'uppercase', color, marginBottom: 4,
+          }}>
+            Active Session
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: '-0.02em', color: 'var(--text)' }}>
+            {TYPE_LABEL[payrollType]}
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 3 }}>
+            {TYPE_DESC[payrollType]}
+          </div>
         </div>
       </div>
+
+      {/* Period info row */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        gap: 12,
+      }}>
+        {[
+          { label: 'Company',     value: 'CTSI' },
+          { label: 'Period',      value: 'February 2026' },
+          { label: 'Status',      value: 'In Progress' },
+          { label: 'Last Posted', value: 'Feb 15, 2026' },
+        ].map(({ label, value }) => (
+          <div key={label} style={{
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: 'var(--radius)', padding: '12px 14px',
+          }}>
+            <div style={{
+              fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
+              textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4,
+            }}>
+              {label}
+            </div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--text)' }}>{value}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Quick-action hint */}
+      <div style={{
+        background: 'var(--surface)', border: '1px solid var(--border)',
+        borderRadius: 'var(--radius)', padding: '14px 18px',
+        fontSize: 12, color: 'var(--text-secondary)',
+        borderLeft: '3px solid var(--border-strong)',
+      }}>
+        Use the ribbon tabs above to process timecards, compute payroll, run reports, and manage master files.
+        To switch between Regular and Casual, click <strong>Switch Type</strong> in the header.
+      </div>
+
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { useNavigate, Routes, Route } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import RibbonNav from '../components/RibbonNav'
 import PayrollMainMenu from '../components/payroll/PayrollMainMenu'
+import PayrollTypeSelector from '../components/payroll/PayrollTypeSelector'
 import TimecardEntry from '../components/payroll/TimecardEntry'
 import PayrollCompute from '../components/payroll/PayrollCompute'
 import EmployeeMaster from '../components/payroll/EmployeeMaster'
@@ -30,6 +31,37 @@ export default function PayrollSystem() {
     navigate('/login')
   }
 
+  const handleSelectType = (type: 'regular' | 'casual') => {
+    setPayrollType(type)
+    navigate('/payroll')
+  }
+
+  // ── No type selected: show full-screen selector before the ribbon ──
+  if (!payrollType) {
+    return (
+      <div className="payroll-container">
+        <header className={`topbar ${isCompactHeader ? 'topbar-compact' : ''}`}>
+          <div className="brand">
+            <div className="brand-mark-small"></div>
+            <div>
+              <h1>PAY Payroll System</h1>
+              <p>Payroll Processing Module</p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <button onClick={() => navigate('/dashboard')} className="btn btn-secondary">
+              ← Back to Dashboard
+            </button>
+            <button onClick={handleLogout} className="btn btn-secondary">
+              Logout
+            </button>
+          </div>
+        </header>
+        <PayrollTypeSelector onSelect={handleSelectType} />
+      </div>
+    )
+  }
+
   const ribbonTabs = [
     { id: 'main', label: 'Main Menu' },
     { id: 'file', label: 'File Maintenance' },
@@ -40,14 +72,8 @@ export default function PayrollSystem() {
   const ribbonGroups = {
     // ── MAIN MENU ──────────────────────────────────────────────────────────────
     // Mirrors PAY.PRG m_main=1 block exactly.
+    // Type selection is now handled at entry (PayrollTypeSelector).
     main: [
-      {
-        title: 'Select Payroll Type',
-        items: [
-          { label: 'Regular Employees', onClick: () => { setPayrollType('regular'); navigate('/payroll'); } },
-          { label: 'Casual Employees',  onClick: () => { setPayrollType('casual');  navigate('/payroll'); } }
-        ]
-      },
       {
         title: 'Process Timecard',
         items: [
@@ -258,6 +284,13 @@ export default function PayrollSystem() {
           <button onClick={() => navigate('/dashboard')} className="btn btn-secondary">
             ← Back to Dashboard
           </button>
+          <button
+            onClick={() => setPayrollType(null)}
+            className="btn btn-secondary"
+            title="Change payroll type"
+          >
+            Switch Type
+          </button>
           <button onClick={handleLogout} className="btn btn-secondary">
             Logout
           </button>
@@ -273,7 +306,7 @@ export default function PayrollSystem() {
 
       <div className="main-content">
         <Routes>
-          <Route path="/" element={<PayrollMainMenu onSelectType={setPayrollType} />} />
+          <Route path="/" element={<PayrollMainMenu payrollType={payrollType} />} />
           <Route path="/timecard" element={<TimecardEntry payrollType={payrollType} />} />
           <Route path="/timecard/view" element={<div className="card"><h3>Timecard Query</h3></div>} />
           <Route path="/compute" element={<PayrollCompute />} />
@@ -283,7 +316,7 @@ export default function PayrollSystem() {
       </div>
 
       <div className="status-bar">
-        <span>PAY System | Company: CTSI | Period: February 2026 | Type: {payrollType || 'Not Selected'}</span>
+        <span>PAY System | Company: CTSI | Period: February 2026 | {payrollType === 'regular' ? 'Regular Employees' : 'Casual Employees'}</span>
         <span>{user?.username}</span>
       </div>
     </div>
