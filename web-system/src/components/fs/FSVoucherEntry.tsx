@@ -32,7 +32,7 @@ interface FSVoucherEntryProps {
   type: 'current' | 'advance'
 }
 
-const API_BASE = 'http://localhost:5081/api/fs'
+const API_BASE = '/api/fs'
 
 function mapMaster(raw: any): CheckMaster {
   return {
@@ -504,6 +504,14 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                     <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Date</label>
                     <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd' }}>{displayDate(currentMaster.jDate)}</div>
                   </div>
+                  <div>
+                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Supplier No.</label>
+                    <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd', fontFamily: 'monospace' }}>{currentMaster.supNo || '—'}</div>
+                  </div>
+                  <div>
+                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Bank Code</label>
+                    <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd', fontFamily: 'monospace' }}>{currentMaster.bankNo || '—'}</div>
+                  </div>
                   <div style={{ gridColumn: '1 / -1' }}>
                     <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Pay To</label>
                     <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd' }}>{currentMaster.jPayTo}</div>
@@ -718,6 +726,18 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                 <input type="date" className="form-input" value={masterForm.jDate}
                   onChange={e => setMasterForm(f => ({ ...f, jDate: e.target.value }))} />
               </div>
+              <div className="form-group">
+                <label className="form-label">Supplier No.</label>
+                <input type="number" className="form-input" value={masterForm.supNo || ''}
+                  onChange={e => setMasterForm(f => ({ ...f, supNo: parseInt(e.target.value) || 0 }))}
+                  placeholder="0" min={0} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Bank Code</label>
+                <input type="number" className="form-input" value={masterForm.bankNo || ''}
+                  onChange={e => setMasterForm(f => ({ ...f, bankNo: parseInt(e.target.value) || 0 }))}
+                  placeholder="0" min={0} />
+              </div>
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                 <label className="form-label">Pay To (Payee) <span style={{ color: 'red' }}>*</span></label>
                 <input type="text" className="form-input" value={masterForm.jPayTo ?? ''}
@@ -755,6 +775,18 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                 <label className="form-label">Date</label>
                 <input type="date" className="form-input" value={masterForm.jDate}
                   onChange={e => setMasterForm(f => ({ ...f, jDate: e.target.value }))} autoFocus />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Supplier No.</label>
+                <input type="number" className="form-input" value={masterForm.supNo || ''}
+                  onChange={e => setMasterForm(f => ({ ...f, supNo: parseInt(e.target.value) || 0 }))}
+                  placeholder="0" min={0} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Bank Code</label>
+                <input type="number" className="form-input" value={masterForm.bankNo || ''}
+                  onChange={e => setMasterForm(f => ({ ...f, bankNo: parseInt(e.target.value) || 0 }))}
+                  placeholder="0" min={0} />
               </div>
               <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                 <label className="form-label">Pay To (Payee)</label>

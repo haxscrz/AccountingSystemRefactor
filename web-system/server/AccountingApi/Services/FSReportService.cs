@@ -35,6 +35,9 @@ public sealed class FSReportService
         decimal totalDebit = 0;
         decimal totalCredit = 0;
 
+        // If detailed, preload all journals (pournals in original) for transaction-level details
+        var allJournals = detailed ? await _context.FSJournals.OrderBy(j => j.JDate).ToListAsync() : null;
+
         foreach (var account in accounts)
         {
             // Calculate ending balance using formula
@@ -44,15 +47,33 @@ public sealed class FSReportService
             else
                 endingBalance = account.OpenBal + account.CurCredit - account.CurDebit;
 
-            lines.Add(new TrialBalanceLine
+            var line = new TrialBalanceLine
             {
                 AccountCode = account.AcctCode,
                 AccountDescription = account.AcctDesc,
                 OpeningBalance = account.OpenBal,
                 DebitMovement = account.CurDebit,
                 CreditMovement = account.CurCredit,
-                EndingBalance = endingBalance
-            });
+                EndingBalance = endingBalance,
+                Formula = account.Formula
+            };
+
+            // If detailed, include per-transaction details (A_REPDTB.PRG line 145-180)
+            if (detailed && allJournals != null)
+            {
+                line.Transactions = allJournals
+                    .Where(j => j.AcctCode == account.AcctCode)
+                    .Select(j => new TrialBalanceTransaction
+                    {
+                        TransactionDate = j.JDate,
+                        Reference = j.JJvNo,
+                        DebitAmount = j.JDOrC.ToUpper() == "D" ? j.JCkAmt : 0,
+                        CreditAmount = j.JDOrC.ToUpper() == "C" ? j.JCkAmt : 0
+                    })
+                    .ToList();
+            }
+
+            lines.Add(line);
 
             totalDebit += account.CurDebit;
             totalCredit += account.CurCredit;
@@ -146,6 +167,22 @@ public sealed class FSReportService
             }
         }
 
+        // Populate ratios (percentage of gross income, matching A_REPIST.PRG logic)
+        foreach (var line in incomeLines)
+        {
+            line.ThisMonthRatio = totalIncome != 0 ? Math.Round((line.ThisMonthAmount / totalIncome) * 100, 2) : 0;
+            line.ToDateRatio    = totalIncomeToDate != 0 ? Math.Round((line.ToDateAmount / totalIncomeToDate) * 100, 2) : 0;
+        }
+        foreach (var line in expenseLines)
+        {
+            line.ThisMonthRatio = totalIncome != 0 ? Math.Round((line.ThisMonthAmount / totalIncome) * 100, 2) : 0;
+            line.ToDateRatio    = totalIncomeToDate != 0 ? Math.Round((line.ToDateAmount / totalIncomeToDate) * 100, 2) : 0;
+        }
+        decimal incomeRatioTotal  = incomeLines.Sum(l => l.ThisMonthRatio);
+        decimal incomeRatioToDate = incomeLines.Sum(l => l.ToDateRatio);
+        decimal expRatioTotal     = expenseLines.Sum(l => l.ThisMonthRatio);
+        decimal expRatioToDate    = expenseLines.Sum(l => l.ToDateRatio);
+
         decimal netIncomeThisMonth = totalIncome - totalExpense;
         decimal netIncomeToDate = totalIncomeToDate - totalExpenseToDate;
 
@@ -156,10 +193,16 @@ public sealed class FSReportService
             ExpenseLines = expenseLines,
             GrossIncome = totalIncome,
             GrossIncomeToDate = totalIncomeToDate,
+            GrossIncomeRatio = Math.Round(incomeRatioTotal, 2),
+            GrossIncomeToDateRatio = Math.Round(incomeRatioToDate, 2),
             TotalExpenses = totalExpense,
             TotalExpensesToDate = totalExpenseToDate,
+            TotalExpensesRatio = Math.Round(expRatioTotal, 2),
+            TotalExpensesToDateRatio = Math.Round(expRatioToDate, 2),
             NetIncome = netIncomeThisMonth,
-            NetIncomeToDate = netIncomeToDate
+            NetIncomeToDate = netIncomeToDate,
+            NetIncomeRatio = Math.Round(incomeRatioTotal - expRatioTotal, 2),
+            NetIncomeToDateRatio = Math.Round(incomeRatioToDate - expRatioToDate, 2)
         };
     }
 
@@ -346,6 +389,16 @@ public sealed class TrialBalanceLine
     public decimal DebitMovement { get; set; }
     public decimal CreditMovement { get; set; }
     public decimal EndingBalance { get; set; }
+    public string Formula { get; set; } = string.Empty;
+    public List<TrialBalanceTransaction>? Transactions { get; set; }
+}
+
+public sealed class TrialBalanceTransaction
+{
+    public DateTime TransactionDate { get; set; }
+    public string Reference { get; set; } = string.Empty;
+    public decimal DebitAmount { get; set; }
+    public decimal CreditAmount { get; set; }
 }
 
 public sealed class IncomeStatementReport
@@ -354,11 +407,17 @@ public sealed class IncomeStatementReport
     public List<IncomeStatementLine> IncomeLines { get; set; } = new();
     public decimal GrossIncome { get; set; }
     public decimal GrossIncomeToDate { get; set; }
+    public decimal GrossIncomeRatio { get; set; }
+    public decimal GrossIncomeToDateRatio { get; set; }
     public List<IncomeStatementLine> ExpenseLines { get; set; } = new();
     public decimal TotalExpenses { get; set; }
     public decimal TotalExpensesToDate { get; set; }
+    public decimal TotalExpensesRatio { get; set; }
+    public decimal TotalExpensesToDateRatio { get; set; }
     public decimal NetIncome { get; set; }
     public decimal NetIncomeToDate { get; set; }
+    public decimal NetIncomeRatio { get; set; }
+    public decimal NetIncomeToDateRatio { get; set; }
 }
 
 public sealed class IncomeStatementLine

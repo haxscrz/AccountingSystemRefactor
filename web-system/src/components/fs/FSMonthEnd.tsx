@@ -15,7 +15,7 @@ const MONTH_NAMES = [
 ]
 
 export default function FSMonthEnd() {
-  const API_BASE = 'http://localhost:5081/api/fs'
+  const API_BASE = '/api/fs'
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [sysInfo, setSysInfo] = useState<SystemInfo | null>(null)
   const [loadingInfo, setLoadingInfo] = useState(true)

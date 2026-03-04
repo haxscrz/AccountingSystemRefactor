@@ -1,4 +1,4 @@
-﻿﻿import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
 
 // A_EDTCOD.PRG — f_a_edtcod(m_which=4) — Schedule table
@@ -17,7 +17,7 @@ interface AccountLookup {
   acctDesc: string
 }
 
-const API_BASE = 'http://localhost:5081/api/fs'
+const API_BASE = '/api/fs'
 
 function mapItem(raw: any): ScheduleEntry {
   return {

@@ -4,6 +4,7 @@ using AccountingApi.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace AccountingApi.Controllers;
 
@@ -18,6 +19,7 @@ public sealed class FSController : ControllerBase
     private readonly FSPostingService _postingService;
     private readonly FSReportService _reportService;
     private readonly AccountingDbContext _db;
+    private readonly IConfiguration _config;
 
     public FSController(
         LegacyDataService legacyDataService,
@@ -26,7 +28,8 @@ public sealed class FSController : ControllerBase
         IFSJournalService journalService,
         FSPostingService postingService,
         FSReportService reportService,
-        AccountingDbContext db)
+        AccountingDbContext db,
+        IConfiguration config)
     {
         _legacyDataService = legacyDataService;
         _accountService = (FSAccountService)accountService;
@@ -35,6 +38,7 @@ public sealed class FSController : ControllerBase
         _postingService = postingService;
         _reportService = reportService;
         _db = db;
+        _config = config;
     }
 
     [HttpGet("chart-of-accounts")]
@@ -238,6 +242,13 @@ public sealed class FSController : ControllerBase
             return NotFound(new { message = $"Check '{checkNo}' not found" });
 
         return Ok(new { data = check });
+    }
+
+    [HttpGet("vouchers/lines")]
+    public async Task<IActionResult> GetAllVoucherLines()
+    {
+        var lines = await _voucherService.GetAllVoucherLinesAsync();
+        return Ok(new { data = lines, count = lines.Count });
     }
 
     [HttpGet("vouchers/lines/{checkNo}")]
@@ -1283,6 +1294,44 @@ public sealed class FSController : ControllerBase
             dataset.RowCount,
             Rows = dataset.Rows
         });
+    }
+
+    #endregion
+
+    #region Backup
+
+    /// <summary>
+    /// Download a point-in-time copy of the SQLite database file.
+    /// Equivalent to f_a_backup() in A_BACKUP.PRG.
+    /// Returns the raw .db file as an octet-stream download.
+    /// </summary>
+    [HttpGet("backup")]
+    public IActionResult DownloadBackup()
+    {
+        // Resolve the db file path from the connection string (Data Source=accounting.db)
+        var connStr = _config.GetConnectionString("DefaultConnection")
+                      ?? "Data Source=accounting.db";
+
+        // Parse "Data Source=<path>" from the connection string
+        var dbPath = connStr
+            .Split(';', StringSplitOptions.RemoveEmptyEntries)
+            .Select(p => p.Trim())
+            .FirstOrDefault(p => p.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase))
+            ?.Substring("Data Source=".Length)
+            ?? "accounting.db";
+
+        if (!Path.IsPathRooted(dbPath))
+            dbPath = Path.Combine(Directory.GetCurrentDirectory(), dbPath);
+
+        if (!System.IO.File.Exists(dbPath))
+            return NotFound(new { error = $"Database file not found at: {dbPath}" });
+
+        var stamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
+        var downloadName = $"accounting_backup_{stamp}.db";
+
+        // Read into memory so the file stream is not held open
+        var bytes = System.IO.File.ReadAllBytes(dbPath);
+        return File(bytes, "application/octet-stream", downloadName);
     }
 
     #endregion

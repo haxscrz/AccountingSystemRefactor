@@ -1,4 +1,4 @@
-﻿﻿import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 
@@ -18,7 +18,7 @@ interface AccountLookup {
 }
 
 // --- Constants ---
-const API_BASE = 'http://localhost:5081/api/fs'
+const API_BASE = '/api/fs'
 
 const JOURNAL_TITLES: Record<string, string> = {
   receipt:    'Cash Receipts',

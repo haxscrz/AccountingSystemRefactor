@@ -44,6 +44,7 @@ public interface IFSVoucherService
 
     #region Check Voucher Details - Line Item Operations
 
+    Task<List<FSCheckVou>> GetAllVoucherLinesAsync();
     Task<List<FSCheckVou>> GetVoucherLinesAsync(string checkNo);
     Task<FSCheckVou> AddVoucherLineAsync(FSCheckVou line);
     Task<FSCheckVou> UpdateVoucherLineAsync(int lineId, FSCheckVou line);
@@ -273,6 +274,18 @@ public class FSVoucherService : IFSVoucherService
     #endregion
 
     #region Check Voucher (Line Items) Operations
+
+    /// <summary>
+    /// Get all distribution lines for all checks (used by reports)
+    /// </summary>
+    public async Task<List<FSCheckVou>> GetAllVoucherLinesAsync()
+    {
+        return await _context.FSCheckVou
+            .AsNoTracking()
+            .OrderBy(v => v.JCkNo)
+            .ThenBy(v => v.Id)
+            .ToListAsync();
+    }
 
     /// <summary>
     /// Get all distribution lines for a check

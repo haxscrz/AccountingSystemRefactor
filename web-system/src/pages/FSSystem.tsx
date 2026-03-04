@@ -11,6 +11,7 @@ import FSPosting from '../components/fs/FSPosting'
 import FSMonthEnd from '../components/fs/FSMonthEnd'
 import FSGroupCodes from '../components/fs/FSGroupCodes'
 import FSSubsidiaryGroups from '../components/fs/FSSubsidiaryGroups'
+import FSQueryBrowser from '../components/fs/FSQueryBrowser'
 import './FSSystem.css'
 
 export default function FSSystem() {
@@ -31,6 +32,24 @@ export default function FSSystem() {
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const handleBackup = async () => {
+    try {
+      const resp = await fetch('/api/fs/backup')
+      if (!resp.ok) throw new Error(`Server returned ${resp.status}`)
+      const blob = await resp.blob()
+      const now = new Date()
+      const stamp = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `accounting_backup_${stamp}.db`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err: any) {
+      alert(`Backup failed: ${err.message}`)
+    }
   }
 
   const ribbonTabs = [
@@ -63,14 +82,6 @@ export default function FSSystem() {
     ],
     file: [
       {
-        title: 'Reindex',
-        items: [
-          { label: 'Reindex Accounts File', onClick: () => alert('Not required: SQLite manages indexes automatically. No manual reindex is needed.') },
-          { label: 'Reindex Transaction File', onClick: () => alert('Not required: SQLite manages indexes automatically. No manual reindex is needed.') },
-          { label: 'Reindex All Files', onClick: () => alert('Not required: SQLite manages indexes automatically. No manual reindex is needed.') }
-        ]
-      },
-      {
         title: 'Master Files',
         items: [
           { label: 'Chart of Accounts', onClick: () => navigate('/fs/chart-of-accounts') },
@@ -81,9 +92,8 @@ export default function FSSystem() {
       {
         title: 'Administration',
         items: [
-          { label: 'Backup Databases', onClick: () => alert('Database Backup: To back up the database, copy the accounting.db file from the server directory to a safe location.') },
-          { label: 'Month-End Processing', onClick: () => navigate('/fs/month-end') },
-          { label: 'Transfer Advance CDB', onClick: () => alert('Transfer Advance CDB: This function transfers advance CDB entries to the current accounting period. Contact your system administrator to run this process.') }
+          { label: 'Backup Database', onClick: () => handleBackup() },
+          { label: 'Month-End Processing', onClick: () => navigate('/fs/month-end') }
         ]
       }
     ],
@@ -91,19 +101,18 @@ export default function FSSystem() {
       {
         title: 'Quick View',
         items: [
-          { label: 'View Spooled File', onClick: () => alert('View Spooled File is not available in the web version. Reports are generated directly on screen.') },
-          { label: 'Charts of Accounts', onClick: () => navigate('/fs/chart-of-accounts') }
+          { label: 'Chart of Accounts', onClick: () => navigate('/fs/query/accounts') }
         ]
       },
       {
         title: 'Transactions',
         items: [
-          { label: 'Check Disbursement Vouchers', onClick: () => navigate('/fs/voucher') },
-          { label: 'Cash Receipts', onClick: () => navigate('/fs/journal/receipt') },
-          { label: 'Sales Book Journals', onClick: () => navigate('/fs/journal/sales') },
-          { label: 'Journal Vouchers', onClick: () => navigate('/fs/journal/general') },
-          { label: 'Purchase Book', onClick: () => navigate('/fs/journal/purchase') },
-          { label: 'Adjustments', onClick: () => navigate('/fs/journal/adjustment') }
+          { label: 'Check Disbursement Vouchers', onClick: () => navigate('/fs/query/cdv') },
+          { label: 'Cash Receipts Transactions', onClick: () => navigate('/fs/query/receipt') },
+          { label: 'Sales Book Journals', onClick: () => navigate('/fs/query/sales') },
+          { label: 'Journal Vouchers', onClick: () => navigate('/fs/query/general') },
+          { label: 'Purchase Book Journals', onClick: () => navigate('/fs/query/purchase') },
+          { label: 'Adjustments', onClick: () => navigate('/fs/query/adjustment') }
         ]
       }
     ],
@@ -185,6 +194,7 @@ export default function FSSystem() {
           <Route path="/posting" element={<FSPosting />} />
           <Route path="/month-end" element={<FSMonthEnd />} />
           <Route path="/reports/:reportType" element={<FSReports />} />
+          <Route path="/query/:queryType" element={<FSQueryBrowser />} />
         </Routes>
       </div>
 

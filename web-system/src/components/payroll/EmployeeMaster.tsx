@@ -1,4 +1,4 @@
-﻿﻿﻿import { useState, useEffect } from 'react'
+﻿﻿import { useState, useEffect } from 'react'
 
 interface Employee {
   // Basic Info (Screen 1)
@@ -159,7 +159,7 @@ export default function EmployeeMaster() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await fetch('http://localhost:5081/api/payroll/employees/all')
+      const response = await fetch('/api/payroll/employees/all')
       if (response.ok) {
         const data = await response.json()
         setEmployees(data)
@@ -210,8 +210,8 @@ export default function EmployeeMaster() {
     try {
       const isNew = !employees.find(e => e.emp_no === editingEmp.emp_no)
       const url = isNew 
-        ? 'http://localhost:5081/api/payroll/employees'
-        : `http://localhost:5081/api/payroll/employees/${editingEmp.emp_no}`
+        ? '/api/payroll/employees'
+        : `/api/payroll/employees/${editingEmp.emp_no}`
       
       const response = await fetch(url, {
         method: isNew ? 'POST' : 'PUT',
@@ -240,7 +240,7 @@ export default function EmployeeMaster() {
     if (!confirm(`Delete employee ${empNo}?`)) return
     
     try {
-      const response = await fetch(`http://localhost:5081/api/payroll/employees/${empNo}`, {
+      const response = await fetch(`/api/payroll/employees/${empNo}`, {
         method: 'DELETE'
       })
 

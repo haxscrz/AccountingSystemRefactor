@@ -21,7 +21,7 @@ const MONTH_NAMES = [
 ]
 
 export default function FSPosting() {
-  const API_BASE = 'http://localhost:5081/api/fs'
+  const API_BASE = '/api/fs'
   const [posting, setPosting] = useState(false)
   const [resultMessage, setResultMessage] = useState('')
   const [resultSuccess, setResultSuccess] = useState(false)

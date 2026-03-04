@@ -1,4 +1,4 @@
-﻿﻿﻿import { useState, useEffect } from 'react'
+﻿﻿import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 interface Account {
@@ -14,7 +14,7 @@ interface Account {
 }
 
 export default function FSChartOfAccounts() {
-  const API_BASE = 'http://localhost:5081/api/fs'
+  const API_BASE = '/api/fs'
   const [accounts, setAccounts] = useState<Account[]>([])
   const [currentAccountIndex, setCurrentAccountIndex] = useState(0)
   const [message, setMessage] = useState('')

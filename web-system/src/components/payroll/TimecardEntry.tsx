@@ -1,4 +1,4 @@
-﻿﻿﻿import { useState, useEffect } from 'react'
+﻿﻿import { useState, useEffect } from 'react'
 import './TimecardEntry.css'
 
 interface TimecardEntryProps {
@@ -95,7 +95,7 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
   const fetchTimecards = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5081/api/payroll/timecards/${currentPeriod.year}/${currentPeriod.month}`
+        `/api/payroll/timecards/${currentPeriod.year}/${currentPeriod.month}`
       )
       if (response.ok) {
         const data = await response.json()
@@ -127,7 +127,7 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
     
     setLoading(true)
     try {
-      const response = await fetch('http://localhost:5081/api/payroll/timecards', {
+      const response = await fetch('/api/payroll/timecards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedTimecard)
