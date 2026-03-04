@@ -249,7 +249,7 @@ function ReportViewer({
           className="btn btn-secondary"
           style={{ marginBottom: 16, fontSize: 12 }}
         >
-          â† Back
+          &larr; Back
         </button>
       )}
       <h2>{title}</h2>
@@ -284,11 +284,12 @@ function ReportViewer({
 
       <div style={{ background: 'var(--panel-2)', padding: '20px', borderRadius: '8px', marginBottom: '24px' }}>
         <h4>Export Options</h4>
-        <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-          <button className="btn btn-secondary" onClick={() => void refreshPreview()} disabled={previewLoading}>Refresh Preview</button>
-          <button className="btn btn-primary"   onClick={() => handleGenerate('pdf')}   disabled={generating}>Generate PDF</button>
-          <button className="btn btn-secondary" onClick={() => handleGenerate('excel')} disabled={generating}>Export to Excel</button>
-          <button className="btn btn-secondary" onClick={() => handleGenerate('csv')}   disabled={generating}>Export to CSV</button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '16px' }}>
+          <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '4px 14px' }} onClick={() => void refreshPreview()} disabled={previewLoading}>&#8635; Refresh</button>
+          <span className="form-label" style={{ margin: '0 4px 0 8px', alignSelf: 'center' }}>Export as:</span>
+          <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '4px 14px' }} onClick={() => handleGenerate('pdf')}   disabled={generating}>&#11015; PDF</button>
+          <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '4px 14px' }} onClick={() => handleGenerate('excel')} disabled={generating}>&#11015; XLSX</button>
+          <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '4px 14px' }} onClick={() => handleGenerate('csv')}   disabled={generating}>&#11015; CSV</button>
         </div>
         {generating && <div style={{ marginTop: '16px', color: 'var(--text-secondary)' }}>Generating report...</div>}
       </div>
