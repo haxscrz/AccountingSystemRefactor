@@ -45,24 +45,43 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Ensure new tables exist (SQLite safe – no-op if already created)
+// Ensure all tables exist on first run (fresh DB from GitHub clone)
 using (var initScope = app.Services.CreateScope())
 {
     var db = initScope.ServiceProvider.GetRequiredService<AccountingDbContext>();
-    db.Database.ExecuteSqlRaw(@"
-        CREATE TABLE IF NOT EXISTS fs_effects (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            gl_report TEXT NOT NULL DEFAULT '',
-            gl_effect TEXT NOT NULL DEFAULT '',
-            gl_head   TEXT
-        );");
-    db.Database.ExecuteSqlRaw(@"
-        CREATE TABLE IF NOT EXISTS fs_schedule (
-            id        INTEGER PRIMARY KEY AUTOINCREMENT,
-            gl_head   TEXT NOT NULL DEFAULT '',
-            acct_code TEXT NOT NULL DEFAULT '',
-            acct_desc TEXT
-        );");
+
+    // Creates ALL tables defined in DbContext if they don't exist yet.
+    // Safe to call every startup — no-op when tables already exist.
+    db.Database.EnsureCreated();
+
+    // Seed a default fs_sys_id row so the FS Main Menu works on first boot
+    if (!db.FSSysId.Any())
+    {
+        var now = DateTime.UtcNow;
+        db.FSSysId.Add(new AccountingApi.Models.FSSysId
+        {
+            PresMo    = now.Month,
+            PresYr    = now.Year,
+            BegDate   = new DateTime(now.Year, now.Month, 1),
+            EndDate   = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month)),
+            UpdatedAt = now
+        });
+        db.SaveChanges();
+    }
+
+    // Seed a default pay_sys_id row so the Payroll module works on first boot
+    if (!db.PaySysId.Any())
+    {
+        var now = DateTime.UtcNow;
+        db.PaySysId.Add(new AccountingApi.Models.PaySysId
+        {
+            PresMo   = now.Month,
+            PresYr   = now.Year,
+            BegDate  = new DateTime(now.Year, now.Month, 1),
+            EndDate  = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month))
+        });
+        db.SaveChanges();
+    }
 }
 
 if (app.Environment.IsDevelopment())
