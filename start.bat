@@ -41,6 +41,11 @@ if not exist "%FRONTEND%\node_modules" (
     echo [1/4] Frontend dependencies already installed. Skipping.
 )
 
+:: ── Kill any already-running backend instance ───
+echo Stopping any previous backend instance...
+taskkill /F /IM AccountingApi.exe >nul 2>&1
+timeout /t 2 /nobreak >nul
+
 :: ── Build backend ───────────────────────────────
 echo [2/4] Building backend...
 cd /d "%BACKEND%"
