@@ -94,7 +94,7 @@ export default function PayrollTypeSelector({ onSelect }: Props) {
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', display: 'flex', flexDirection: 'column', gap: 6 }}>
             {['Monthly salary computation', 'Full SSS / PHIC / Pag-Ibig coverage', '13th month pay & leave credits', 'Withholding tax'].map(item => (
               <li key={item} style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                <span style={{ color: 'var(--primary)', fontWeight: 800, marginTop: 1 }}>›</span>
+                <span style={{ color: 'var(--primary)', fontWeight: 800, marginTop: 1 }}>&rsaquo;</span>
                 {item}
               </li>
             ))}
@@ -109,7 +109,7 @@ export default function PayrollTypeSelector({ onSelect }: Props) {
               fontSize: 12, fontWeight: 800, color: 'var(--primary)',
               display: 'flex', alignItems: 'center', gap: 4,
             }}>
-              Select →
+              Select &rarr;
             </span>
           </div>
         </button>
@@ -162,7 +162,7 @@ export default function PayrollTypeSelector({ onSelect }: Props) {
           <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', display: 'flex', flexDirection: 'column', gap: 6 }}>
             {['Daily or project-based computation', 'Basic statutory coverage', 'Pro-rated benefits', 'Flexible scheduling'].map(item => (
               <li key={item} style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                <span style={{ color: 'var(--accent)', fontWeight: 800, marginTop: 1 }}>›</span>
+                <span style={{ color: 'var(--accent)', fontWeight: 800, marginTop: 1 }}>&rsaquo;</span>
                 {item}
               </li>
             ))}
@@ -177,7 +177,7 @@ export default function PayrollTypeSelector({ onSelect }: Props) {
               fontSize: 12, fontWeight: 800, color: 'var(--accent)',
               display: 'flex', alignItems: 'center', gap: 4,
             }}>
-              Select →
+              Select &rarr;
             </span>
           </div>
         </button>

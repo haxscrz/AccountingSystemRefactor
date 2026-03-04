@@ -50,7 +50,7 @@ export default function PayrollSystem() {
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <button onClick={() => navigate('/dashboard')} className="btn btn-secondary">
-              ← Back to Dashboard
+              &larr; Back to Dashboard
             </button>
             <button onClick={handleLogout} className="btn btn-secondary">
               Logout
@@ -92,8 +92,8 @@ export default function PayrollSystem() {
       {
         title: 'Enter OR/SBR Info',
         items: [
-          { label: 'SSS OR/SBR',     onClick: () => alert('Enter OR/SBR Info – SSS') },
-          { label: 'Pag-Ibig OR/SBR', onClick: () => alert('Enter OR/SBR Info – Pag-Ibig') }
+          { label: 'SSS OR/SBR',     onClick: () => alert('Enter OR/SBR Info - SSS') },
+          { label: 'Pag-Ibig OR/SBR', onClick: () => alert('Enter OR/SBR Info - Pag-Ibig') }
         ]
       },
       {
@@ -106,7 +106,7 @@ export default function PayrollSystem() {
     ],
 
     // ── FILE MAINTENANCE ───────────────────────────────────────────────────────
-    // Mirrors PAY.PRG m_main=2 block exactly (items 1–11).
+    // Mirrors PAY.PRG m_main=2 block exactly (items 1-1).
     file: [
       {
         title: 'Reindex Corrupted Files',
@@ -190,7 +190,7 @@ export default function PayrollSystem() {
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <button onClick={() => navigate('/dashboard')} className="btn btn-secondary">
-            ← Back to Dashboard
+            &larr; Back to Dashboard
           </button>
           <button
             onClick={() => setPayrollType(null)}

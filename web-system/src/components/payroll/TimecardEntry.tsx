@@ -1,4 +1,4 @@
-﻿﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import './TimecardEntry.css'
 
 interface TimecardEntryProps {
@@ -221,7 +221,7 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
           <div className="modal timecard-modal" style={{ maxWidth: '1100px', width: '95%', maxHeight: '90vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3 className="modal-title">Edit Timecard - {selectedTimecard.emp_nm} ({selectedTimecard.emp_no})</h3>
-              <button onClick={() => setShowEdit(false)} className="modal-close">—</button>
+              <button onClick={() => setShowEdit(false)} className="modal-close">&times;</button>
             </div>
 
             <div className="timecard-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
@@ -454,46 +454,46 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', fontSize: '13px' }}>
                 <div>
                   <div style={{ fontWeight: '600', marginBottom: '4px' }}>Earnings:</div>
-                  <div>Reg Pay: â‚±{selectedTimecard.reg_pay.toFixed(2)}</div>
-                  <div>OT Pay: â‚±{selectedTimecard.rot_pay.toFixed(2)}</div>
-                  <div>SPH Pay: â‚±{selectedTimecard.sphp_pay.toFixed(2)}</div>
-                  <div>SPOT Pay: â‚±{selectedTimecard.spot_pay.toFixed(2)}</div>
-                  <div>LH Pay: â‚±{selectedTimecard.lghp_pay.toFixed(2)}</div>
-                  <div>LHOT Pay: â‚±{selectedTimecard.lgot_pay.toFixed(2)}</div>
-                  <div>NSD Pay: â‚±{selectedTimecard.nsd_pay.toFixed(2)}</div>
-                  <div>VL Pay: â‚±{selectedTimecard.lv_pay.toFixed(2)}</div>
-                  <div>SL Pay: â‚±{selectedTimecard.ls_pay.toFixed(2)}</div>
+                  <div>Reg Pay: &#8369;{selectedTimecard.reg_pay.toFixed(2)}</div>
+                  <div>OT Pay: &#8369;{selectedTimecard.rot_pay.toFixed(2)}</div>
+                  <div>SPH Pay: &#8369;{selectedTimecard.sphp_pay.toFixed(2)}</div>
+                  <div>SPOT Pay: &#8369;{selectedTimecard.spot_pay.toFixed(2)}</div>
+                  <div>LH Pay: &#8369;{selectedTimecard.lghp_pay.toFixed(2)}</div>
+                  <div>LHOT Pay: &#8369;{selectedTimecard.lgot_pay.toFixed(2)}</div>
+                  <div>NSD Pay: &#8369;{selectedTimecard.nsd_pay.toFixed(2)}</div>
+                  <div>VL Pay: &#8369;{selectedTimecard.lv_pay.toFixed(2)}</div>
+                  <div>SL Pay: &#8369;{selectedTimecard.ls_pay.toFixed(2)}</div>
                 </div>
                 
                 <div>
                   <div style={{ fontWeight: '600', marginBottom: '4px' }}>Government:</div>
-                  <div>SSS (EE): â‚±{selectedTimecard.sss_ee.toFixed(2)}</div>
-                  <div>SSS (ER): â‚±{selectedTimecard.sss_er.toFixed(2)}</div>
-                  <div>Medicare (EE): â‚±{selectedTimecard.med_ee.toFixed(2)}</div>
-                  <div>Medicare (ER): â‚±{selectedTimecard.med_er.toFixed(2)}</div>
-                  <div>Pag-IBIG (EE): â‚±{selectedTimecard.pgbg_ee.toFixed(2)}</div>
-                  <div>Pag-IBIG (ER): â‚±{selectedTimecard.pgbg_er.toFixed(2)}</div>
-                  <div>EC (ER): â‚±{selectedTimecard.ec_er.toFixed(2)}</div>
-                  <div>Tax: â‚±{selectedTimecard.tax_ee.toFixed(2)}</div>
+                  <div>SSS (EE): &#8369;{selectedTimecard.sss_ee.toFixed(2)}</div>
+                  <div>SSS (ER): &#8369;{selectedTimecard.sss_er.toFixed(2)}</div>
+                  <div>Medicare (EE): &#8369;{selectedTimecard.med_ee.toFixed(2)}</div>
+                  <div>Medicare (ER): &#8369;{selectedTimecard.med_er.toFixed(2)}</div>
+                  <div>Pag-IBIG (EE): &#8369;{selectedTimecard.pgbg_ee.toFixed(2)}</div>
+                  <div>Pag-IBIG (ER): &#8369;{selectedTimecard.pgbg_er.toFixed(2)}</div>
+                  <div>EC (ER): &#8369;{selectedTimecard.ec_er.toFixed(2)}</div>
+                  <div>Tax: &#8369;{selectedTimecard.tax_ee.toFixed(2)}</div>
                 </div>
                 
                 <div>
                   <div style={{ fontWeight: '600', marginBottom: '4px' }}>Totals:</div>
                   <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--primary)', marginTop: '8px' }}>
-                    Gross: â‚±{selectedTimecard.grs_pay.toFixed(2)}
+                    Gross: &#8369;{selectedTimecard.grs_pay.toFixed(2)}
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '600', color: '#dc3545', marginTop: '8px' }}>
-                    Deductions: â‚±{selectedTimecard.tot_ded.toFixed(2)}
+                    Deductions: &#8369;{selectedTimecard.tot_ded.toFixed(2)}
                   </div>
                   <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--success)', marginTop: '12px' }}>
-                    NET PAY: â‚±{selectedTimecard.net_pay.toFixed(2)}
+                    NET PAY: &#8369;{selectedTimecard.net_pay.toFixed(2)}
                   </div>
                 </div>
                 
                 <div>
                   <div style={{ fontWeight: '600', marginBottom: '4px' }}>13th Month:</div>
-                  <div>Bonus: â‚±{selectedTimecard.bonus.toFixed(2)}</div>
-                  <div>Bonus Tax: â‚±{selectedTimecard.bonustax.toFixed(2)}</div>
+                  <div>Bonus: &#8369;{selectedTimecard.bonus.toFixed(2)}</div>
+                  <div>Bonus Tax: &#8369;{selectedTimecard.bonustax.toFixed(2)}</div>
                 </div>
               </div>
             </div>

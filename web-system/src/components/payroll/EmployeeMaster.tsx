@@ -1,4 +1,4 @@
-﻿﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 interface Employee {
   // Basic Info (Screen 1)
@@ -290,8 +290,8 @@ export default function EmployeeMaster() {
               <td>{emp.emp_nm}</td>
               <td>{emp.dep_no}</td>
               <td>{emp.position}</td>
-              <td style={{ textAlign: 'right' }}>â‚± {emp.b_rate.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-              <td style={{ textAlign: 'right' }}>â‚± {emp.cola.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+              <td style={{ textAlign: 'right' }}>&#8369; {emp.b_rate.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+              <td style={{ textAlign: 'right' }}>&#8369; {emp.cola.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
               <td>{emp.date_hire}</td>
               <td><span className="badge badge-success">{emp.status === 'A' ? 'Active' : emp.status === 'R' ? 'Resigned' : 'On Leave'}</span></td>
               <td>
@@ -314,7 +314,7 @@ export default function EmployeeMaster() {
               <h3 className="modal-title">
                 {editingEmp.emp_no ? `Edit Employee - ${editingEmp.emp_no}` : 'Add Employee'}
               </h3>
-              <button onClick={() => setShowModal(false)} className="modal-close">—</button>
+              <button onClick={() => setShowModal(false)} className="modal-close">&times;</button>
             </div>
 
             {/* 5-Screen Navigation Tabs */}
@@ -972,12 +972,12 @@ export default function EmployeeMaster() {
               <div style={{ display: 'flex', gap: '8px' }}>
                 {activeScreen > 1 && (
                   <button className="btn btn-secondary" onClick={() => setActiveScreen(activeScreen - 1)}>
-                    â† Previous Screen
+                    &larr; Previous Screen
                   </button>
                 )}
                 {activeScreen < 5 && (
                   <button className="btn btn-secondary" onClick={() => setActiveScreen(activeScreen + 1)}>
-                    Next Screen â†’
+                    Next Screen &rarr;
                   </button>
                 )}
               </div>

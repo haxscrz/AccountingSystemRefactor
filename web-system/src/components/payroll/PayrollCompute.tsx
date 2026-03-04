@@ -68,7 +68,7 @@ export default function PayrollCompute() {
 
       {complete && (
         <div style={{ background: 'rgba(22, 163, 74, 0.1)', border: '1px solid var(--success)', borderRadius: '8px', padding: '16px', marginBottom: '24px', color: 'var(--success)' }}>
-          ✓ Payroll computation complete! Gross pay, tax, SSS, PHIC, Pag-ibig, and net pay calculated for all employees.
+          &#10003; Payroll computation complete! Gross pay, tax, SSS, PHIC, Pag-ibig, and net pay calculated for all employees.
         </div>
       )}
 

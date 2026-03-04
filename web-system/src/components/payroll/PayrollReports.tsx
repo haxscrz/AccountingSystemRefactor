@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { buildLegacyReportPreview, downloadPreviewAsCsv, downloadPreviewAsExcel, downloadPreviewAsPdf, type ReportPreviewData } from '../../services/legacyData'
 
