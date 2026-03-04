@@ -211,7 +211,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
 
   // ---- FIND ----
   const handleFind = async () => {
-    if (!findJv.trim()) { setMessage('Enter a JV number'); return }
+    if (!findJv.trim()) { setMessage('Enter a CDV number'); return }
     try {
       const resp = await axios.get(`${API_BASE}/vouchers/checkmaster/jv/${encodeURIComponent(findJv.trim())}`)
       const found = mapMaster(resp.data?.data ?? resp.data)
@@ -224,7 +224,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       }
       setMessage('')
     } catch {
-      setMessage(`JV "${findJv}" not found.`)
+      setMessage(`CDV "${findJv}" not found.`)
     }
     setShowFind(false)
     setFindJv('')
@@ -232,7 +232,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
 
   // ---- ADD master ----
   const handleAddMaster = () => {
-    const newJv  = `JV${String(masters.length + 1).padStart(5, '0')}`
+    const newJv  = `CDV${String(masters.length + 1).padStart(5, '0')}`
     const newCk  = `CK${String(masters.length + 1).padStart(5, '0')}`
     setMasterForm({ ...EMPTY_MASTER, jJvNo: newJv, jCkNo: newCk })
     setMode('addMaster')
