@@ -2,3 +2,6 @@
 # SQLite WAL files
 *.db-shm
 *.db-wal
+
+# SQLite database
+*.db
