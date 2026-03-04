@@ -1,0 +1,4 @@
+
+# SQLite WAL files
+*.db-shm
+*.db-wal
