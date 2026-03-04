@@ -4,7 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Use PascalCase so frontend TypeScript interfaces match without aliasing
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
@@ -54,6 +59,61 @@ using (var initScope = app.Services.CreateScope())
     // Creates ALL tables defined in DbContext if they don't exist yet.
     // Safe to call every startup — no-op when tables already exist.
     db.Database.EnsureCreated();
+
+    // ── Schema patches: add new columns to existing tables if they don't exist ──
+    // SQLite doesn't support IF NOT EXISTS for ALTER TABLE, so we use PRAGMA to check.
+    using (var conn = db.Database.GetDbConnection())
+    {
+        conn.Open();
+
+        // Helper: returns set of column names already in a table
+        System.Collections.Generic.HashSet<string> GetColumns(string table)
+        {
+            var cols = new System.Collections.Generic.HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"PRAGMA table_info({table})";
+            using var r = cmd.ExecuteReader();
+            while (r.Read()) cols.Add(r.GetString(1));
+            return cols;
+        }
+
+        void AddColumn(string table, string column, string sqlType)
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"ALTER TABLE {table} ADD COLUMN {column} {sqlType}";
+            try { cmd.ExecuteNonQuery(); } catch { /* column already exists */ }
+        }
+
+        void RunSql(string sql)
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = sql;
+            try { cmd.ExecuteNonQuery(); } catch { }
+        }
+
+        // Patch pay_sys_id: add pay_type, work_hours, need_backup
+        var sysIdCols = GetColumns("pay_sys_id");
+        if (!sysIdCols.Contains("pay_type"))    AddColumn("pay_sys_id", "pay_type",   "INTEGER DEFAULT 1");
+        if (!sysIdCols.Contains("work_hours"))  AddColumn("pay_sys_id", "work_hours", "INTEGER DEFAULT 80");
+        if (!sysIdCols.Contains("need_backup")) AddColumn("pay_sys_id", "need_backup","INTEGER DEFAULT 0");
+
+        // Create pay_prempaid if it doesn't exist
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS pay_prempaid (
+                id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                preflag   TEXT NOT NULL DEFAULT 'S',
+                month     TEXT NOT NULL DEFAULT '',
+                year      TEXT NOT NULL DEFAULT '',
+                or_sbr    TEXT NOT NULL DEFAULT '',
+                or_date   TEXT,
+                period    TEXT NOT NULL DEFAULT '',
+                amount    REAL NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+            )");
+
+        conn.Close();
+    }
 
     // Auto-seed from legacy JSON files if the database is empty (fresh clone)
     if (!db.FSAccounts.Any())

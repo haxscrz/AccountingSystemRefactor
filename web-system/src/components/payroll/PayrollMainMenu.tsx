@@ -1,3 +1,18 @@
+import { useState, useEffect } from 'react'
+
+interface SysInfo {
+  PresMo: number
+  PresYr: number
+  PayType: number
+  BegDate: string
+  EndDate: string
+  TrnCtr: number
+  TrnPrc: number
+  TrnUpd: number
+  EmpCount: number
+  TcCount: number
+}
+
 interface PayrollMainMenuProps {
   payrollType: 'regular' | 'casual'
 }
@@ -17,11 +32,38 @@ const TYPE_DESC = {
   casual:  'Daily / project-based pay with pro-rated benefits.',
 }
 
+const MONTHS = ['', 'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December']
+
 export default function PayrollMainMenu({ payrollType }: PayrollMainMenuProps) {
+  const [sysInfo, setSysInfo] = useState<SysInfo | null>(null)
   const color = TYPE_COLOR[payrollType]
 
+  useEffect(() => {
+    fetch('/api/payroll/system-id')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => d && setSysInfo(d))
+      .catch(() => {})
+  }, [])
+
+  const periodLabel = sysInfo
+    ? `${MONTHS[sysInfo.PresMo] ?? sysInfo.PresMo} ${sysInfo.PresYr}`
+    : '—'
+
+  const payTypeLabel = sysInfo
+    ? (sysInfo.PayType === 1 ? '1st Half' : sysInfo.PayType === 2 ? '2nd Half' : 'Monthly')
+    : '—'
+
+  const statusLabel = sysInfo
+    ? (sysInfo.TrnPrc === sysInfo.TrnUpd && sysInfo.TrnPrc > 0
+        ? 'Posted'
+        : sysInfo.TrnPrc === sysInfo.TrnCtr && sysInfo.TrnCtr > 0
+          ? 'Computed'
+          : sysInfo.TcCount > 0 ? 'In Progress' : 'Not Started')
+    : '—'
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 860 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
       {/* Active session banner */}
       <div style={{
@@ -58,10 +100,11 @@ export default function PayrollMainMenu({ payrollType }: PayrollMainMenuProps) {
         gap: 12,
       }}>
         {[
-          { label: 'Company',     value: 'CTSI' },
-          { label: 'Period',      value: 'February 2026' },
-          { label: 'Status',      value: 'In Progress' },
-          { label: 'Last Posted', value: 'Feb 15, 2026' },
+          { label: 'Period',     value: periodLabel },
+          { label: 'Pay Type',   value: payTypeLabel },
+          { label: 'Status',     value: statusLabel },
+          { label: 'Employees',  value: sysInfo ? String(sysInfo.EmpCount) : '—' },
+          { label: 'Timecards',  value: sysInfo ? String(sysInfo.TcCount) : '—' },
         ].map(({ label, value }) => (
           <div key={label} style={{
             background: 'var(--surface)', border: '1px solid var(--border)',
@@ -92,3 +135,4 @@ export default function PayrollMainMenu({ payrollType }: PayrollMainMenuProps) {
     </div>
   )
 }
+

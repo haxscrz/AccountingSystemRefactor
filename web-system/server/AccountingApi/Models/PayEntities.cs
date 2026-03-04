@@ -600,7 +600,128 @@ public sealed class PaySysId
     
     [Column("m_daily_wage")]
     public bool MDailyWage { get; set; }
+
+    /// <summary>1 = 1st half, 2 = 2nd half (from INITTIME.PRG / COMPTIME.PRG)</summary>
+    [Column("pay_type")]
+    public int PayType { get; set; } = 1;
+
+    /// <summary>Standard working hours per period (used in initialization)</summary>
+    [Column("work_hours")]
+    public int WorkHours { get; set; } = 80;
+
+    /// <summary>Flag set after posting to require a backup before next initialization</summary>
+    [Column("need_backup")]
+    public bool NeedBackup { get; set; }
     
+    [Column("updated_at")]
+    public DateTime UpdatedAt { get; set; }
+}
+
+/// <summary>
+/// OR/SBR Premium Paid records — stores SSS and Pag-IBIG official receipt / special bank receipt entries.
+/// Mirrors the prempaid.dbf table used by ENTORSBR.PRG and ENTORPAG.PRG.
+/// preflag = 'S' for SSS, 'T' for Pag-IBIG/HDMF.
+/// </summary>
+[Table("pay_prempaid")]
+public sealed class PayPremPaid
+{
+    [Key]
+    public int Id { get; set; }
+
+    /// <summary>'S' = SSS, 'T' = Pag-IBIG/HDMF</summary>
+    [Required]
+    [Column("preflag")]
+    [MaxLength(1)]
+    public string PreFlag { get; set; } = "S";
+
+    [Column("month")]
+    [MaxLength(2)]
+    public string Month { get; set; } = "";
+
+    [Column("year")]
+    [MaxLength(4)]
+    public string Year { get; set; } = "";
+
+    /// <summary>O.R. / SBR number</summary>
+    [Column("or_sbr")]
+    [MaxLength(15)]
+    public string OrSbr { get; set; } = "";
+
+    [Column("or_date")]
+    public DateTime? OrDate { get; set; }
+
+    /// <summary>Period key e.g. "202601"</summary>
+    [Column("period")]
+    [MaxLength(6)]
+    public string Period { get; set; } = "";
+
+    [Column("amount")]
+    public decimal Amount { get; set; }
+
+    [Column("created_at")]
+    public DateTime CreatedAt { get; set; }
+
+    [Column("updated_at")]
+    public DateTime UpdatedAt { get; set; }
+}
+
+/// <summary>
+/// Department file — mirrors dept.dbf from DEPTEDIT.PRG / FTDEPEDT.PRG.
+/// dep_no and dep_nm are the editable keys; financial totals are updated by PostTransactions.
+/// </summary>
+[Table("pay_dept")]
+public sealed class PayDept
+{
+    [Key]
+    public int Id { get; set; }
+
+    [Required]
+    [Column("dep_no")]
+    [MaxLength(10)]
+    public string DepNo { get; set; } = string.Empty;
+
+    [Column("dep_nm")]
+    [MaxLength(50)]
+    public string DepNm { get; set; } = string.Empty;
+
+    // Financial totals updated by PostTransactions (read-only in dept edit screen)
+    [Column("reg_pay")]     public decimal RegPay    { get; set; }
+    [Column("ot_pay")]      public decimal OtPay     { get; set; }
+    [Column("hol_pay")]     public decimal HolPay    { get; set; }
+    [Column("oth_pay1")]    public decimal OthPay1   { get; set; }
+    [Column("oth_pay3")]    public decimal OthPay3   { get; set; }
+    [Column("lvenc_pay")]   public decimal LvencPay  { get; set; }
+    [Column("lsenc_pay")]   public decimal LsencPay  { get; set; }
+    [Column("grs_pay")]     public decimal GrsPay    { get; set; }
+    [Column("tax")]         public decimal Tax       { get; set; }
+    [Column("oth_pay2")]    public decimal OthPay2   { get; set; }
+    [Column("sss_ee")]      public decimal SssEe     { get; set; }
+    [Column("sss_er")]      public decimal SssEr     { get; set; }
+    [Column("med_ee")]      public decimal MedEe     { get; set; }
+    [Column("med_er")]      public decimal MedEr     { get; set; }
+    [Column("pgbg_ee")]     public decimal PgbgEe    { get; set; }
+    [Column("pgbg_er")]     public decimal PgbgEr    { get; set; }
+    [Column("ec_er")]       public decimal EcEr      { get; set; }
+    [Column("pbg_loan")]    public decimal PbgLoan   { get; set; }
+    [Column("sss_loan")]    public decimal SssLoan   { get; set; }
+    [Column("cal_loan")]    public decimal CalLoan   { get; set; }
+    [Column("comp_loan")]   public decimal CompLoan  { get; set; }
+    [Column("commodloan")]  public decimal Commodloan{ get; set; }
+    [Column("oth_ded1")]    public decimal OthDed1   { get; set; }
+    [Column("oth_ded2")]    public decimal OthDed2   { get; set; }
+    [Column("oth_ded3")]    public decimal OthDed3   { get; set; }
+    [Column("oth_ded4")]    public decimal OthDed4   { get; set; }
+    [Column("oth_ded5")]    public decimal OthDed5   { get; set; }
+    [Column("oth_ded6")]    public decimal OthDed6   { get; set; }
+    [Column("oth_ded7")]    public decimal OthDed7   { get; set; }
+    [Column("oth_ded8")]    public decimal OthDed8   { get; set; }
+    [Column("oth_ded9")]    public decimal OthDed9   { get; set; }
+    [Column("oth_ded10")]   public decimal OthDed10  { get; set; }
+    [Column("emp_ctr")]     public int    EmpCtr     { get; set; }
+    [Column("net_pay")]     public decimal NetPay    { get; set; }
+    [Column("bontot")]      public decimal Bontot    { get; set; }
+    [Column("bontax")]      public decimal Bontax    { get; set; }
+
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
 }

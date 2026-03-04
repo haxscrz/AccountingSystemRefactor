@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import ModalPortal from '../ModalPortal'
 
 interface Employee {
   // Basic Info (Screen 1)
@@ -308,7 +309,7 @@ export default function EmployeeMaster() {
       </table>
 
       {showModal && editingEmp && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <ModalPortal onClick={() => setShowModal(false)}>
           <div className="modal" style={{ maxWidth: '900px', width: '90%', maxHeight: '90vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3 className="modal-title">
@@ -989,7 +990,7 @@ export default function EmployeeMaster() {
               </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   )

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import ModalPortal from '../ModalPortal'
 import './TimecardEntry.css'
 
 interface TimecardEntryProps {
@@ -76,15 +77,44 @@ interface Timecard {
   bonustax: number
 }
 
+interface EmpLookup {
+  emp_no: string
+  emp_nm: string
+  dep_no: string
+  b_rate: number
+}
+
+const BLANK_TIMECARD = (emp_no: string, emp_nm: string, dep_no: string, year: number, month: number): Timecard => ({
+  emp_no, emp_nm, dep_no, period_year: year, period_month: month,
+  reg_hrs: 0, abs_hrs: 0, rot_hrs: 0, sphp_hrs: 0, spot_hrs: 0, lghp_hrs: 0,
+  lgot_hrs: 0, nsd_hrs: 0, lv_hrs: 0, ls_hrs: 0, oth_pay1: 0, oth_pay2: 0,
+  oth_pay3: 0, oth_pay4: 0, lv_cashout: 0, ls_cashout: 0, sln_ded: 0, hdmf_ded: 0,
+  cal_ded: 0, comp_ded: 0, comd_ded: 0, oth_ded1: 0, oth_ded2: 0, oth_ded3: 0,
+  oth_ded4: 0, oth_ded5: 0, oth_ded6: 0, oth_ded7: 0, oth_ded8: 0, oth_ded9: 0,
+  tax_add: 0, withbonus: true, bonus: 0,
+  reg_pay: 0, rot_pay: 0, sphp_pay: 0, spot_pay: 0, lghp_pay: 0, lgot_pay: 0,
+  nsd_pay: 0, lv_pay: 0, lv2_pay: 0, ls_pay: 0, grs_pay: 0, sss_ee: 0, sss_er: 0,
+  med_ee: 0, med_er: 0, pgbg_ee: 0, pgbg_er: 0, ec_er: 0, tax_ee: 0, tot_ded: 0,
+  net_pay: 0, bonustax: 0
+})
+
 export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
   const [timecards, setTimecards] = useState<Timecard[]>([])
   const [selectedTimecard, setSelectedTimecard] = useState<Timecard | null>(null)
   const [showEdit, setShowEdit] = useState(false)
+  const [isNewEntry, setIsNewEntry] = useState(false)
   const [loading, setLoading] = useState(false)
   const [currentPeriod, setCurrentPeriod] = useState({
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1
   })
+
+  // Add New dialog state
+  const [showAddDialog, setShowAddDialog] = useState(false)
+  const [employees, setEmployees] = useState<EmpLookup[]>([])
+  const [empSearch, setEmpSearch] = useState('')
+  const [loadingEmps, setLoadingEmps] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState<Timecard | null>(null)
 
   useEffect(() => {
     if (payrollType) {
@@ -106,10 +136,57 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
     }
   }
 
+  const fetchEmployees = async () => {
+    setLoadingEmps(true)
+    try {
+      const res = await fetch('/api/payroll/employees/all')
+      if (res.ok) {
+        const data = await res.json()
+        setEmployees(data)
+      }
+    } catch (e) {
+      console.error('Failed to fetch employees:', e)
+    } finally {
+      setLoadingEmps(false)
+    }
+  }
+
+  const handleOpenAddDialog = () => {
+    setEmpSearch('')
+    setShowAddDialog(true)
+    if (employees.length === 0) fetchEmployees()
+  }
+
+  const handleSelectEmployee = (emp: EmpLookup) => {
+    setShowAddDialog(false)
+    const blank = BLANK_TIMECARD(emp.emp_no, emp.emp_nm, emp.dep_no ?? '', currentPeriod.year, currentPeriod.month)
+    setSelectedTimecard(blank)
+    setIsNewEntry(true)
+    setShowEdit(true)
+  }
+
+  const handleDelete = async (tc: Timecard) => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/payroll/timecards/${tc.emp_no}/${tc.period_year}/${tc.period_month}`, { method: 'DELETE' })
+      if (res.ok) {
+        await fetchTimecards()
+        setDeleteConfirm(null)
+      } else {
+        const err = await res.json()
+        alert(`Error: ${err.message}`)
+      }
+    } catch {
+      alert('Failed to delete timecard.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   if (!payrollType) {
     return (
       <div className="card">
-        <h2>Timecard Entry - EDITTIME</h2>
+        <h2>Timecard Entry</h2>
         <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
           Please select a payroll type (Regular or Casual) from the Main Menu ribbon first.
         </div>
@@ -119,6 +196,7 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
 
   const handleEdit = (tc: Timecard) => {
     setSelectedTimecard({ ...tc })
+    setIsNewEntry(false)
     setShowEdit(true)
   }
 
@@ -136,7 +214,7 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
       if (response.ok) {
         await fetchTimecards()
         setShowEdit(false)
-        alert('Timecard saved successfully!')
+        setIsNewEntry(false)
       } else {
         const error = await response.json()
         alert(`Error: ${error.message}`)
@@ -153,10 +231,13 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
     <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
-          <h2>Timecard Entry - EDITTIME ({payrollType === 'regular' ? 'Regular' : 'Casual'} Employees)</h2>
-          <p className="subtitle">33-field data entry with hours, amounts, and deductions (A-AG)</p>
+          <h2>Add/Edit Timecard ({payrollType === 'regular' ? 'Regular' : 'Casual'} Employees)</h2>
+          <p className="subtitle">33-field data entry: hours, amounts, and deductions (A&#8211;AG)</p>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <button className="btn btn-primary" onClick={handleOpenAddDialog}>
+            + Add New Timecard
+          </button>
           <label style={{ fontSize: '14px', fontWeight: '500' }}>Period:</label>
           <select
             className="form-input"
@@ -181,47 +262,85 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
         </div>
       </div>
 
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Emp No.</th>
-            <th>Employee Name</th>
-            <th>Dept</th>
-            <th style={{ textAlign: 'right' }}>Reg Hrs</th>
-            <th style={{ textAlign: 'right' }}>OT Hrs</th>
-            <th style={{ textAlign: 'right' }}>Gross Pay</th>
-            <th style={{ textAlign: 'right' }}>Total Ded</th>
-            <th style={{ textAlign: 'right' }}>Net Pay</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {timecards.map(tc => (
-            <tr key={tc.emp_no}>
-              <td><strong>{tc.emp_no}</strong></td>
-              <td>{tc.emp_nm}</td>
-              <td>{tc.dep_no}</td>
-              <td style={{ textAlign: 'right' }}>{tc.reg_hrs.toFixed(2)}</td>
-              <td style={{ textAlign: 'right' }}>{tc.rot_hrs.toFixed(2)}</td>
-              <td style={{ textAlign: 'right' }}>{tc.grs_pay.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-              <td style={{ textAlign: 'right' }}>{tc.tot_ded.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-              <td style={{ textAlign: 'right' }}><strong>{tc.net_pay.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</strong></td>
-              <td>
-                <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={() => handleEdit(tc)}>
-                  Edit
-                </button>
-              </td>
+      {timecards.length === 0 ? (
+        <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-secondary)', border: '2px dashed var(--border)', borderRadius: '8px' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>&#128203;</div>
+          <div style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>No timecards for this period</div>
+          <div style={{ marginBottom: '20px' }}>
+            {currentPeriod.month}/{currentPeriod.year} &#8212; Use <strong>Initialize Timecard</strong> to set up a new payroll period,
+            or click <strong>+ Add New Timecard</strong> to add entries manually.
+          </div>
+          <button className="btn btn-primary" onClick={handleOpenAddDialog}>+ Add New Timecard</button>
+        </div>
+      ) : (
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Emp No.</th>
+              <th>Employee Name</th>
+              <th>Dept</th>
+              <th style={{ textAlign: 'right' }}>Reg Hrs</th>
+              <th style={{ textAlign: 'right' }}>OT Hrs</th>
+              <th style={{ textAlign: 'right' }}>Gross Pay</th>
+              <th style={{ textAlign: 'right' }}>Total Ded</th>
+              <th style={{ textAlign: 'right' }}>Net Pay</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {timecards.map(tc => (
+              <tr key={tc.emp_no}>
+                <td><strong>{tc.emp_no}</strong></td>
+                <td>{tc.emp_nm}</td>
+                <td>{tc.dep_no}</td>
+                <td style={{ textAlign: 'right' }}>{Number(tc.reg_hrs).toFixed(2)}</td>
+                <td style={{ textAlign: 'right' }}>{Number(tc.rot_hrs).toFixed(2)}</td>
+                <td style={{ textAlign: 'right' }}>{Number(tc.grs_pay).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                <td style={{ textAlign: 'right' }}>{Number(tc.tot_ded).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+                <td style={{ textAlign: 'right' }}><strong>{Number(tc.net_pay).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</strong></td>
+                <td>
+                  <span className={`badge ${(tc as any).trn_flag === 'P' ? 'badge-success' : (tc as any).trn_flag === 'X' ? 'badge-primary' : 'badge-warning'}`}>
+                    {(tc as any).trn_flag === 'P' ? 'Computed' : (tc as any).trn_flag === 'X' ? 'Posted' : 'Pending'}
+                  </span>
+                </td>
+                <td style={{ display: 'flex', gap: '6px' }}>
+                  <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '12px' }} onClick={() => handleEdit(tc)}>
+                    Edit
+                  </button>
+                  <button className="btn" style={{ padding: '4px 10px', fontSize: '12px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }} onClick={() => setDeleteConfirm(tc)}>
+                    Del
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr style={{ fontWeight: '700', background: 'var(--background)' }}>
+              <td colSpan={5} style={{ padding: '8px 12px' }}>TOTALS ({timecards.length} employees)</td>
+              <td style={{ textAlign: 'right', padding: '8px 12px' }}>
+                {timecards.reduce((s, t) => s + Number(t.grs_pay), 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+              </td>
+              <td style={{ textAlign: 'right', padding: '8px 12px' }}>
+                {timecards.reduce((s, t) => s + Number(t.tot_ded), 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+              </td>
+              <td style={{ textAlign: 'right', padding: '8px 12px' }}>
+                {timecards.reduce((s, t) => s + Number(t.net_pay), 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+              </td>
+              <td colSpan={2} />
+            </tr>
+          </tfoot>
+        </table>
+      )}
 
       {showEdit && selectedTimecard && (
-        <div className="modal-overlay" onClick={() => setShowEdit(false)}>
+        <ModalPortal onClick={() => { setShowEdit(false); setIsNewEntry(false) }}>
           <div className="modal timecard-modal" style={{ maxWidth: '1100px', width: '95%', maxHeight: '90vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3 className="modal-title">Edit Timecard - {selectedTimecard.emp_nm} ({selectedTimecard.emp_no})</h3>
-              <button onClick={() => setShowEdit(false)} className="modal-close">&times;</button>
+              <h3 className="modal-title">
+                {isNewEntry ? 'Add Timecard' : 'Edit Timecard'} &#8212; {selectedTimecard.emp_nm} ({selectedTimecard.emp_no})
+              </h3>
+              <button onClick={() => { setShowEdit(false); setIsNewEntry(false) }} className="modal-close">&times;</button>
             </div>
 
             <div className="timecard-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
@@ -500,13 +619,100 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px' }}>
-              <button className="btn btn-secondary" onClick={() => setShowEdit(false)}>Cancel</button>
+              <button className="btn btn-secondary" onClick={() => { setShowEdit(false); setIsNewEntry(false) }}>Cancel</button>
               <button className="btn btn-primary" onClick={handleSave} disabled={loading}>
-                {loading ? 'Saving...' : 'Save Timecard'}
+                {loading ? 'Saving...' : isNewEntry ? 'Add Timecard' : 'Save Changes'}
               </button>
             </div>
           </div>
-        </div>
+        </ModalPortal>
+      )}
+
+      {/* ── Add New Timecard ─ Employee Picker Dialog ──────────────── */}
+      {showAddDialog && (
+        <ModalPortal onClick={() => setShowAddDialog(false)}>
+          <div className="modal" style={{ maxWidth: '600px', width: '95%', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Select Employee</h3>
+              <button className="modal-close" onClick={() => setShowAddDialog(false)}>&times;</button>
+            </div>
+
+            <div style={{ padding: '16px', borderBottom: '1px solid var(--border)' }}>
+              <input
+                className="form-input"
+                style={{ width: '100%' }}
+                placeholder="Search by name or employee number..."
+                value={empSearch}
+                onChange={e => setEmpSearch(e.target.value)}
+                autoFocus
+              />
+            </div>
+
+            <div style={{ overflowY: 'auto', flex: 1 }}>
+              {loadingEmps ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading employees...</div>
+              ) : (
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Emp No.</th>
+                      <th>Name</th>
+                      <th>Department</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {employees
+                      .filter(e =>
+                        !empSearch ||
+                        e.emp_no.toLowerCase().includes(empSearch.toLowerCase()) ||
+                        e.emp_nm.toLowerCase().includes(empSearch.toLowerCase())
+                      )
+                      .filter(e => {
+                        // Exclude employees already in the current period
+                        return !timecards.some(t => t.emp_no === e.emp_no)
+                      })
+                      .map(emp => (
+                        <tr key={emp.emp_no} style={{ cursor: 'pointer' }} onClick={() => handleSelectEmployee(emp)}>
+                          <td><strong>{emp.emp_no}</strong></td>
+                          <td>{emp.emp_nm}</td>
+                          <td>{emp.dep_no}</td>
+                          <td>
+                            <button className="btn btn-primary" style={{ padding: '4px 12px', fontSize: '12px' }}>
+                              Select
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </ModalPortal>
+      )}
+
+      {/* ── Delete Confirmation ──────────────────────────────────── */}
+      {deleteConfirm && (
+        <ModalPortal onClick={() => setDeleteConfirm(null)}>
+          <div className="modal" style={{ maxWidth: '420px', width: '95%' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Confirm Delete</h3>
+              <button className="modal-close" onClick={() => setDeleteConfirm(null)}>&times;</button>
+            </div>
+            <div style={{ padding: '24px' }}>
+              <p>Delete timecard for <strong>{deleteConfirm.emp_nm} ({deleteConfirm.emp_no})</strong>?</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>This action cannot be undone.</p>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '20px' }}>
+                <button className="btn btn-secondary" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+                <button className="btn" style={{ background: '#dc3545', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: '600' }} onClick={() => handleDelete(deleteConfirm)} disabled={loading}>
+                  {loading ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </ModalPortal>
       )}
     </div>
   )

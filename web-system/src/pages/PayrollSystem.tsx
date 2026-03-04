@@ -8,6 +8,17 @@ import TimecardEntry from '../components/payroll/TimecardEntry'
 import PayrollCompute from '../components/payroll/PayrollCompute'
 import EmployeeMaster from '../components/payroll/EmployeeMaster'
 import PayrollReports from '../components/payroll/PayrollReports'
+import InitializeTimecard from '../components/payroll/InitializeTimecard'
+import AppendFromDatafile from '../components/payroll/AppendFromDatafile'
+import PostTransactions from '../components/payroll/PostTransactions'
+import OrSbrEntry from '../components/payroll/OrSbrEntry'
+import Compute13thMonth from '../components/payroll/Compute13thMonth'
+import ComputeYearEndTax from '../components/payroll/ComputeYearEndTax'
+import SystemIdEdit from '../components/payroll/SystemIdEdit'
+import TaxTableEdit from '../components/payroll/TaxTableEdit'
+import DepartmentEdit from '../components/payroll/DepartmentEdit'
+import UpdateEmployeeRate from '../components/payroll/UpdateEmployeeRate'
+import InitializeNewYear from '../components/payroll/InitializeNewYear'
 import './PayrollSystem.css'
 
 export default function PayrollSystem() {
@@ -16,6 +27,7 @@ export default function PayrollSystem() {
   const [activeTab, setActiveTab] = useState('main')
   const [payrollType, setPayrollType] = useState<'regular' | 'casual' | null>(null)
   const [isCompactHeader, setIsCompactHeader] = useState(false)
+  const [statusPeriod, setStatusPeriod] = useState('Loading...')
 
   useEffect(() => {
     const onScroll = () => {
@@ -25,6 +37,19 @@ export default function PayrollSystem() {
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Refresh status bar period whenever payrollType is chosen or page loads
+  useEffect(() => {
+    if (!payrollType) return
+    const MONTHS = ['', 'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December']
+    fetch('/api/payroll/system-id')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d) setStatusPeriod(`${MONTHS[d.PresMo] ?? d.PresMo} ${d.PresYr}`)
+      })
+      .catch(() => setStatusPeriod('—'))
+  }, [payrollType])
 
   const handleLogout = () => {
     logout()
@@ -78,29 +103,29 @@ export default function PayrollSystem() {
         title: 'Process Timecard',
         items: [
           { label: 'Add/Edit Timecard',     onClick: () => navigate('/payroll/timecard') },
-          { label: 'Initialize Timecard',   onClick: () => alert('Initialize Timecard') },
-          { label: 'Append From Datafile',  onClick: () => alert('Append From Datafile') }
+          { label: 'Initialize Timecard',   onClick: () => navigate('/payroll/initialize') },
+          { label: 'Append From Datafile',  onClick: () => navigate('/payroll/append') }
         ]
       },
       {
         title: 'Compute / Post',
         items: [
           { label: 'Compute Payroll',   onClick: () => navigate('/payroll/compute') },
-          { label: 'Post Transactions', onClick: () => alert('Post Transactions') }
+          { label: 'Post Transactions', onClick: () => navigate('/payroll/post-transactions') }
         ]
       },
       {
         title: 'Enter OR/SBR Info',
         items: [
-          { label: 'SSS OR/SBR',     onClick: () => alert('Enter OR/SBR Info - SSS') },
-          { label: 'Pag-Ibig OR/SBR', onClick: () => alert('Enter OR/SBR Info - Pag-Ibig') }
+          { label: 'SSS OR/SBR',     onClick: () => navigate('/payroll/or-sbr/sss') },
+          { label: 'Pag-Ibig OR/SBR', onClick: () => navigate('/payroll/or-sbr/pagibig') }
         ]
       },
       {
         title: 'Year-End Processing',
         items: [
-          { label: 'Compute 13th Month Pay', onClick: () => alert('Compute 13th Month Pay') },
-          { label: 'Compute Year-End Tax',   onClick: () => alert('Compute Year-End Tax') }
+          { label: 'Compute 13th Month Pay', onClick: () => navigate('/payroll/13th-month') },
+          { label: 'Compute Year-End Tax',   onClick: () => navigate('/payroll/yearend-tax') }
         ]
       }
     ],
@@ -123,20 +148,20 @@ export default function PayrollSystem() {
         title: 'Master File Maintenance',
         items: [
           { label: 'Edit Employee Master File', onClick: () => navigate('/payroll/employees') },
-          { label: 'Update Employee Rate',      onClick: () => alert('Update Employee Rate') },
-          { label: 'Edit Department File',      onClick: () => alert('Edit Department File') },
-          { label: 'Edit Tax Table File',       onClick: () => alert('Edit Tax Table File') },
-          { label: 'Edit Systems ID',           onClick: () => alert('Edit Systems ID') }
+          { label: 'Update Employee Rate',      onClick: () => navigate('/payroll/update-rate') },
+          { label: 'Edit Department File',      onClick: () => navigate('/payroll/dept-file') },
+          { label: 'Edit Tax Table File',       onClick: () => navigate('/payroll/tax-table') },
+          { label: 'Edit Systems ID',           onClick: () => navigate('/payroll/system-id') }
         ]
       },
       {
         title: 'Administration',
         items: [
-          { label: 'Initialize For a New Year', onClick: () => alert('Initialize For a New Year') },
+          { label: 'Initialize For a New Year', onClick: () => navigate('/payroll/initialize-new-year') },
           { label: 'Backup Databases',          onClick: () => alert('Backup Databases') },
           { label: 'Edit Database Path',        onClick: () => alert('Edit Database Path') },
           { label: 'Edit Employee Number',      onClick: () => alert('Edit Employee Number') },
-          { label: 'Add/Edit Department',       onClick: () => alert('Add/Edit Department') }
+          { label: 'Add/Edit Department',       onClick: () => navigate('/payroll/departments') }
         ]
       }
     ],
@@ -220,11 +245,24 @@ export default function PayrollSystem() {
           <Route path="/compute" element={<PayrollCompute />} />
           <Route path="/employees" element={<EmployeeMaster />} />
           <Route path="/reports/:reportType" element={<PayrollReports />} />
+          <Route path="/initialize" element={<InitializeTimecard />} />
+          <Route path="/append" element={<AppendFromDatafile />} />
+          <Route path="/post-transactions" element={<PostTransactions />} />
+          <Route path="/or-sbr/sss" element={<OrSbrEntry type="sss" />} />
+          <Route path="/or-sbr/pagibig" element={<OrSbrEntry type="pagibig" />} />
+          <Route path="/13th-month" element={<Compute13thMonth />} />
+          <Route path="/yearend-tax" element={<ComputeYearEndTax />} />
+          <Route path="/system-id" element={<SystemIdEdit />} />
+          <Route path="/tax-table" element={<TaxTableEdit />} />
+          <Route path="/departments" element={<DepartmentEdit />} />
+          <Route path="/dept-file" element={<DepartmentEdit />} />
+          <Route path="/update-rate" element={<UpdateEmployeeRate />} />
+          <Route path="/initialize-new-year" element={<InitializeNewYear />} />
         </Routes>
       </div>
 
       <div className="status-bar">
-        <span>PAY System | Company: CTSI | Period: February 2026 | {payrollType === 'regular' ? 'Regular Employees' : 'Casual Employees'}</span>
+        <span>PAY System | Company: CTSI | Period: {statusPeriod} | {payrollType === 'regular' ? 'Regular Employees' : 'Casual Employees'}</span>
         <span>{user?.username}</span>
       </div>
     </div>

@@ -299,6 +299,134 @@ public sealed class LegacySeedingService
             seeded["fs_schedule"] = rows.Count;
         }
 
+        // ── pay_sys_id ────────────────────────────────────────────────────────
+        var sysDs = await _legacyData.GetDatasetByKeyAsync("pay_sys_id", cancellationToken);
+        if (sysDs != null && sysDs.Rows.Count > 0)
+        {
+            var r       = sysDs.Rows[0];
+            var existing = await _db.PaySysId.FirstOrDefaultAsync(cancellationToken);
+            if (existing is null)
+            {
+                existing = new PaySysId();
+                _db.PaySysId.Add(existing);
+            }
+            existing.PresMo    = (int)Dec(r, "PRES_MO");
+            existing.PresYr    = now.Year;
+            existing.PayType   = (int)Dec(r, "PAY_TYPE");
+            existing.TrnCtr    = (int)Dec(r, "TRN_CTR");
+            existing.TrnPrc    = (int)Dec(r, "TRN_PRC");
+            existing.TrnUpd    = (int)Dec(r, "TRN_UPD");
+            existing.HdmfPre   = Dec(r, "HDMF_PRE");
+            existing.NeedBackup = Bool(r, "NEEDBACKUP");
+            existing.WorkHours  = (int)Dec(r, "WORKHOURS");
+            existing.PgLower   = Dec(r, "PG_LOWER");
+            existing.PgHigher  = Dec(r, "PG_HIGHER");
+            existing.PgLwper   = Dec(r, "PG_LWPER");
+            existing.PgHiper   = Dec(r, "PG_HIPER");
+            existing.BonDays   = (int)Dec(r, "BON_DAYS");
+            existing.BonMont   = Dec(r, "BON_MONT");
+            if (DateTime.TryParse(Str(r, "BEG_DATE"), out var bd)) existing.BegDate = bd;
+            if (DateTime.TryParse(Str(r, "END_DATE"), out var ed)) existing.EndDate = ed;
+            existing.UpdatedAt = now;
+            await _db.SaveChangesAsync(cancellationToken);
+            seeded["pay_sys_id"] = 1;
+        }
+
+        // ── pay_master ────────────────────────────────────────────────────────
+        // Prefer pay_master (MASTER.DBF) which has 286 active employees.
+        var pmDs = await _legacyData.GetDatasetByKeyAsync("pay_master", cancellationToken)
+                ?? await _legacyData.GetDatasetByKeyAsync("pay_mastfile", cancellationToken);
+        if (pmDs != null && pmDs.Rows.Count > 0)
+        {
+            await _db.Database.ExecuteSqlRawAsync("DELETE FROM pay_master", cancellationToken);
+            var rows = pmDs.Rows
+                .Select(r => new PayMaster
+                {
+                    EmpNo           = Str(r, "EMP_NO"),
+                    EmpNm           = Str(r, "EMP_NM"),
+                    DepNo           = Str(r, "DEP_NO"),
+                    BRate           = Dec(r, "B_RATE"),
+                    Cola            = Dec(r, "COLA"),
+                    EmpStat         = Str(r, "EMP_TYPE") is "C" ? "C" : "R",
+                    Status          = Str(r, "EMP_STAT"),
+                    SssNo           = Str(r, "SSS"),
+                    TinNo           = Str(r, "TAN"),
+                    PhicNo          = Str(r, "PHIC"),
+                    PgbgNo          = Str(r, "PGBG_NO"),
+                    SssMember       = Bool(r, "SSS_MEMBER"),
+                    Pgbg            = Bool(r, "PGBG"),
+                    VacationLeave   = Dec(r, "VAC_LV"),
+                    SickLeave       = Dec(r, "SIK_LV"),
+                    SlnBal          = Dec(r, "SLN_BAL"),
+                    SlnAmt          = Dec(r, "SLN_AMT"),
+                    SlnTerm         = (int)Dec(r, "SLN_TRM"),
+                    SlnDate         = Dt(r, "L_DATE", now),
+                    HdmfBal         = Dec(r, "HLN_BAL"),
+                    HdmfAmt         = Dec(r, "HLN_AMT"),
+                    HdmfTerm        = (int)Dec(r, "HLN_TRM"),
+                    HdmfDate        = Dt(r, "HLN_DTE", now),
+                    CalBal          = Dec(r, "SS_CAL_BAL"),
+                    CalAmt          = Dec(r, "SS_CAL_LN"),
+                    CalTerm         = (int)Dec(r, "SS_CAL_TRM"),
+                    CalDate         = Dt(r, "SS_CAL_DTE", now),
+                    CompBal         = Dec(r, "CO_LN_BAL"),
+                    CompAmt         = Dec(r, "CO_LN"),
+                    CompTerm        = (int)Dec(r, "CO_LN_TRM"),
+                    CompDate        = Dt(r, "CO_LN_DTE", now),
+                    ComdBal         = Dec(r, "COM_LN_BAL"),
+                    ComdAmt         = Dec(r, "COM_LN"),
+                    ComdTerm        = (int)Dec(r, "COM_LN_TRM"),
+                    ComdDate        = Dt(r, "COM_LN_DTE", now),
+                    MBasic          = Dec(r, "M_BASIC"),
+                    MCola           = 0m,
+                    MHol            = Dec(r, "M_HOL"),
+                    MOt             = Dec(r, "M_OT"),
+                    MLeave          = Dec(r, "M_LEAVE"),
+                    MGross          = Dec(r, "M_GROSS"),
+                    MSsee           = Dec(r, "M_SSEE"),
+                    MSser           = Dec(r, "M_SSER"),
+                    MMedee          = Dec(r, "M_MEDEE"),
+                    MMeder          = Dec(r, "M_MEDER"),
+                    MPgee           = Dec(r, "M_PGEE"),
+                    MPger           = Dec(r, "M_PGER"),
+                    MEcer           = Dec(r, "M_ECER"),
+                    MTax            = Dec(r, "M_TAX"),
+                    MOthp1          = Dec(r, "M_OTHP1"),
+                    MOthp2          = Dec(r, "M_OTHP2"),
+                    MOthp3          = Dec(r, "M_OTHP3"),
+                    MOthp4          = Dec(r, "M_OTHP4"),
+                    MNetpay         = Dec(r, "M_NETPAY"),
+                    YBasic          = Dec(r, "Y_BASIC"),
+                    YCola           = 0m,
+                    YHol            = Dec(r, "Y_HOL"),
+                    YOt             = Dec(r, "Y_OT"),
+                    YLeave          = Dec(r, "Y_LEAVE"),
+                    YGross          = Dec(r, "Y_GROSS"),
+                    YSsee           = 0m,
+                    YSser           = 0m,
+                    YMedee          = 0m,
+                    YMeder          = 0m,
+                    YPgee           = 0m,
+                    YPger           = 0m,
+                    YEcer           = 0m,
+                    YTax            = Dec(r, "Y_TAX"),
+                    YOthp1          = Dec(r, "Y_OTHP1"),
+                    YOthp2          = Dec(r, "Y_OTHP2"),
+                    YOthp3          = Dec(r, "Y_OTHP3"),
+                    YOthp4          = Dec(r, "Y_OTHP4"),
+                    YBonus          = Dec(r, "Y_BONUS"),
+                    YBtax           = Dec(r, "Y_BTAX"),
+                    YNetpay         = Dec(r, "Y_NETPAY"),
+                    CreatedAt       = now,
+                    UpdatedAt       = now
+                })
+                .Where(e => !string.IsNullOrWhiteSpace(e.EmpNo))
+                .ToList();
+            _db.PayMaster.AddRange(rows);
+            await _db.SaveChangesAsync(cancellationToken);
+            seeded["pay_master"] = rows.Count;
+        }
+
         return seeded;
     }
 }

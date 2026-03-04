@@ -28,6 +28,8 @@ public sealed class AccountingDbContext : DbContext
     public DbSet<PayTmcard> PayTmcard { get; set; } = null!;
     public DbSet<PaySysId> PaySysId { get; set; } = null!;
     public DbSet<PayTaxTab> PayTaxTab { get; set; } = null!;
+    public DbSet<PayPremPaid> PayPremPaid { get; set; } = null!;
+    public DbSet<PayDept> PayDept { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -81,5 +83,9 @@ public sealed class AccountingDbContext : DbContext
 
         modelBuilder.Entity<PayTaxTab>()
             .HasIndex(t => new { t.Exemption, t.Sequence });
+
+        modelBuilder.Entity<PayDept>()
+            .HasIndex(d => d.DepNo)
+            .IsUnique();
     }
 }

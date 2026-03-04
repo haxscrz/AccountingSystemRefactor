@@ -604,7 +604,7 @@ public sealed class PayrollComputationService
         };
     }
 
-    public async Task<(bool Success, string Message, int EmployeesPosted)> PostTimecardAsync(CancellationToken cancellationToken = default)
+    public async Task<(bool Success, string Message, int EmployeesPosted)> PostTimecardAsync(bool has3rdPayroll = false, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -768,34 +768,32 @@ public sealed class PayrollComputationService
     /// Based on BONSCOMP.PRG - separate year-end batch process.
     /// </summary>
     /// <param name="bonusDays">Number of days to use for regular employees (if 0, defaults to bon_days from sys_id)</param>
-    public async Task<(bool Success, string Message, int EmployeesProcessed)> Compute13thMonthPayAsync(int bonusDays = 0, CancellationToken cancellationToken = default)
+    public async Task<(bool Success, string Message, int EmployeesProcessed, List<object>? Employees)> Compute13thMonthPayAsync(
+        int bonusDays = 0, decimal taxThreshold = 0, CancellationToken cancellationToken = default)
     {
         try
         {
             // Get system configuration
             var sysId = await _context.PaySysId.FirstOrDefaultAsync(cancellationToken);
             if (sysId is null)
-            {
-                return (false, "System ID not configured.", 0);
-            }
+                return (false, "System ID not configured.", 0, null);
 
             // Use system bon_days if not specified
-            if (bonusDays == 0)
-            {
-                bonusDays = sysId.BonDays;
-            }
+            if (bonusDays == 0) bonusDays = sysId.BonDays;
 
-            // Get all active employees
+            // Use caller-supplied threshold or fall back to system TaxBon (default 90000)
+            decimal threshold = taxThreshold > 0 ? taxThreshold : (sysId.TaxBon > 0 ? sysId.TaxBon : 90000m);
+
+            // Get all regular and casual employees (EmpStat: R=Regular, C=Casual, F=Confidential, E=Executive)
             var masters = await _context.PayMaster
-                .Where(m => m.EmpStat == "A" || m.EmpStat == "C")  // Active or Casual
+                .Where(m => m.EmpStat == "R" || m.EmpStat == "C" || m.EmpStat == "F" || m.EmpStat == "E")
                 .ToListAsync(cancellationToken);
 
             if (masters.Count == 0)
-            {
-                return (false, "No active employees in master file!", 0);
-            }
+                return (false, "No employees in master file! Make sure employees are loaded.", 0, null);
 
             int processed = 0;
+            var employeeResults = new List<object>();
 
             foreach (var master in masters)
             {
@@ -805,61 +803,67 @@ public sealed class PayrollComputationService
                 if (master.EmpStat == "C")
                 {
                     // Casual: y_basic / 12
-                    bonNet = master.YBasic / 12;
+                    bonNet = master.YBasic > 0 ? master.YBasic / 12 : master.BRate * bonusDays;
                 }
                 else
                 {
-                    // Regular: b_rate * bon_days
+                    // Regular/Confidential/Executive: b_rate * bon_days
                     bonNet = master.BRate * bonusDays;
                 }
 
                 decimal bonusTax = 0;
+                bool isTaxable = bonNet > threshold;
 
-                // Compute bonus tax if exceeds threshold
-                if (bonNet > sysId.TaxBon)
+                // Compute bonus tax only on the amount above the tax-free threshold
+                if (isTaxable)
                 {
                     // Taxable amount (divide by 2 because tax table is semi-monthly)
-                    decimal taxable = (bonNet - sysId.TaxBon) / 2;
+                    decimal taxable = (bonNet - threshold) / 2;
 
                     if (!string.IsNullOrWhiteSpace(master.Status) && master.Status.Trim().Length > 0)
                     {
-                        // Use tax table based on exemption status
-                        var taxEntry = await _context.PayTaxTab
-                            .Where(t => t.Exemption == master.Status && t.Salary <= taxable)
+                        // Fetch tax brackets for this status and find the right bracket in memory
+                        var taxRows = await _context.PayTaxTab
+                            .Where(t => t.Exemption == master.Status)
+                            .ToListAsync(cancellationToken);
+                        var taxEntry = taxRows
+                            .Where(t => t.Salary <= taxable)
                             .OrderByDescending(t => t.Salary)
-                            .FirstOrDefaultAsync(cancellationToken);
+                            .FirstOrDefault();
 
                         if (taxEntry != null && taxEntry.Salary != -1)
                         {
-                            decimal peso = taxEntry.Peso;
-                            decimal percent = taxEntry.Percent;
-                            decimal salary = taxEntry.Salary;
-
-                            // Compute tax and multiply by 2 for full month rate
-                            bonusTax = (peso + ((taxable - salary) * (percent / 100))) * 2;
+                            bonusTax = (taxEntry.Peso + ((taxable - taxEntry.Salary) * (taxEntry.Percent / 100))) * 2;
                         }
                     }
                     else
                     {
-                        // Fallback: Use flat computation if status not set
                         bonusTax = ComputeBonusTax(taxable) * 2;
                     }
                 }
 
                 // Update master file
-                master.YBonus = bonNet;
-                master.YBtax = Math.Round(bonusTax, 2);
+                master.YBonus = Math.Round(bonNet, 2);
+                master.YBtax  = Math.Round(bonusTax, 2);
 
+                employeeResults.Add(new
+                {
+                    EmpNo    = master.EmpNo,
+                    Name     = master.EmpNm,
+                    EmpType  = master.EmpStat,
+                    BonusAmt = Math.Round(bonNet, 2),
+                    Taxable  = isTaxable
+                });
                 processed++;
             }
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return (true, $"13th month pay computation completed. {processed} employees processed.", processed);
+            return (true, $"13th month pay computation completed. {processed} employees processed.", processed, employeeResults);
         }
         catch (Exception ex)
         {
-            return (false, $"13th month pay computation failed: {ex.Message}", 0);
+            return (false, $"13th month pay computation failed: {ex.Message}", 0, null);
         }
     }
 }
