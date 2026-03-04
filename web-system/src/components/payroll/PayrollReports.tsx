@@ -285,10 +285,10 @@ function ReportViewer({
       <div style={{ background: 'var(--panel-2)', padding: '20px', borderRadius: '8px', marginBottom: '24px' }}>
         <h4>Export Options</h4>
         <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-          <button className="btn btn-secondary" onClick={() => void refreshPreview()} disabled={previewLoading}>ðŸ”„ Refresh Preview</button>
-          <button className="btn btn-primary"   onClick={() => handleGenerate('pdf')}   disabled={generating}>ðŸ“„ Generate PDF</button>
-          <button className="btn btn-secondary" onClick={() => handleGenerate('excel')} disabled={generating}>ðŸ“Š Export to Excel</button>
-          <button className="btn btn-secondary" onClick={() => handleGenerate('csv')}   disabled={generating}>ðŸ“‹ Export to CSV</button>
+          <button className="btn btn-secondary" onClick={() => void refreshPreview()} disabled={previewLoading}>Refresh Preview</button>
+          <button className="btn btn-primary"   onClick={() => handleGenerate('pdf')}   disabled={generating}>Generate PDF</button>
+          <button className="btn btn-secondary" onClick={() => handleGenerate('excel')} disabled={generating}>Export to Excel</button>
+          <button className="btn btn-secondary" onClick={() => handleGenerate('csv')}   disabled={generating}>Export to CSV</button>
         </div>
         {generating && <div style={{ marginTop: '16px', color: 'var(--text-secondary)' }}>Generating report...</div>}
       </div>
