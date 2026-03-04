@@ -52,16 +52,16 @@ const SUB_OPTIONS: Record<string, { label: string; key: string }[]> = {
     { label: 'Denomination Breakdown',       key: 'den' },
   ],
   'year-end-tax': [
-    { label: "Tax Recon â€“ Emp.'s Taxable Income",     key: 'recon-taxable' },
-    { label: "Tax Recon â€“ Emp.'s Non-Taxable Income", key: 'recon-nontaxable' },
-    { label: 'Tax Refund Report',                      key: 'refund' },
-    { label: 'Tax Refund Denomination Breakdown',      key: 'refund-den' },
-    { label: 'Tax Refund Slip',                        key: 'refund-slip' },
-    { label: 'BIR Tax Withheld Report',                key: 'bir-withheld' },
-    { label: 'Individual BIR W2 Form',                 key: 'w2' },
-    { label: 'Alpha List',                             key: 'alpha' },
-    { label: 'Form 1604CF â€“ Schedule 7.3',             key: '1604cf-73' },
-    { label: 'Form 1604CF â€“ Schedule 7.1',             key: '1604cf-71' },
+    { label: "Tax Recon - Emp.'s Taxable Income",     key: 'recon-taxable' },
+    { label: "Tax Recon - Emp.'s Non-Taxable Income", key: 'recon-nontaxable' },
+    { label: 'Tax Refund Report',                     key: 'refund' },
+    { label: 'Tax Refund Denomination Breakdown',     key: 'refund-den' },
+    { label: 'Tax Refund Slip',                       key: 'refund-slip' },
+    { label: 'BIR Tax Withheld Report',               key: 'bir-withheld' },
+    { label: 'Individual BIR W2 Form',                key: 'w2' },
+    { label: 'Alpha List',                            key: 'alpha' },
+    { label: 'Form 1604CF - Schedule 7.3',            key: '1604cf-73' },
+    { label: 'Form 1604CF - Schedule 7.1',            key: '1604cf-71' },
   ],
   'premium-cert': [
     { label: 'SSS Premium Payment Certification',      key: 'sss' },
@@ -124,7 +124,7 @@ function SubOptionSelector({
           >
             <span style={{ fontSize: 11, color: 'var(--text-muted)', minWidth: 18, fontVariantNumeric: 'tabular-nums' }}>{i + 1}.</span>
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{opt.label}</span>
-            <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--text-muted)' }}>â€º</span>
+            <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--text-muted)' }}>&gt;</span>
           </button>
         ))}
       </div>
