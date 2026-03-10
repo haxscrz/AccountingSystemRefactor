@@ -64,8 +64,8 @@ export default function UpdateEmployeeRate() {
       <Label label={label} />
       <input type="number" value={String(form[k])}
         onChange={e => setForm(p => ({ ...p, [k]: Number(e.target.value) }))}
-        style={{ padding: '5px 8px', fontSize: 13, border: '1px solid var(--border)',
-          background: 'var(--input-bg, #2a2a2a)', color: 'var(--text)', borderRadius: 3, width: '100%' }}
+        style={{ padding: '5px 8px', fontSize: 13, border: '1px solid var(--border, #d0d0d0)',
+          background: 'var(--surface, #ffffff)', color: 'var(--text, #1a1a1a)', borderRadius: 3, width: '100%' }}
       />
     </div>
   )
@@ -75,8 +75,8 @@ export default function UpdateEmployeeRate() {
       <Label label={label} />
       <input type="text" value={form[k]}
         onChange={e => setForm(p => ({ ...p, [k]: e.target.value }))}
-        style={{ padding: '5px 8px', fontSize: 13, border: '1px solid var(--border)',
-          background: 'var(--input-bg, #2a2a2a)', color: 'var(--text)', borderRadius: 3, width: '100%' }}
+        style={{ padding: '5px 8px', fontSize: 13, border: '1px solid var(--border, #d0d0d0)',
+          background: 'var(--surface, #ffffff)', color: 'var(--text, #1a1a1a)', borderRadius: 3, width: '100%' }}
       />
     </div>
   )
@@ -158,8 +158,8 @@ export default function UpdateEmployeeRate() {
         <Label label="Amount to Add / Subtract (use positive or negative value)" />
         <input type="number" value={form.Amount}
           onChange={e => setForm(p => ({ ...p, Amount: Number(e.target.value) }))}
-          style={{ padding: '6px 10px', fontSize: 15, border: '1px solid var(--border)',
-            background: 'var(--input-bg, #2a2a2a)', color: 'var(--text)', borderRadius: 3, width: '100%' }}
+          style={{ padding: '6px 10px', fontSize: 15, border: '1px solid var(--border, #d0d0d0)',
+            background: 'var(--surface, #ffffff)', color: 'var(--text, #1a1a1a)', borderRadius: 3, width: '100%' }}
         />
         <div style={{ marginTop: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
           e.g. <code>500</code> adds ₱500 to each matched employee's rate.{' '}

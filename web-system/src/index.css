@@ -23,6 +23,7 @@
   --background:     #f0f0f0;
   --surface:        #ffffff;
   --surface-raised: #fafafa;
+  --panel-2:        #f2f4f5;   /* slightly tinted raised panel used in info cards / table footers */
 
   /* Borders */
   --border:         #d0d0d0;

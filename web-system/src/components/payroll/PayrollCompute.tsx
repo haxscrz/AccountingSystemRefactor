@@ -110,7 +110,7 @@ export default function PayrollCompute() {
   const fmt = (n: number) => (n ?? 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })
   const halfLabel = sysInfo ? (sysInfo.PayType === 1 ? '1st Half' : '2nd Half') : ''
 
-  const canCompute = sysInfo && sysInfo.TcCount > 0 && sysInfo.TrnCtr !== sysInfo.TrnUpd
+  const canCompute = sysInfo && sysInfo.TcCount > 0 && sysInfo.TrnPrc < sysInfo.TrnCtr
 
   return (
     <div className="card">

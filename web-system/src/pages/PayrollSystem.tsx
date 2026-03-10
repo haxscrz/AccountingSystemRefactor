@@ -19,6 +19,9 @@ import TaxTableEdit from '../components/payroll/TaxTableEdit'
 import DepartmentEdit from '../components/payroll/DepartmentEdit'
 import UpdateEmployeeRate from '../components/payroll/UpdateEmployeeRate'
 import InitializeNewYear from '../components/payroll/InitializeNewYear'
+import BackupDatabases from '../components/payroll/BackupDatabases'
+import EditEmployeeNumber from '../components/payroll/EditEmployeeNumber'
+import TimecardQuery from '../components/payroll/TimecardQuery'
 import './PayrollSystem.css'
 
 export default function PayrollSystem() {
@@ -28,6 +31,7 @@ export default function PayrollSystem() {
   const [payrollType, setPayrollType] = useState<'regular' | 'casual' | null>(null)
   const [isCompactHeader, setIsCompactHeader] = useState(false)
   const [statusPeriod, setStatusPeriod] = useState('Loading...')
+  const [companyName, setCompanyName] = useState('PAY System')
 
   useEffect(() => {
     const onScroll = () => {
@@ -46,7 +50,10 @@ export default function PayrollSystem() {
     fetch('/api/payroll/system-id')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
-        if (d) setStatusPeriod(`${MONTHS[d.PresMo] ?? d.PresMo} ${d.PresYr}`)
+        if (d) {
+          setStatusPeriod(`${MONTHS[d.PresMo] ?? d.PresMo} ${d.PresYr}`)
+          if (d.SysNm) setCompanyName(d.SysNm)
+        }
       })
       .catch(() => setStatusPeriod('—'))
   }, [payrollType])
@@ -131,25 +138,15 @@ export default function PayrollSystem() {
     ],
 
     // ── FILE MAINTENANCE ───────────────────────────────────────────────────────
-    // Mirrors PAY.PRG m_main=2 block exactly (items 1-1).
+    // Reindex group removed — SQLite manages indexes transactionally, no manual
+    // reindex is ever needed. Edit Database Path removed — handled via appsettings.
+    // Edit Department File removed — DepartmentEdit covers both list + edit.
     file: [
-      {
-        title: 'Reindex Corrupted Files',
-        items: [
-          { label: 'Employee Master File',    onClick: () => alert('Reindex Employee Master File') },
-          { label: 'Timecard File',           onClick: () => alert('Reindex Timecard File') },
-          { label: 'Department File',         onClick: () => alert('Reindex Department File') },
-          { label: 'Tax Code File',           onClick: () => alert('Reindex Tax Code File') },
-          { label: 'Certification File',      onClick: () => alert('Reindex Certification File (premmast/prempaid)') },
-          { label: 'Reindex All Files',       onClick: () => alert('Reindex All Files') }
-        ]
-      },
       {
         title: 'Master File Maintenance',
         items: [
           { label: 'Edit Employee Master File', onClick: () => navigate('/payroll/employees') },
           { label: 'Update Employee Rate',      onClick: () => navigate('/payroll/update-rate') },
-          { label: 'Edit Department File',      onClick: () => navigate('/payroll/dept-file') },
           { label: 'Edit Tax Table File',       onClick: () => navigate('/payroll/tax-table') },
           { label: 'Edit Systems ID',           onClick: () => navigate('/payroll/system-id') }
         ]
@@ -158,9 +155,8 @@ export default function PayrollSystem() {
         title: 'Administration',
         items: [
           { label: 'Initialize For a New Year', onClick: () => navigate('/payroll/initialize-new-year') },
-          { label: 'Backup Databases',          onClick: () => alert('Backup Databases') },
-          { label: 'Edit Database Path',        onClick: () => alert('Edit Database Path') },
-          { label: 'Edit Employee Number',      onClick: () => alert('Edit Employee Number') },
+          { label: 'Backup Databases',          onClick: () => navigate('/payroll/backup') },
+          { label: 'Edit Employee Number',      onClick: () => navigate('/payroll/edit-employee-number') },
           { label: 'Add/Edit Department',       onClick: () => navigate('/payroll/departments') }
         ]
       }
@@ -196,8 +192,7 @@ export default function PayrollSystem() {
           { label: 'Employee Master File',   onClick: () => navigate('/payroll/reports/employee-master') },
           { label: 'Bonus',                  onClick: () => navigate('/payroll/reports/bonus') },
           { label: 'Year-End Tax/Refund',    onClick: () => navigate('/payroll/reports/year-end-tax') },
-          { label: 'Premium Payment Certif', onClick: () => navigate('/payroll/reports/premium-cert') },
-          { label: 'Set Printer Font',       onClick: () => alert('Set Printer Font') }
+          { label: 'Premium Payment Certif', onClick: () => navigate('/payroll/reports/premium-cert') }
         ]
       }
     ]
@@ -241,7 +236,7 @@ export default function PayrollSystem() {
         <Routes>
           <Route path="/" element={<PayrollMainMenu payrollType={payrollType} />} />
           <Route path="/timecard" element={<TimecardEntry payrollType={payrollType} />} />
-          <Route path="/timecard/view" element={<div className="card"><h3>Timecard Query</h3></div>} />
+          <Route path="/timecard/view" element={<TimecardQuery />} />
           <Route path="/compute" element={<PayrollCompute />} />
           <Route path="/employees" element={<EmployeeMaster />} />
           <Route path="/reports/:reportType" element={<PayrollReports />} />
@@ -255,14 +250,15 @@ export default function PayrollSystem() {
           <Route path="/system-id" element={<SystemIdEdit />} />
           <Route path="/tax-table" element={<TaxTableEdit />} />
           <Route path="/departments" element={<DepartmentEdit />} />
-          <Route path="/dept-file" element={<DepartmentEdit />} />
           <Route path="/update-rate" element={<UpdateEmployeeRate />} />
           <Route path="/initialize-new-year" element={<InitializeNewYear />} />
+          <Route path="/backup" element={<BackupDatabases />} />
+          <Route path="/edit-employee-number" element={<EditEmployeeNumber />} />
         </Routes>
       </div>
 
       <div className="status-bar">
-        <span>PAY System | Company: CTSI | Period: {statusPeriod} | {payrollType === 'regular' ? 'Regular Employees' : 'Casual Employees'}</span>
+        <span>PAY System | Company: {companyName} | Period: {statusPeriod} | {payrollType === 'regular' ? 'Regular Employees' : 'Casual Employees'}</span>
         <span>{user?.username}</span>
       </div>
     </div>

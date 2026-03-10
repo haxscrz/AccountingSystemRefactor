@@ -1324,6 +1324,13 @@ namespace AccountingApi.Data.Migrations
                         .HasColumnType("INTEGER")
                         .HasColumnName("pay_type");
 
+                    b.Property<string>("SysNm")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("sys_nm")
+                        .HasDefaultValue("");
+
                     b.Property<decimal>("PgHigher")
                         .HasColumnType("TEXT")
                         .HasColumnName("pg_higher");

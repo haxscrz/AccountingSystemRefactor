@@ -68,8 +68,8 @@ export default function TaxTableEdit() {
       <input type={type}
         value={String(form[key] ?? '')}
         onChange={e => setForm(p => ({ ...p, [key]: type === 'number' ? Number(e.target.value) : e.target.value }))}
-        style={{ padding: '5px 8px', fontSize: 13, border: '1px solid var(--border)',
-          background: 'var(--input-bg, #2a2a2a)', color: 'var(--text)', borderRadius: 3 }}
+        style={{ padding: '5px 8px', fontSize: 13, border: '1px solid var(--border, #d0d0d0)',
+          background: 'var(--surface, #ffffff)', color: 'var(--text, #1a1a1a)', borderRadius: 3 }}
       />
     </div>
   )
@@ -167,8 +167,8 @@ export default function TaxTableEdit() {
                 onChange={e => setForm(p => ({ ...p, TaxSts: e.target.value.toUpperCase() }))}
                 placeholder="S, M, ME, S1…S4, M1…M4"
                 style={{ display: 'block', width: '100%', marginTop: 4, marginBottom: 12,
-                  padding: '5px 8px', fontSize: 13, border: '1px solid var(--border)',
-                  background: 'var(--input-bg, #2a2a2a)', color: 'var(--text)', borderRadius: 3 }}
+              padding: '5px 8px', fontSize: 13, border: '1px solid var(--border, #d0d0d0)',
+              background: 'var(--surface, #ffffff)', color: 'var(--text, #1a1a1a)', borderRadius: 3 }}
               />
             </div>
             {f('Salary Ceiling',   'TaxSal')}

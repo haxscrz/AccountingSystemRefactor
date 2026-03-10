@@ -318,6 +318,7 @@ public sealed class LegacySeedingService
             existing.TrnUpd    = (int)Dec(r, "TRN_UPD");
             existing.HdmfPre   = Dec(r, "HDMF_PRE");
             existing.NeedBackup = Bool(r, "NEEDBACKUP");
+            existing.SysNm      = Str(r, "SYS_NM");
             existing.WorkHours  = (int)Dec(r, "WORKHOURS");
             existing.PgLower   = Dec(r, "PG_LOWER");
             existing.PgHigher  = Dec(r, "PG_HIGHER");

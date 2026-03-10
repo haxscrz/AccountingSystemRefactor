@@ -108,6 +108,20 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
     year: new Date().getFullYear(),
     month: new Date().getMonth() + 1
   })
+  const [periodLoaded, setPeriodLoaded] = useState(false)
+
+  // Load the active payroll period from system-id on mount
+  useEffect(() => {
+    fetch('/api/payroll/system-id')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d && d.PresYr && d.PresMo) {
+          setCurrentPeriod({ year: d.PresYr, month: d.PresMo })
+        }
+      })
+      .catch(() => {/* use calendar fallback */})
+      .finally(() => setPeriodLoaded(true))
+  }, [])
 
   // Add New dialog state
   const [showAddDialog, setShowAddDialog] = useState(false)
@@ -117,10 +131,10 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<Timecard | null>(null)
 
   useEffect(() => {
-    if (payrollType) {
+    if (payrollType && periodLoaded) {
       fetchTimecards()
     }
-  }, [payrollType, currentPeriod])
+  }, [payrollType, currentPeriod, periodLoaded])
 
   const fetchTimecards = async () => {
     try {
@@ -255,7 +269,7 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
             value={currentPeriod.year}
             onChange={(e) => setCurrentPeriod({ ...currentPeriod, year: Number(e.target.value) })}
           >
-            {[2024, 2025, 2026, 2027].map(y => (
+            {Array.from({ length: 8 }, (_, i) => currentPeriod.year - 2 + i).map(y => (
               <option key={y} value={y}>{y}</option>
             ))}
           </select>

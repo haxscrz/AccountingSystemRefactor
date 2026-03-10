@@ -15,19 +15,22 @@ public sealed class PayrollController : ControllerBase
     private readonly EmployeeService _employeeService;
     private readonly TimecardService _timecardService;
     private readonly AccountingDbContext _db;
+    private readonly IConfiguration _configuration;
 
     public PayrollController(
         LegacyDataService legacyDataService, 
         PayrollComputationService computationService,
         EmployeeService employeeService,
         TimecardService timecardService,
-        AccountingDbContext db)
+        AccountingDbContext db,
+        IConfiguration configuration)
     {
         _legacyDataService = legacyDataService;
         _computationService = computationService;
         _employeeService = employeeService;
         _timecardService = timecardService;
         _db = db;
+        _configuration = configuration;
     }
 
     [HttpGet("employees")]
@@ -291,6 +294,7 @@ public sealed class PayrollController : ControllerBase
             BonMont    = sysId.BonMont,
             TaxBon     = sysId.TaxBon,
             MDailyWage = sysId.MDailyWage,
+            SysNm      = sysId.SysNm,
             EmpCount   = empCount,
             TcCount    = tcCount
         });
@@ -687,6 +691,7 @@ public sealed class PayrollController : ControllerBase
         public decimal BonMont   { get; set; }
         public decimal TaxBon    { get; set; }
         public bool   MDailyWage { get; set; }
+        public string SysNm      { get; set; } = "";
     }
 
     [HttpPut("system-id")]
@@ -723,6 +728,7 @@ public sealed class PayrollController : ControllerBase
         sysId.BonMont   = req.BonMont;
         sysId.TaxBon    = req.TaxBon;
         sysId.MDailyWage = req.MDailyWage;
+        sysId.SysNm     = req.SysNm ?? "";
         sysId.UpdatedAt  = DateTime.UtcNow;
 
         await _db.SaveChangesAsync(cancellationToken);
@@ -963,5 +969,72 @@ public sealed class PayrollController : ControllerBase
 
         await _db.SaveChangesAsync(cancellationToken);
         return Ok(new { message = $"Year-end initialization complete. System is now set to {year} January.", year, employeesReset = masters.Count });
+    }
+
+    // ── BACKUP DATABASE ────────────────────────────────────────────────────────
+    // Mirrors FILEBACK.PRG: copy all DB files to backup location.
+    // Modern equivalent: stream the SQLite DB file as a download.
+    [HttpGet("backup-db")]
+    public IActionResult BackupDatabase()
+    {
+        var connString = _configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting.db";
+        var match = System.Text.RegularExpressions.Regex.Match(connString, @"[Dd]ata\s*[Ss]ource=([^;]+)");
+        var dbPath = match.Success ? match.Groups[1].Value.Trim() : "accounting.db";
+
+        // Resolve relative path against the content root
+        if (!System.IO.Path.IsPathRooted(dbPath))
+            dbPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), dbPath);
+
+        if (!System.IO.File.Exists(dbPath))
+            return NotFound(new { error = "Database file not found at: " + dbPath });
+
+        var timestamp = DateTime.Now.ToString("yyyyMMdd-HHmm");
+        var downloadName = $"payroll-backup-{timestamp}.db";
+
+        // Read into memory so we don't lock the file
+        var bytes = System.IO.File.ReadAllBytes(dbPath);
+        return File(bytes, "application/octet-stream", downloadName);
+    }
+
+    // ── CHANGE EMPLOYEE NUMBER ────────────────────────────────────────────────
+    // Mirrors F_EDTCOD.PRG (m_which=2): change an emp_no and cascade to all
+    // related tables (pay_master, pay_tmcard).
+    public sealed class ChangeEmpNoRequest
+    {
+        public string OldEmpNo { get; set; } = "";
+        public string NewEmpNo { get; set; } = "";
+    }
+
+    [HttpPost("change-employee-number")]
+    public async Task<IActionResult> ChangeEmployeeNumber([FromBody] ChangeEmpNoRequest req, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(req.OldEmpNo) || string.IsNullOrWhiteSpace(req.NewEmpNo))
+            return BadRequest(new { error = "Both old and new employee numbers are required." });
+        if (req.OldEmpNo.Trim() == req.NewEmpNo.Trim())
+            return BadRequest(new { error = "Old and new employee numbers are the same." });
+
+        var employee = await _db.PayMaster.FirstOrDefaultAsync(m => m.EmpNo == req.OldEmpNo.Trim(), cancellationToken);
+        if (employee is null)
+            return NotFound(new { error = $"Employee '{req.OldEmpNo}' not found." });
+
+        var conflict = await _db.PayMaster.AnyAsync(m => m.EmpNo == req.NewEmpNo.Trim(), cancellationToken);
+        if (conflict)
+            return Conflict(new { error = $"Employee number '{req.NewEmpNo}' already exists." });
+
+        var oldNo = req.OldEmpNo.Trim();
+        var newNo = req.NewEmpNo.Trim();
+
+        employee.EmpNo = newNo;
+
+        var timecards = await _db.PayTmcard.Where(t => t.EmpNo == oldNo).ToListAsync(cancellationToken);
+        foreach (var t in timecards) t.EmpNo = newNo;
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return Ok(new {
+            message = $"Employee number changed from '{oldNo}' to '{newNo}'.",
+            employeeName = employee.EmpNm,
+            timecardsUpdated = timecards.Count
+        });
     }
 }

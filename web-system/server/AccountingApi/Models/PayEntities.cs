@@ -612,6 +612,11 @@ public sealed class PaySysId
     /// <summary>Flag set after posting to require a backup before next initialization</summary>
     [Column("need_backup")]
     public bool NeedBackup { get; set; }
+
+    /// <summary>Company / organization name displayed in the status bar</summary>
+    [Column("sys_nm")]
+    [MaxLength(80)]
+    public string SysNm { get; set; } = "";
     
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }

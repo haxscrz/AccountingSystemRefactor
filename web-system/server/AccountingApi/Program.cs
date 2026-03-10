@@ -7,8 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Use PascalCase so frontend TypeScript interfaces match without aliasing
-        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        // Use camelCase so frontend TypeScript mappers receive camelCase property names
+        // (e.g. JJvNo → jJvNo, CurrentMonth → currentMonth)
+        // Snake_case payroll properties (emp_no etc.) are unaffected as their first letter is already lowercase
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
@@ -91,11 +93,12 @@ using (var initScope = app.Services.CreateScope())
             try { cmd.ExecuteNonQuery(); } catch { }
         }
 
-        // Patch pay_sys_id: add pay_type, work_hours, need_backup
+        // Patch pay_sys_id: add pay_type, work_hours, need_backup, sys_nm
         var sysIdCols = GetColumns("pay_sys_id");
         if (!sysIdCols.Contains("pay_type"))    AddColumn("pay_sys_id", "pay_type",   "INTEGER DEFAULT 1");
         if (!sysIdCols.Contains("work_hours"))  AddColumn("pay_sys_id", "work_hours", "INTEGER DEFAULT 80");
         if (!sysIdCols.Contains("need_backup")) AddColumn("pay_sys_id", "need_backup","INTEGER DEFAULT 0");
+        if (!sysIdCols.Contains("sys_nm"))      AddColumn("pay_sys_id", "sys_nm",     "TEXT NOT NULL DEFAULT ''");
 
         // Create pay_prempaid if it doesn't exist
         RunSql(@"

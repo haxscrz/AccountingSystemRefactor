@@ -74,8 +74,8 @@ export default function DepartmentEdit() {
             value={(form as any)[key]}
             onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
             style={{ display: 'block', width: '100%', marginTop: 4,
-              padding: '5px 8px', fontSize: 13, border: '1px solid var(--border)',
-              background: 'var(--input-bg, #2a2a2a)', color: 'var(--text)', borderRadius: 3 }}
+              padding: '5px 8px', fontSize: 13, border: '1px solid var(--border, #d0d0d0)',
+              background: 'var(--surface, #ffffff)', color: 'var(--text, #1a1a1a)', borderRadius: 3 }}
           />
         </div>
       ))}

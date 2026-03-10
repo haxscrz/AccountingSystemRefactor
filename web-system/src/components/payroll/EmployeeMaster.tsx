@@ -153,6 +153,9 @@ export default function EmployeeMaster() {
   const [editingEmp, setEditingEmp] = useState<Employee | null>(null)
   const [activeScreen, setActiveScreen] = useState(1) // 1-5 for 5 screens
   const [loading, setLoading] = useState(false)
+  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null)
+  const [modalMsg, setModalMsg] = useState<{ text: string; ok: boolean } | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
 
   useEffect(() => {
     fetchEmployees()
@@ -167,40 +170,20 @@ export default function EmployeeMaster() {
       }
     } catch (error) {
       console.error('Failed to fetch employees:', error)
-      // Fallback to demo data
-      setEmployees([
-        {
-          ...emptyEmployee,
-          emp_no: '001234',
-          emp_nm: 'Juan Dela Cruz',
-          dep_no: '01',
-          position: 'Accountant',
-          b_rate: 30000,
-          cola: 500,
-          date_hire: '2020-01-15',
-          status: 'A',
-          sss_no: '12-3456789-0',
-          tin_no: '123-456-789',
-          phic_no: 'PH123456789',
-          pgbg_no: 'PG123456789',
-          sss_member: true,
-          pgbg: true,
-          vacation_leave: 10,
-          sick_leave: 10
-        }
-      ])
     }
   }
 
   const handleAdd = () => {
     setEditingEmp({ ...emptyEmployee })
     setActiveScreen(1)
+    setModalMsg(null)
     setShowModal(true)
   }
 
   const handleEdit = (emp: Employee) => {
     setEditingEmp({ ...emp })
     setActiveScreen(1)
+    setModalMsg(null)
     setShowModal(true)
   }
 
@@ -208,6 +191,7 @@ export default function EmployeeMaster() {
     if (!editingEmp) return
     
     setLoading(true)
+    setModalMsg(null)
     try {
       const isNew = !employees.find(e => e.emp_no === editingEmp.emp_no)
       const url = isNew 
@@ -224,22 +208,23 @@ export default function EmployeeMaster() {
         await fetchEmployees()
         setShowModal(false)
         setEditingEmp(null)
-        alert(isNew ? 'Employee created successfully!' : 'Employee updated successfully!')
+        setMsg({ text: isNew ? 'Employee created successfully.' : 'Employee updated successfully.', ok: true })
       } else {
         const error = await response.json()
-        alert(`Error: ${error.message}`)
+        setModalMsg({ text: error.message || 'Save failed.', ok: false })
       }
     } catch (error) {
       console.error('Failed to save employee:', error)
-      alert('Failed to save employee. Please check server connection.')
+      setModalMsg({ text: 'Failed to save employee. Please check server connection.', ok: false })
     } finally {
       setLoading(false)
     }
   }
 
-  const handleDelete = async (empNo: string) => {
-    if (!confirm(`Delete employee ${empNo}?`)) return
-    
+  const handleDeleteConfirmed = async () => {
+    if (!deleteTarget) return
+    const empNo = deleteTarget
+    setDeleteTarget(null)
     try {
       const response = await fetch(`/api/payroll/employees/${empNo}`, {
         method: 'DELETE'
@@ -247,14 +232,14 @@ export default function EmployeeMaster() {
 
       if (response.ok) {
         await fetchEmployees()
-        alert('Employee deleted successfully!')
+        setMsg({ text: `Employee ${empNo} deleted.`, ok: true })
       } else {
         const error = await response.json()
-        alert(`Error: ${error.message}`)
+        setMsg({ text: error.message || 'Delete failed.', ok: false })
       }
     } catch (error) {
       console.error('Failed to delete employee:', error)
-      alert('Failed to delete employee.')
+      setMsg({ text: 'Failed to delete employee.', ok: false })
     }
   }
 
@@ -269,6 +254,16 @@ export default function EmployeeMaster() {
           + Add Employee
         </button>
       </div>
+
+      {msg && (
+        <div style={{ padding: '8px 12px', borderRadius: 4, marginBottom: 12,
+          background: msg.ok ? 'rgba(46,160,67,0.15)' : 'rgba(220,53,53,0.15)',
+          border: `1px solid ${msg.ok ? 'var(--success)' : '#dc3545'}`,
+          color: msg.ok ? 'var(--success)' : '#dc3545', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{msg.text}</span>
+          <button onClick={() => setMsg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'inherit', padding: '0 4px' }}>&times;</button>
+        </div>
+      )}
 
       <table className="data-table">
         <thead>
@@ -299,7 +294,7 @@ export default function EmployeeMaster() {
                 <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '12px', marginRight: '4px' }} onClick={() => handleEdit(emp)}>
                   Edit
                 </button>
-                <button className="btn" style={{ padding: '4px 12px', fontSize: '12px', background: '#dc3545', color: 'white' }} onClick={() => handleDelete(emp.emp_no)}>
+                <button className="btn" style={{ padding: '4px 12px', fontSize: '12px', background: '#dc3545', color: 'white' }} onClick={() => setDeleteTarget(emp.emp_no)}>
                   Delete
                 </button>
               </td>
@@ -969,6 +964,14 @@ export default function EmployeeMaster() {
             )}
 
             {/* Action Buttons */}
+            {modalMsg && (
+              <div style={{ padding: '8px 12px', borderRadius: 4, marginTop: 16,
+                background: modalMsg.ok ? 'rgba(46,160,67,0.15)' : 'rgba(220,53,53,0.15)',
+                border: `1px solid ${modalMsg.ok ? 'var(--success)' : '#dc3545'}`,
+                color: modalMsg.ok ? 'var(--success)' : '#dc3545', fontSize: 13 }}>
+                {modalMsg.text}
+              </div>
+            )}
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'space-between', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', gap: '8px' }}>
                 {activeScreen > 1 && (
@@ -986,6 +989,30 @@ export default function EmployeeMaster() {
                 <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
                 <button className="btn btn-primary" onClick={handleSave} disabled={loading}>
                   {loading ? 'Saving...' : 'Save Employee'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </ModalPortal>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <ModalPortal onClick={() => setDeleteTarget(null)}>
+          <div className="modal" style={{ maxWidth: '380px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Delete Employee?</h3>
+              <button onClick={() => setDeleteTarget(null)} className="modal-close">&times;</button>
+            </div>
+            <div style={{ padding: '20px' }}>
+              <p style={{ marginBottom: '20px', fontSize: '14px', color: 'var(--text-secondary)' }}>
+                Permanently delete employee <strong style={{ color: 'var(--text)' }}>{deleteTarget}</strong>? This cannot be undone.
+              </p>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <button className="btn btn-secondary" onClick={() => setDeleteTarget(null)}>Cancel</button>
+                <button className="btn" onClick={handleDeleteConfirmed}
+                  style={{ background: 'rgba(220,53,53,0.2)', color: '#dc3545', border: '1px solid #dc3545' }}>
+                  Delete
                 </button>
               </div>
             </div>

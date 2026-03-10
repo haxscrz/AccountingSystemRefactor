@@ -3,7 +3,6 @@
  * Mirrors SYSTEDIT.PRG: maintain system ID / payroll period file.
  */
 import { useState, useEffect } from 'react'
-import ModalPortal from '../ModalPortal'
 
 interface SysId {
   PresMo: number; PresYr: number; PayType: number
@@ -12,7 +11,7 @@ interface SysId {
   WorkHours: number
   HdmfPre: number; PgLower: number; PgHigher: number; PgLwper: number; PgHiper: number
   BonDays: number; BonMont: number; TaxBon: number
-  MDailyWage: boolean; NeedBackup: boolean; EmpCount: number; TcCount: number
+  MDailyWage: boolean; NeedBackup: boolean; EmpCount: number; TcCount: number; SysNm: string
 }
 
 export default function SystemIdEdit() {
@@ -57,8 +56,8 @@ export default function SystemIdEdit() {
           readOnly={readOnly || !editing}
           style={{
             flex: 1, padding: '3px 6px', fontSize: 13, border: '1px solid var(--border)',
-            background: (readOnly || !editing) ? 'var(--surface-alt, #1e1e1e)' : 'var(--input-bg, #2a2a2a)',
-            color: 'var(--text)', borderRadius: 3,
+            background: (readOnly || !editing) ? 'var(--surface-raised, #f5f5f5)' : 'var(--surface, #ffffff)',
+            color: 'var(--text, #1a1a1a)', borderRadius: 3,
           }}
           onChange={e => !readOnly && setForm(p => ({
             ...p,
@@ -104,6 +103,7 @@ export default function SystemIdEdit() {
         <div>
           <h3 style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
             color: 'var(--text-secondary)', margin: '0 0 8px' }}>Payroll Period</h3>
+          {fld('SysNm',    'Company / Organization Name', 'text')}
           {fld('EmpCount',  'No. of Employees on Record', 'number', true)}
           {fld('PresMo',    'Present Month (1-12)', 'number')}
           {fld('PresYr',    'Present Year', 'number')}
@@ -130,8 +130,8 @@ export default function SystemIdEdit() {
           {fld('BonDays',  'Bonus Working Days Divisor', 'number')}
           {fld('BonMont',  'No. of Months Covered', 'number')}
           {fld('TaxBon',   'Non-Taxable 13th Month Ceiling', 'number')}
-          <div style={{ marginTop: 16, padding: '8px 10px', background: 'var(--surface-alt, #1a1a1a)',
-            borderRadius: 4, fontSize: 12, color: 'var(--text-secondary)' }}>
+          <div style={{ marginTop: 16, padding: '8px 10px', background: 'var(--surface-raised, #f5f5f5)',
+            border: '1px solid var(--border, #d0d0d0)', borderRadius: 4, fontSize: 12, color: 'var(--text-secondary, #5a5a5a)' }}>
             <div>Employees: <b style={{ color: 'var(--text)' }}>{data.EmpCount}</b></div>
             <div>Timecards: <b style={{ color: 'var(--text)' }}>{data.TcCount}</b></div>
           </div>
