@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react'
 import ModalPortal from '../ModalPortal'
 
 interface SysIdInfo {
-  TrnCtr: number
-  TrnPrc: number
-  TrnUpd: number
-  BegDate: string
-  EndDate: string
-  PAYMonth: number
-  PAYYear: number
-  PayType: number
-  EmpCount: number
-  TcCount: number
+  trnCtr: number
+  trnPrc: number
+  trnUpd: number
+  begDate: string
+  endDate: string
+  payMonth: number
+  payYear: number
+  payType: number
+  empCount: number
+  tcCount: number
 }
 
 interface PostResult {
@@ -42,8 +42,8 @@ export default function PostTransactions() {
       const data = await res.json()
       if (res.ok) {
         setSysId(data)
-        setConfirmMonth(String(data.PAYMonth).padStart(2, '0'))
-        setConfirmYear(String(data.PAYYear))
+        setConfirmMonth(String(data.payMonth).padStart(2, '0'))
+        setConfirmYear(String(data.payYear))
       } else {
         setError('Could not load payroll period information.')
       }
@@ -83,18 +83,18 @@ export default function PostTransactions() {
 
   const getValidationError = (): string | null => {
     if (!sysId) return null
-    if (sysId.TcCount === 0) return 'No timecard records to post. Please add employees first.'
-    if (sysId.TrnCtr !== sysId.TrnPrc)
-      return `Timecard not yet computed (TrnCtr=${sysId.TrnCtr} ≠ TrnPrc=${sysId.TrnPrc}). Please run Compute Payroll first.`
-    if (sysId.TrnPrc === sysId.TrnUpd)
-      return `Transactions already posted (TrnPrc=${sysId.TrnPrc} = TrnUpd=${sysId.TrnUpd}). This period has already been posted to the master file.`
+    if (sysId.tcCount === 0) return 'No timecard records to post. Please add employees first.'
+    if (sysId.trnCtr !== sysId.trnPrc)
+      return `Timecard not yet computed (TrnCtr=${sysId.trnCtr} ≠ TrnPrc=${sysId.trnPrc}). Please run Compute Payroll first.`
+    if (sysId.trnPrc === sysId.trnUpd)
+      return `Transactions already posted (TrnPrc=${sysId.trnPrc} = TrnUpd=${sysId.trnUpd}). This period has already been posted to the master file.`
     return null
   }
 
   const MONTHS = ['', 'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December']
 
-  const payTypeLabel = sysId?.PayType === 1 ? '1st Half' : sysId?.PayType === 2 ? '2nd Half' : 'Monthly'
+  const payTypeLabel = sysId?.payType === 1 ? '1st Half' : sysId?.payType === 2 ? '2nd Half' : 'Monthly'
   const validationError = getValidationError()
 
   if (loading) {
@@ -112,13 +112,13 @@ export default function PostTransactions() {
       {sysId && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '12px', marginBottom: '24px' }}>
           {[
-            { label: 'Period', value: `${sysId.BegDate} – ${sysId.EndDate}` },
+            { label: 'Period', value: `${sysId.begDate} – ${sysId.endDate}` },
             { label: 'Pay Type', value: payTypeLabel },
-            { label: 'Month/Year', value: `${MONTHS[sysId.PAYMonth]} ${sysId.PAYYear}` },
-            { label: 'TrnCtr', value: sysId.TrnCtr },
-            { label: 'TrnPrc', value: sysId.TrnPrc },
-            { label: 'TrnUpd', value: sysId.TrnUpd },
-            { label: 'Timecards', value: sysId.TcCount },
+            { label: 'Month/Year', value: `${MONTHS[sysId.payMonth]} ${sysId.payYear}` },
+            { label: 'TrnCtr', value: sysId.trnCtr },
+            { label: 'TrnPrc', value: sysId.trnPrc },
+            { label: 'TrnUpd', value: sysId.trnUpd },
+            { label: 'Timecards', value: sysId.tcCount },
           ].map(item => (
             <div key={item.label} style={{ background: 'var(--panel-2)', borderRadius: '8px', padding: '12px' }}>
               <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>{item.label}</div>
@@ -169,7 +169,7 @@ export default function PostTransactions() {
             <h3 style={{ marginBottom: '16px' }}>Confirm Post</h3>
 
             <p style={{ marginBottom: '16px', fontSize: '14px', color: 'var(--text-secondary)' }}>
-              You are about to post <strong>{sysId.TcCount} timecard records</strong> for <strong>{MONTHS[sysId.PAYMonth]} {sysId.PAYYear} ({payTypeLabel})</strong> to the master pay file.
+              You are about to post <strong>{sysId.tcCount} timecard records</strong> for <strong>{MONTHS[sysId.payMonth]} {sysId.payYear} ({payTypeLabel})</strong> to the master pay file.
             </p>
 
             {/* Month/Year confirmation */}
@@ -199,7 +199,7 @@ export default function PostTransactions() {
             </div>
 
             {/* 3rd Payroll question (only for 2nd half) */}
-            {sysId.PayType === 2 && (
+            {sysId.payType === 2 && (
               <div style={{ background: 'var(--background)', borderRadius: '8px', padding: '14px', marginBottom: '16px' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px' }}>
                   <input type="checkbox" checked={has3rdPayroll} onChange={e => setHas3rdPayroll(e.target.checked)} />

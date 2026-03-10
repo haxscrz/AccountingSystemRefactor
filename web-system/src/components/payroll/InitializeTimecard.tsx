@@ -2,18 +2,18 @@ import { useState, useEffect } from 'react'
 import ModalPortal from '../ModalPortal'
 
 interface SysInfo {
-  BegDate: string
-  EndDate: string
-  PresMo: number
-  PresYr: number
-  TrnCtr: number
-  TrnPrc: number
-  TrnUpd: number
-  PayType: number
-  WorkHours: number
-  NeedBackup: boolean
-  TcCount: number
-  EmpCount: number
+  begDate: string
+  endDate: string
+  presMo: number
+  presYr: number
+  trnCtr: number
+  trnPrc: number
+  trnUpd: number
+  payType: number
+  workHours: number
+  needBackup: boolean
+  tcCount: number
+  empCount: number
 }
 
 // Compute next period dates based on previous end_date (matching INITTIME.PRG logic)
@@ -62,12 +62,12 @@ export default function InitializeTimecard() {
         const data: SysInfo = await res.json()
         setSysInfo(data)
         // Pre-fill form with suggested next period
-        const next = nextPeriodDates(data.EndDate, data.PayType)
+        const next = nextPeriodDates(data.endDate, data.payType)
         setBegDate(next.begDate)
         setEndDate(next.endDate)
         setPayType(next.nextPayType)
         setPresMo(next.nextMonth)
-        setWorkHours(data.WorkHours || 80)
+        setWorkHours(data.workHours || 80)
       } else {
         setLoadError('Could not load system information.')
       }
@@ -110,11 +110,11 @@ export default function InitializeTimecard() {
   // ─── Prerequisites check ────────────────────────────────────────
   const warnings: string[] = []
   if (sysInfo) {
-    if (sysInfo.NeedBackup)
+    if (sysInfo.needBackup)
       warnings.push('A backup is required before initializing. Please run Backup Databases first.')
-    if (sysInfo.TcCount > 0 && sysInfo.TrnCtr !== sysInfo.TrnPrc)
-      warnings.push(`Initialization denied — ${sysInfo.TrnCtr - sysInfo.TrnPrc} employee(s) have not been computed yet.`)
-    if (sysInfo.TcCount > 0 && sysInfo.TrnPrc !== sysInfo.TrnUpd)
+    if (sysInfo.tcCount > 0 && sysInfo.trnCtr !== sysInfo.trnPrc)
+      warnings.push(`Initialization denied — ${sysInfo.trnCtr - sysInfo.trnPrc} employee(s) have not been computed yet.`)
+    if (sysInfo.tcCount > 0 && sysInfo.trnPrc !== sysInfo.trnUpd)
       warnings.push('Initialization denied — timecard has not yet been posted. Run Post Transactions first.')
   }
   const canInitialize = warnings.length === 0 && !saving
@@ -132,12 +132,12 @@ export default function InitializeTimecard() {
           {/* Current Period Info */}
           <div style={{ background: 'var(--background)', border: '1px solid var(--border)', borderRadius: '8px', padding: '16px', marginBottom: '20px', fontSize: '13px' }}>
             <strong>Current Period:</strong>&nbsp;
-            {fmt(sysInfo.BegDate)} &#8212; {fmt(sysInfo.EndDate)}
-            &nbsp;&bull;&nbsp;{halfLabel(sysInfo.PayType)}
-            &nbsp;&bull;&nbsp;Month {sysInfo.PresMo}/{sysInfo.PresYr}
-            &nbsp;&bull;&nbsp;{sysInfo.TcCount} timecard record(s)
-            &nbsp;&bull;&nbsp;Computed: {sysInfo.TrnPrc}/{sysInfo.TrnCtr}
-            &nbsp;&bull;&nbsp;Posted: {sysInfo.TrnUpd}
+            {fmt(sysInfo.begDate)} &#8212; {fmt(sysInfo.endDate)}
+            &nbsp;&bull;&nbsp;{halfLabel(sysInfo.payType)}
+            &nbsp;&bull;&nbsp;Month {sysInfo.presMo}/{sysInfo.presYr}
+            &nbsp;&bull;&nbsp;{sysInfo.tcCount} timecard record(s)
+            &nbsp;&bull;&nbsp;Computed: {sysInfo.trnPrc}/{sysInfo.trnCtr}
+            &nbsp;&bull;&nbsp;Posted: {sysInfo.trnUpd}
           </div>
 
           {/* Warnings */}

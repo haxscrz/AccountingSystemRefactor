@@ -2,38 +2,38 @@ import { useState, useEffect } from 'react'
 import ModalPortal from '../ModalPortal'
 
 interface SysInfo {
-  BegDate: string
-  EndDate: string
-  PresMo: number
-  PresYr: number
-  TrnCtr: number
-  TrnPrc: number
-  TrnUpd: number
-  PayType: number
-  EmpCount: number
-  TcCount: number
+  begDate: string
+  endDate: string
+  presMo: number
+  presYr: number
+  trnCtr: number
+  trnPrc: number
+  trnUpd: number
+  payType: number
+  empCount: number
+  tcCount: number
 }
 
 interface ComputeSummary {
-  BegDate: string
-  EndDate: string
-  PresMo: number
-  PresYr: number
-  TrnCtr: number
-  TrnPrc: number
-  TrnUpd: number
-  PayType: number
-  Uncomputed: number
-  ComputedCount: number
-  PostedCount: number
-  TotalGross: number
-  TotalTax: number
-  TotalSssEe: number
-  TotalMedEe: number
-  TotalPgbgEe: number
-  TotalDed: number
-  TotalNet: number
-  Rows: { EmpNo: string; GrsPay: number; SssEe: number; MedEe: number; PgbgEe: number; TaxEe: number; TotDed: number; NetPay: number }[]
+  begDate: string
+  endDate: string
+  presMo: number
+  presYr: number
+  trnCtr: number
+  trnPrc: number
+  trnUpd: number
+  payType: number
+  uncomputed: number
+  computedCount: number
+  postedCount: number
+  totalGross: number
+  totalTax: number
+  totalSssEe: number
+  totalMedEe: number
+  totalPgbgEe: number
+  totalDed: number
+  totalNet: number
+  rows: { empNo: string; grsPay: number; sssEe: number; medEe: number; pgbgEe: number; taxEe: number; totDed: number; netPay: number }[]
 }
 
 export default function PayrollCompute() {
@@ -108,9 +108,9 @@ export default function PayrollCompute() {
   }
 
   const fmt = (n: number) => (n ?? 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })
-  const halfLabel = sysInfo ? (sysInfo.PayType === 1 ? '1st Half' : '2nd Half') : ''
+  const halfLabel = sysInfo ? (sysInfo.payType === 1 ? '1st Half' : '2nd Half') : ''
 
-  const canCompute = sysInfo && sysInfo.TcCount > 0 && sysInfo.TrnPrc < sysInfo.TrnCtr
+  const canCompute = sysInfo && sysInfo.tcCount > 0 && sysInfo.trnPrc < sysInfo.trnCtr
 
   return (
     <div className="card">
@@ -135,33 +135,33 @@ export default function PayrollCompute() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: '12px', fontSize: '14px' }}>
               <div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>PERIOD</div>
-                <div style={{ fontWeight: '600' }}>{formatDate(sysInfo.BegDate)} &#8212; {formatDate(sysInfo.EndDate)}</div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '12px', marginTop: '2px' }}>{halfLabel} &bull; Month {sysInfo.PresMo}/{sysInfo.PresYr}</div>
+                <div style={{ fontWeight: '600' }}>{formatDate(sysInfo.begDate)} &#8212; {formatDate(sysInfo.endDate)}</div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '12px', marginTop: '2px' }}>{halfLabel} &bull; Month {sysInfo.presMo}/{sysInfo.presYr}</div>
               </div>
               <div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>EMPLOYEES IN TIMECARD</div>
-                <div style={{ fontWeight: '700', fontSize: '22px', color: 'var(--primary)' }}>{sysInfo.TcCount}</div>
+                <div style={{ fontWeight: '700', fontSize: '22px', color: 'var(--primary)' }}>{sysInfo.tcCount}</div>
               </div>
               <div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>COMPUTED</div>
                 <div style={{ fontWeight: '700', fontSize: '22px', color: 'var(--success)' }}>
-                  {sysInfo.TrnPrc} <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>/ {sysInfo.TrnCtr}</span>
+                  {sysInfo.trnPrc} <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>/ {sysInfo.trnCtr}</span>
                 </div>
               </div>
               <div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>POSTED</div>
-                <div style={{ fontWeight: '700', fontSize: '22px', color: sysInfo.TrnUpd > 0 ? 'var(--primary)' : 'var(--text-secondary)' }}>
-                  {sysInfo.TrnUpd}
+                <div style={{ fontWeight: '700', fontSize: '22px', color: sysInfo.trnUpd > 0 ? 'var(--primary)' : 'var(--text-secondary)' }}>
+                  {sysInfo.trnUpd}
                 </div>
               </div>
             </div>
 
-            {sysInfo.TrnCtr === sysInfo.TrnUpd && sysInfo.TrnCtr > 0 && (
+            {sysInfo.trnCtr === sysInfo.trnUpd && sysInfo.trnCtr > 0 && (
               <div style={{ marginTop: '12px', padding: '10px 14px', background: 'rgba(22,163,74,0.08)', border: '1px solid var(--success)', borderRadius: '6px', color: 'var(--success)', fontSize: '13px' }}>
                 &#10003; This period has already been posted. Use <strong>Initialize Timecard</strong> to start a new payroll period.
               </div>
             )}
-            {sysInfo.TcCount === 0 && (
+            {sysInfo.tcCount === 0 && (
               <div style={{ marginTop: '12px', padding: '10px 14px', background: 'rgba(220,53,69,0.08)', border: '1px solid #dc3545', borderRadius: '6px', color: '#dc3545', fontSize: '13px' }}>
                 No timecards in the system. Use <strong>Add/Edit Timecard</strong> to enter employee time data first.
               </div>
@@ -207,25 +207,25 @@ export default function PayrollCompute() {
             </button>
             {canCompute && (
               <span style={{ marginLeft: '14px', color: 'var(--text-secondary)', fontSize: '13px' }}>
-                Will process {sysInfo.TcCount - sysInfo.TrnPrc} remaining employee(s)
+                Will process {sysInfo.tcCount - sysInfo.trnPrc} remaining employee(s)
               </span>
             )}
           </div>
 
           {/* Computation Totals */}
-          {summary && summary.ComputedCount > 0 && (
+          {summary && summary.computedCount > 0 && (
             <>
               <h4 style={{ marginBottom: '14px' }}>Computed Payroll Summary</h4>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '12px', marginBottom: '20px' }}>
                 {[
-                  { label: 'Total Employees', value: summary.ComputedCount.toString(), color: 'var(--primary)' },
-                  { label: 'Gross Pay', value: '&#8369; ' + fmt(summary.TotalGross), color: 'var(--text)' },
-                  { label: 'SSS (EE)', value: '&#8369; ' + fmt(summary.TotalSssEe), color: 'var(--text)' },
-                  { label: 'PhilHealth (EE)', value: '&#8369; ' + fmt(summary.TotalMedEe), color: 'var(--text)' },
-                  { label: 'Pag-IBIG (EE)', value: '&#8369; ' + fmt(summary.TotalPgbgEe), color: 'var(--text)' },
-                  { label: 'Withholding Tax', value: '&#8369; ' + fmt(summary.TotalTax), color: 'var(--text)' },
-                  { label: 'Total Deductions', value: '&#8369; ' + fmt(summary.TotalDed), color: '#dc3545' },
-                  { label: 'NET PAY', value: '&#8369; ' + fmt(summary.TotalNet), color: 'var(--success)' },
+                  { label: 'Total Employees', value: summary.computedCount.toString(), color: 'var(--primary)' },
+                  { label: 'Gross Pay', value: '&#8369; ' + fmt(summary.totalGross), color: 'var(--text)' },
+                  { label: 'SSS (EE)', value: '&#8369; ' + fmt(summary.totalSssEe), color: 'var(--text)' },
+                  { label: 'PhilHealth (EE)', value: '&#8369; ' + fmt(summary.totalMedEe), color: 'var(--text)' },
+                  { label: 'Pag-IBIG (EE)', value: '&#8369; ' + fmt(summary.totalPgbgEe), color: 'var(--text)' },
+                  { label: 'Withholding Tax', value: '&#8369; ' + fmt(summary.totalTax), color: 'var(--text)' },
+                  { label: 'Total Deductions', value: '&#8369; ' + fmt(summary.totalDed), color: '#dc3545' },
+                  { label: 'NET PAY', value: '&#8369; ' + fmt(summary.totalNet), color: 'var(--success)' },
                 ].map(c => (
                   <div key={c.label} style={{ background: 'var(--background)', border: '1px solid var(--border)', borderRadius: '6px', padding: '12px 14px' }}>
                     <div style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{c.label}</div>
@@ -249,29 +249,29 @@ export default function PayrollCompute() {
                   </tr>
                 </thead>
                 <tbody>
-                  {summary.Rows.map(r => (
-                    <tr key={r.EmpNo}>
-                      <td><strong>{r.EmpNo}</strong></td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.GrsPay)}</td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.SssEe)}</td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.MedEe)}</td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.PgbgEe)}</td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.TaxEe)}</td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.TotDed)}</td>
-                      <td style={{ textAlign: 'right' }}><strong>{fmt(r.NetPay)}</strong></td>
+                  {summary.rows.map(r => (
+                    <tr key={r.empNo}>
+                      <td><strong>{r.empNo}</strong></td>
+                      <td style={{ textAlign: 'right' }}>{fmt(r.grsPay)}</td>
+                      <td style={{ textAlign: 'right' }}>{fmt(r.sssEe)}</td>
+                      <td style={{ textAlign: 'right' }}>{fmt(r.medEe)}</td>
+                      <td style={{ textAlign: 'right' }}>{fmt(r.pgbgEe)}</td>
+                      <td style={{ textAlign: 'right' }}>{fmt(r.taxEe)}</td>
+                      <td style={{ textAlign: 'right' }}>{fmt(r.totDed)}</td>
+                      <td style={{ textAlign: 'right' }}><strong>{fmt(r.netPay)}</strong></td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
                   <tr style={{ fontWeight: '700', background: 'var(--background)' }}>
                     <td>TOTALS</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.TotalGross)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.TotalSssEe)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.TotalMedEe)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.TotalPgbgEe)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.TotalTax)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.TotalDed)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.TotalNet)}</td>
+                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalGross)}</td>
+                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalSssEe)}</td>
+                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalMedEe)}</td>
+                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalPgbgEe)}</td>
+                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalTax)}</td>
+                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalDed)}</td>
+                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalNet)}</td>
                   </tr>
                 </tfoot>
               </table>

@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
 
 interface SysInfo {
-  PresMo: number
-  PresYr: number
-  PayType: number
-  BegDate: string
-  EndDate: string
-  TrnCtr: number
-  TrnPrc: number
-  TrnUpd: number
-  EmpCount: number
-  TcCount: number
+  presMo: number
+  presYr: number
+  payType: number
+  begDate: string
+  endDate: string
+  trnCtr: number
+  trnPrc: number
+  trnUpd: number
+  empCount: number
+  tcCount: number
 }
 
 interface PayrollMainMenuProps {
@@ -47,19 +47,19 @@ export default function PayrollMainMenu({ payrollType }: PayrollMainMenuProps) {
   }, [])
 
   const periodLabel = sysInfo
-    ? `${MONTHS[sysInfo.PresMo] ?? sysInfo.PresMo} ${sysInfo.PresYr}`
+    ? `${MONTHS[sysInfo.presMo] ?? sysInfo.presMo} ${sysInfo.presYr}`
     : '—'
 
   const payTypeLabel = sysInfo
-    ? (sysInfo.PayType === 1 ? '1st Half' : sysInfo.PayType === 2 ? '2nd Half' : 'Monthly')
+    ? (sysInfo.payType === 1 ? '1st Half' : sysInfo.payType === 2 ? '2nd Half' : 'Monthly')
     : '—'
 
   const statusLabel = sysInfo
-    ? (sysInfo.TrnPrc === sysInfo.TrnUpd && sysInfo.TrnPrc > 0
+    ? (sysInfo.trnPrc === sysInfo.trnUpd && sysInfo.trnPrc > 0
         ? 'Posted'
-        : sysInfo.TrnPrc === sysInfo.TrnCtr && sysInfo.TrnCtr > 0
+        : sysInfo.trnPrc === sysInfo.trnCtr && sysInfo.trnCtr > 0
           ? 'Computed'
-          : sysInfo.TcCount > 0 ? 'In Progress' : 'Not Started')
+          : sysInfo.tcCount > 0 ? 'In Progress' : 'Not Started')
     : '—'
 
   return (
@@ -103,8 +103,8 @@ export default function PayrollMainMenu({ payrollType }: PayrollMainMenuProps) {
           { label: 'Period',     value: periodLabel },
           { label: 'Pay Type',   value: payTypeLabel },
           { label: 'Status',     value: statusLabel },
-          { label: 'Employees',  value: sysInfo ? String(sysInfo.EmpCount) : '—' },
-          { label: 'Timecards',  value: sysInfo ? String(sysInfo.TcCount) : '—' },
+          { label: 'Employees',  value: sysInfo ? String(sysInfo.empCount) : '—' },
+          { label: 'Timecards',  value: sysInfo ? String(sysInfo.tcCount) : '—' },
         ].map(({ label, value }) => (
           <div key={label} style={{
             background: 'var(--surface)', border: '1px solid var(--border)',

@@ -256,8 +256,8 @@ export default function TimecardQuery() {
     fetch('/api/payroll/system-id')
       .then(r => r.json())
       .then(d => {
-        if (d.PresYr) setYear(d.PresYr)
-        if (d.PresMo) setMonth(d.PresMo)
+        if (d.presYr) setYear(d.presYr)
+        if (d.presMo) setMonth(d.presMo)
         setPeriodLoaded(true)
       })
       .catch(() => setPeriodLoaded(true))

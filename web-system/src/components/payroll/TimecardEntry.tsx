@@ -115,8 +115,8 @@ export default function TimecardEntry({ payrollType }: TimecardEntryProps) {
     fetch('/api/payroll/system-id')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
-        if (d && d.PresYr && d.PresMo) {
-          setCurrentPeriod({ year: d.PresYr, month: d.PresMo })
+        if (d && d.presYr && d.presMo) {
+          setCurrentPeriod({ year: d.presYr, month: d.presMo })
         }
       })
       .catch(() => {/* use calendar fallback */})
