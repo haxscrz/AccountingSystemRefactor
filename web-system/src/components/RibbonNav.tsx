@@ -41,12 +41,12 @@ export default function RibbonNav({ tabs, groups, activeTab, onTabChange }: Ribb
       onMouseLeave={() => setBodyOpen(false)}
     >
       {/* ── Tab strip ── */}
-      <div className="ribbon-tabs">
+      <div className="ribbon-tabs" onMouseEnter={() => setBodyOpen(true)}>
         {tabs.map(tab => (
           <button
             key={tab.id}
             className={`ribbon-tab${activeTab === tab.id ? ' active' : ''}`}
-            onMouseEnter={() => setBodyOpen(true)}
+            onMouseEnter={() => { setBodyOpen(true); onTabChange(tab.id) }}
             onClick={() => { onTabChange(tab.id); setBodyOpen(true) }}
           >
             {tab.label}

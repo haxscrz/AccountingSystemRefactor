@@ -280,7 +280,7 @@ button { cursor: pointer; }
   right: 0;
   overflow: hidden;
   max-height: 0;
-  transition: max-height var(--t-slow) var(--ease-out),
+  transition: max-height 180ms var(--ease-out),
               box-shadow var(--t-base) var(--ease-out);
   z-index: 89;
   background: var(--ribbon-active);
