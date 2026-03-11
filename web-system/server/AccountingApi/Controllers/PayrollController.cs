@@ -1037,4 +1037,159 @@ public sealed class PayrollController : ControllerBase
             timecardsUpdated = timecards.Count
         });
     }
+
+    // ── Report Data ────────────────────────────────────────────────────────────
+    /// <summary>
+    /// Returns all data needed to render payroll reports on the frontend,
+    /// mirroring the Clipper/dBASE PRG report files (RPREGIST, RPPAYSLP, etc.).
+    /// </summary>
+    [HttpGet("report-data")]
+    public async Task<IActionResult> GetReportData(CancellationToken cancellationToken)
+    {
+        var sysId = await _db.PaySysId.FirstOrDefaultAsync(cancellationToken);
+        if (sysId is null)
+            return NotFound(new { message = "System ID not found." });
+
+        var timecards = await _db.PayTmcard
+            .OrderBy(t => t.DepNo)
+            .ThenBy(t => t.EmpNo)
+            .ToListAsync(cancellationToken);
+
+        var masters = await _db.PayMaster
+            .OrderBy(m => m.DepNo)
+            .ThenBy(m => m.EmpNo)
+            .ToListAsync(cancellationToken);
+
+        var departments = await _db.PayDept
+            .OrderBy(d => d.DepNo)
+            .ToListAsync(cancellationToken);
+
+        // Build a dept lookup for fast name resolution
+        var deptLookup = departments.ToDictionary(d => d.DepNo, d => d.DepNm, StringComparer.OrdinalIgnoreCase);
+        // Build a master lookup by emp_no
+        var masterLookup = masters.ToDictionary(m => m.EmpNo, m => m, StringComparer.OrdinalIgnoreCase);
+
+        var tcRows = timecards.Select(t => {
+            masterLookup.TryGetValue(t.EmpNo, out var m);
+            deptLookup.TryGetValue(t.DepNo ?? "", out var depNm);
+            return new {
+                empNo    = t.EmpNo,
+                empNm    = t.EmpNm ?? m?.EmpNm ?? "",
+                depNo    = t.DepNo ?? "",
+                depNm    = depNm ?? "",
+                trnFlag  = t.TrnFlag,
+                // Hours
+                regHrs   = t.RegHrs,  absHrs  = t.AbsHrs,
+                rotHrs   = t.RotHrs,  sphpHrs = t.SphpHrs, spotHrs = t.SpotHrs,
+                lghpHrs  = t.LghpHrs, lgotHrs = t.LgotHrs, nsdHrs  = t.NsdHrs,
+                lvHrs    = t.LvHrs,   lsHrs   = t.LsHrs,
+                // Earnings
+                regPay   = t.RegPay,  rotPay  = t.RotPay,
+                sphpPay  = t.SphpPay, spotPay = t.SpotPay,
+                lghpPay  = t.LghpPay, lgotPay = t.LgotPay,
+                nsdPay   = t.NsdPay,
+                lvPay    = t.LvPay,   lv2Pay  = t.Lv2Pay,  lsPay   = t.LsPay,
+                othPay1  = t.OthPay1, othPay2 = t.OthPay2,
+                othPay3  = t.OthPay3, othPay4 = t.OthPay4,
+                bonus    = t.Bonus,   grsPay  = t.GrsPay,
+                // Deductions
+                taxEe    = t.TaxEe,   sssEe   = t.SssEe,   sssEr   = t.SssEr,
+                medEe    = t.MedEe,   medEr   = t.MedEr,
+                pgbgEe   = t.PgbgEe,  pgbgEr  = t.PgbgEr,  ecEr    = t.EcEr,
+                slnDed   = t.SlnDed,  calDed  = t.CalDed,  hdmfDed = t.HdmfDed,
+                compDed  = t.CompDed, comdDed = t.ComdDed,
+                othDed1  = t.OthDed1, othDed2  = t.OthDed2, othDed3  = t.OthDed3,
+                othDed4  = t.OthDed4, othDed5  = t.OthDed5, othDed6  = t.OthDed6,
+                othDed7  = t.OthDed7, othDed8  = t.OthDed8, othDed9  = t.OthDed9,
+                othDed10 = t.OthDed10,
+                totDed   = t.TotDed,  netPay  = t.NetPay,  bonustax = t.Bonustax,
+                // Master data (for pay slips / SSS report etc.)
+                bRate    = m?.BRate   ?? 0,
+                sssNo    = m?.SssNo   ?? "",
+                tinNo    = m?.TinNo   ?? "",
+                phicNo   = m?.PhicNo  ?? "",
+                pgbgNo   = m?.PgbgNo  ?? "",
+                // Year-to-date (for pay slips)
+                yGross   = m?.YGross  ?? 0,
+                yTax     = m?.YTax    ?? 0,
+                // Loan balances
+                slnBal   = m?.SlnBal  ?? 0,
+                calBal   = m?.CalBal  ?? 0,
+                hdmfBal  = m?.HdmfBal ?? 0,
+                compBal  = m?.CompBal ?? 0,
+                comdBal  = m?.ComdBal ?? 0
+            };
+        }).ToList();
+
+        var masterRows = masters.Select(m => {
+            deptLookup.TryGetValue(m.DepNo ?? "", out var depNm);
+            return new {
+                empNo       = m.EmpNo,
+                empNm       = m.EmpNm,
+                depNo       = m.DepNo ?? "",
+                depNm       = depNm ?? "",
+                position    = m.Position ?? "",
+                bRate       = m.BRate,
+                sssNo       = m.SssNo  ?? "",
+                tinNo       = m.TinNo  ?? "",
+                phicNo      = m.PhicNo ?? "",
+                pgbgNo      = m.PgbgNo ?? "",
+                dateHire    = m.DateHire?.ToString("MM/dd/yyyy") ?? "",
+                dateResign  = m.DateResign?.ToString("MM/dd/yyyy") ?? "",
+                empStat     = m.EmpStat,
+                status      = m.Status ?? "",
+                // yearly accumulators
+                yGross      = m.YGross, yTax   = m.YTax,
+                ySsee       = m.YSsee,  ySser  = m.YSser,
+                yMedee      = m.YMedee, yMeder = m.YMeder,
+                yPgee       = m.YPgee,  yPger  = m.YPger, yEcer = m.YEcer,
+                yBonus      = m.YBonus,
+                // monthly accumulators
+                mBasic      = m.MBasic, mHol = m.MHol, mOt = m.MOt,
+                mGross      = m.MGross, mTax = m.MTax,
+                mSsee       = m.MSsee,  mSser = m.MSser,
+                mMedee      = m.MMedee, mMeder = m.MMeder,
+                mPgee       = m.MPgee,  mPger = m.MPger, mEcer = m.MEcer,
+                mLeave      = m.MLeave, mNetpay = m.MNetpay,
+                mOthp1      = m.MOthp1, mOthp2 = m.MOthp2, mOthp3 = m.MOthp3, mOthp4 = m.MOthp4,
+                // loan balances
+                slnBal      = m.SlnBal,  calBal  = m.CalBal,
+                hdmfBal     = m.HdmfBal, compBal = m.CompBal, comdBal = m.ComdBal
+            };
+        }).ToList();
+
+        var deptRows = departments.Select(d => new {
+            depNo  = d.DepNo,
+            depNm  = d.DepNm,
+            regPay = d.RegPay, otPay  = d.OtPay, holPay = d.HolPay,
+            grsPay = d.GrsPay, tax    = d.Tax,    sssEe  = d.SssEe,
+            sssEr  = d.SssEr,  medEe  = d.MedEe,  medEr  = d.MedEr,
+            pgbgEe = d.PgbgEe, pgbgEr = d.PgbgEr, ecEr   = d.EcEr,
+            netPay = d.NetPay, empCtr = d.EmpCtr
+        }).ToList();
+
+        // Determine month name
+        var monthNames = new[]{"","January","February","March","April","May","June",
+            "July","August","September","October","November","December"};
+        var monthName = sysId.PresMo >= 1 && sysId.PresMo <= 12
+            ? monthNames[sysId.PresMo] : sysId.PresMo.ToString();
+
+        return Ok(new {
+            sysInfo = new {
+                company  = sysId.SysNm,
+                begDate  = sysId.BegDate.ToString("MM/dd/yyyy"),
+                endDate  = sysId.EndDate.ToString("MM/dd/yyyy"),
+                presMo   = sysId.PresMo,
+                presYr   = sysId.PresYr,
+                payType  = sysId.PayType,
+                monthName,
+                trnCtr   = sysId.TrnCtr,
+                trnPrc   = sysId.TrnPrc,
+                trnUpd   = sysId.TrnUpd
+            },
+            timecards   = tcRows,
+            masters     = masterRows,
+            departments = deptRows
+        });
+    }
 }
