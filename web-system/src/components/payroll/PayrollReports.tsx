@@ -1,6 +1,8 @@
 ﻿import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import React from 'react'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 
 //  Types 
 
@@ -1123,6 +1125,7 @@ function ReportViewer({ reportType, subOptionKey, title, onBack }: {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showSummary, setShowSummary] = useState(false)
+  const [pdfLoading, setPdfLoading] = useState(false)
   const printRef = useRef<HTMLDivElement>(null)
 
   const load = useCallback(async () => {
@@ -1137,8 +1140,71 @@ function ReportViewer({ reportType, subOptionKey, title, onBack }: {
 
   useEffect(() => { void load() }, [load])
 
-  const handlePrint = () => {
-    window.print()
+  const handlePrint = async () => {
+    if (!printRef.current || pdfLoading) return
+    setPdfLoading(true)
+    const el = printRef.current
+
+    // Temporarily expand overflow so html2canvas captures the full scrollable width
+    const prevOverflow = el.style.overflow
+    const prevOverflowX = el.style.overflowX
+    const prevWidth = el.style.width
+    el.style.overflow = 'visible'
+    el.style.overflowX = 'visible'
+    el.style.width = el.scrollWidth + 'px'
+
+    try {
+      const canvas = await html2canvas(el, {
+        scale: 1.5,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+      })
+
+      // Legal landscape: 14" × 8.5" at 72pt/in
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'legal' })
+      const pW = pdf.internal.pageSize.getWidth()
+      const pH = pdf.internal.pageSize.getHeight()
+      const margin = 18
+      const contentH = pH - margin * 2
+
+      const cW = canvas.width
+      const cH = canvas.height
+      const scaleRatio = pW / cW
+      const scaledFullH = cH * scaleRatio
+
+      let yRendered = 0
+      let page = 0
+
+      while (yRendered < scaledFullH) {
+        if (page > 0) pdf.addPage()
+
+        const srcY = yRendered / scaleRatio
+        const srcSliceH = Math.min(contentH / scaleRatio, cH - srcY)
+
+        const slice = document.createElement('canvas')
+        slice.width = cW
+        slice.height = Math.ceil(srcSliceH)
+        const ctx = slice.getContext('2d')!
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, slice.width, slice.height)
+        ctx.drawImage(canvas, 0, srcY, cW, srcSliceH, 0, 0, cW, srcSliceH)
+
+        const imgData = slice.toDataURL('image/jpeg', 0.95)
+        pdf.addImage(imgData, 'JPEG', 0, margin, pW, srcSliceH * scaleRatio)
+
+        yRendered += contentH
+        page++
+      }
+
+      const filename = title.replace(/[^a-z0-9]/gi, '_').replace(/_+/g, '_') + '.pdf'
+      pdf.save(filename)
+    } finally {
+      el.style.overflow = prevOverflow
+      el.style.overflowX = prevOverflowX
+      el.style.width = prevWidth
+      setPdfLoading(false)
+    }
   }
 
   const reportNode = data ? renderReport(reportType, subOptionKey, title, data) : null
@@ -1157,8 +1223,8 @@ function ReportViewer({ reportType, subOptionKey, title, onBack }: {
         <button className="btn btn-secondary" style={{ fontSize:12, padding:'4px 14px' }} onClick={() => void load()} disabled={loading}>
           {loading ? 'Loading...' : '\u21BA Refresh'}
         </button>
-        <button className="btn btn-primary" style={{ fontSize:12, padding:'4px 14px' }} onClick={handlePrint} disabled={!data||loading}>
-          Print / Export (Legal Landscape)
+        <button className="btn btn-primary" style={{ fontSize:12, padding:'4px 14px' }} onClick={() => { void handlePrint() }} disabled={!data||loading||pdfLoading}>
+          {pdfLoading ? 'Generating PDF...' : 'Export PDF'}
         </button>
         {canShowSummary && (
           <button className="btn btn-secondary" style={{ fontSize:12, padding:'4px 14px' }} onClick={() => setShowSummary(s=>!s)}>
