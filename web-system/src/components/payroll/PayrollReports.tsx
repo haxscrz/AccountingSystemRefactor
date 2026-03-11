@@ -1094,11 +1094,24 @@ function renderReport(reportType: string, subOptionKey: string|undefined, title:
 //  Print CSS 
 const PRINT_STYLE = `
 @media print {
-  body * { visibility: hidden; }
-  #pay-print-area, #pay-print-area * { visibility: visible; }
-  #pay-print-area { position: fixed; left: 0; top: 0; width: 100%; }
+  body * { visibility: hidden !important; }
+  #pay-print-area, #pay-print-area * { visibility: visible !important; }
+  #pay-print-area {
+    position: absolute; left: 0; top: 0; width: 100%;
+    overflow: visible !important;
+    border: none !important;
+    padding: 5mm !important;
+  }
   @page { size: legal landscape; margin: 6mm 5mm; }
-  pre { font-size: 8pt; font-family: 'Courier New', monospace; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td {
+    padding: 0 3px !important;
+    line-height: 14px !important;
+    white-space: nowrap !important;
+    font-size: 8pt !important;
+    font-family: 'Courier New', monospace !important;
+  }
+  div { overflow: visible !important; }
 }
 `
 
@@ -1125,17 +1138,7 @@ function ReportViewer({ reportType, subOptionKey, title, onBack }: {
   useEffect(() => { void load() }, [load])
 
   const handlePrint = () => {
-    if (!printRef.current) return
-    const w = window.open('', '_blank')
-    if (!w) return
-    w.document.write(`<!DOCTYPE html><html><head><title>${title}</title>
-      <style>
-        *{box-sizing:border-box;margin:0;padding:0}body{font-family:monospace;font-size:8pt;padding:5mm}
-        @page{size:legal landscape;margin:6mm 5mm}
-        table{width:100%;border-collapse:collapse}
-        th,td{padding:0 3px;line-height:14px;white-space:nowrap;font-size:8pt}
-      </style></head><body>${printRef.current.innerHTML}</body></html>`)
-    w.document.close(); w.focus(); w.print(); w.close()
+    window.print()
   }
 
   const reportNode = data ? renderReport(reportType, subOptionKey, title, data) : null
