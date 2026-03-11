@@ -156,6 +156,8 @@ export default function EmployeeMaster() {
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null)
   const [modalMsg, setModalMsg] = useState<{ text: string; ok: boolean } | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('A')
 
   useEffect(() => {
     fetchEmployees()
@@ -265,6 +267,38 @@ export default function EmployeeMaster() {
         </div>
       )}
 
+      {/* Search + Filter bar */}
+      <div style={{ display: 'flex', gap: 10, marginBottom: 14, flexWrap: 'wrap', alignItems: 'center' }}>
+        <input
+          type="text"
+          placeholder="Search by Emp# or Name…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{ flex: '1 1 220px', padding: '6px 10px', fontSize: 13, border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)' }}
+        />
+        <select
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}
+          style={{ padding: '6px 10px', fontSize: 13, border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)', minWidth: 130 }}
+        >
+          <option value="">All Employees</option>
+          <option value="A">Active Only</option>
+          <option value="R">Resigned Only</option>
+          <option value="L">On Leave Only</option>
+        </select>
+        <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+          {(() => {
+            const fil = employees.filter(e => {
+              const matchStatus = statusFilter === '' || (e.status ?? '') === statusFilter
+              const q = search.trim().toLowerCase()
+              const matchSearch = !q || e.emp_no.toLowerCase().includes(q) || e.emp_nm.toLowerCase().includes(q)
+              return matchStatus && matchSearch
+            })
+            return `${fil.length} of ${employees.length} employees`
+          })()}
+        </span>
+      </div>
+
       <table className="data-table">
         <thead>
           <tr>
@@ -280,14 +314,21 @@ export default function EmployeeMaster() {
           </tr>
         </thead>
         <tbody>
-          {employees.map(emp => (
+          {employees
+            .filter(e => {
+              const matchStatus = statusFilter === '' || (e.status ?? '') === statusFilter
+              const q = search.trim().toLowerCase()
+              const matchSearch = !q || e.emp_no.toLowerCase().includes(q) || e.emp_nm.toLowerCase().includes(q)
+              return matchStatus && matchSearch
+            })
+            .map(emp => (
             <tr key={emp.emp_no}>
               <td><strong>{emp.emp_no}</strong></td>
               <td>{emp.emp_nm}</td>
               <td>{emp.dep_no}</td>
               <td>{emp.position}</td>
-              <td style={{ textAlign: 'right' }}>&#8369; {emp.b_rate.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-              <td style={{ textAlign: 'right' }}>&#8369; {emp.cola.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+              <td style={{ textAlign: 'right' }}>&#8369; {parseFloat(String(emp.b_rate || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
+              <td style={{ textAlign: 'right' }}>&#8369; {parseFloat(String(emp.cola || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
               <td>{emp.date_hire}</td>
               <td><span className="badge badge-success">{emp.status === 'A' ? 'Active' : emp.status === 'R' ? 'Resigned' : 'On Leave'}</span></td>
               <td>
