@@ -1307,7 +1307,7 @@ public sealed class PayrollController : ControllerBase
             var (no, nm, dep, pos, brate, estat) = emps[i];
             masterList.Add(new PayMaster {
                 EmpNo = no, EmpNm = nm, DepNo = dep, Position = pos,
-                BRate = brate, Cola = 0, EmpStat = estat, Status = null,
+                BRate = brate, Cola = 0, EmpStat = estat, Status = "A",
                 DateHire = hires[i],
                 SssNo = sssNos[i], TinNo = tinNos[i], PhicNo = phicNos[i], PgbgNo = phicNos[i],
                 SssMember = true, Pgbg = true,
