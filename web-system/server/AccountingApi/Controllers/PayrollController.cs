@@ -1192,4 +1192,187 @@ public sealed class PayrollController : ControllerBase
             departments = deptRows
         });
     }
+
+    // ── Sample Data Seeder ─────────────────────────────────────────────────────
+    /// <summary>
+    /// Creates 15 "Sample Data" employees with timecards for calculation testing.
+    /// Calling again resets the sample records to their original unprocessed state.
+    /// </summary>
+    [HttpPost("seed-sample")]
+    public async Task<IActionResult> SeedSampleData(CancellationToken cancellationToken)
+    {
+        // Update system header
+        var sysId = await _db.PaySysId.FirstOrDefaultAsync(cancellationToken);
+        if (sysId is null) return NotFound(new { message = "pay_sys_id not found." });
+
+        sysId.SysNm    = "SAMPLE COMPANY INC.";
+        sysId.BegDate  = new DateTime(2026, 1, 1);
+        sysId.EndDate  = new DateTime(2026, 1, 15);
+        sysId.PresMo   = 1;
+        sysId.PresYr   = 2026;
+        sysId.PayType  = 1;
+        sysId.MDailyWage = false;
+        sysId.TrnCtr   = 1;
+        sysId.TrnUpd   = 0;
+        sysId.TrnPrc   = 0;
+        sysId.HdmfPre  = 0.02m;
+        sysId.PgLower  = 1500m;
+        sysId.PgHigher = 5000m;
+        sysId.PgLwper  = 0.01m;
+        sysId.PgHiper  = 0.02m;
+        sysId.UpdatedAt = DateTime.UtcNow;
+
+        // Upsert departments
+        var depts = new[] {
+            ("01","ADMINISTRATION"), ("02","OPERATIONS"), ("03","FINANCE")
+        };
+        foreach (var (no, nm) in depts)
+        {
+            var d = await _db.PayDept.FirstOrDefaultAsync(x => x.DepNo == no, cancellationToken);
+            if (d is null)
+            {
+                _db.PayDept.Add(new PayDept { DepNo = no, DepNm = nm, UpdatedAt = DateTime.UtcNow });
+            }
+            else
+            {
+                d.DepNm = nm;
+                d.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+
+        // Remove stale sample timecards then masters
+        var oldTc = await _db.PayTmcard.Where(t => t.EmpNo.StartsWith("SD")).ToListAsync(cancellationToken);
+        _db.PayTmcard.RemoveRange(oldTc);
+        var oldMasters = await _db.PayMaster.Where(m => m.EmpNo.StartsWith("SD")).ToListAsync(cancellationToken);
+        _db.PayMaster.RemoveRange(oldMasters);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        // Employee definitions: (no, name, dep, position, monthly_brate, emp_stat)
+        var emps = new[] {
+            ("SD0001","SAMPLE DATA 1", "01","DIRECTOR",       80000m,"R"),
+            ("SD0002","SAMPLE DATA 2", "01","MANAGER",        45000m,"R"),
+            ("SD0003","SAMPLE DATA 3", "01","STAFF",          32000m,"R"),
+            ("SD0004","SAMPLE DATA 4", "01","STAFF",          30000m,"R"),
+            ("SD0005","SAMPLE DATA 5", "02","SUPERVISOR",     38000m,"R"),
+            ("SD0006","SAMPLE DATA 6", "02","WORKER",         25000m,"R"),
+            ("SD0007","SAMPLE DATA 7", "02","WORKER",         22000m,"R"),
+            ("SD0008","SAMPLE DATA 8", "02","WORKER",         23500m,"R"),
+            ("SD0009","SAMPLE DATA 9", "02","WORKER",         21000m,"R"),
+            ("SD0010","SAMPLE DATA 10","02","HELPER",         18000m,"C"),
+            ("SD0011","SAMPLE DATA 11","03","ACCOUNTANT",     55000m,"R"),
+            ("SD0012","SAMPLE DATA 12","03","BOOKKEEPER",     48000m,"R"),
+            ("SD0013","SAMPLE DATA 13","03","ANALYST",        35000m,"R"),
+            ("SD0014","SAMPLE DATA 14","03","STAFF",          33000m,"R"),
+            ("SD0015","SAMPLE DATA 15","03","ENCODER",        20000m,"C"),
+        };
+
+        // Personal info arrays indexed 0–14
+        string[] sssNos  = { "34-1234567-1","34-2345678-2","34-3456789-3","34-4567890-4","34-5678901-5",
+                             "34-6789012-6","34-7890123-7","34-8901234-8","34-9012345-9","34-0123456-0",
+                             "34-1122334-1","34-2233445-2","34-3344556-3","34-4455667-4","34-5566778-5" };
+        string[] tinNos  = { "123-456-789-000","234-567-890-001","345-678-901-002","456-789-012-003","567-890-123-004",
+                             "678-901-234-005","789-012-345-006","890-123-456-007","901-234-567-008","012-345-678-009",
+                             "111-222-333-010","222-333-444-011","333-444-555-012","444-555-666-013","555-666-777-014" };
+        string[] phicNos = { "121234567890","122345678901","123456789012","124567890123","125678901234",
+                             "126789012345","127890123456","128901234567","129012345678","120123456789",
+                             "131122334455","132233445566","133344556677","134455667788","135566778899" };
+        DateTime[] births = {
+            new(1980,6,15), new(1985,9,22), new(1990,3,5),  new(1992,11,30), new(1988,4,18),
+            new(1993,7,25), new(1994,12,8), new(1993,2,14), new(1995,8,20),  new(1998,3,11),
+            new(1987,5,30), new(1989,10,14),new(1991,1,27), new(1993,6,3),   new(1997,9,17)
+        };
+        DateTime[] hires = {
+            new(2015,3,15), new(2016,7,1),  new(2018,1,10), new(2019,4,20), new(2017,6,15),
+            new(2019,8,1),  new(2020,2,14), new(2020,5,18), new(2021,1,4),  new(2022,6,1),
+            new(2016,3,1),  new(2017,11,20),new(2019,9,9),  new(2020,7,13), new(2023,3,6)
+        };
+        string[] addresses = {
+            "123 Rizal St., Makati City",         "456 Mabini Ave., Quezon City",
+            "789 Luna Rd., Pasig City",           "321 Bonifacio Blvd., Mandaluyong",
+            "654 Del Pilar St., Taguig City",     "987 Burgos St., Pasay City",
+            "111 Aguinaldo Rd., Caloocan City",   "222 Magsaysay Ave., Valenzuela",
+            "333 Marcos Hwy., Antipolo",          "444 Katipunan Rd., Quezon City",
+            "555 C. Palanca St., Makati City",    "666 Salcedo St., Makati City",
+            "777 Ayala Ave., Makati City",        "888 EDSA, Mandaluyong City",
+            "999 Shaw Blvd., Pasig City"
+        };
+        // Loan balances: sln, hdmf, comp  per employee index
+        decimal[] slnBals  = { 0,30000,0,0,0, 0,0,0,0,0, 0,0,0,0,0 };
+        decimal[] hdmfBals = { 0,0,0,0,0, 0,0,0,0,0, 15000,0,0,0,0 };
+        decimal[] compBals = { 0,0,0,0,0, 0,0,0,0,0, 0,20000,0,0,0 };
+
+        var masterList = new List<PayMaster>();
+        for (int i = 0; i < emps.Length; i++)
+        {
+            var (no, nm, dep, pos, brate, estat) = emps[i];
+            masterList.Add(new PayMaster {
+                EmpNo = no, EmpNm = nm, DepNo = dep, Position = pos,
+                BRate = brate, Cola = 0, EmpStat = estat, Status = null,
+                DateHire = hires[i],
+                SssNo = sssNos[i], TinNo = tinNos[i], PhicNo = phicNos[i], PgbgNo = phicNos[i],
+                SssMember = true, Pgbg = true,
+                SlnBal = slnBals[i], HdmfBal = hdmfBals[i], CompBal = compBals[i],
+                Birthdate = births[i], Address = addresses[i],
+                SickLeave = i < 10 ? 10m : 15m,    VacationLeave = i < 10 ? 10m : 15m,
+                CreatedAt = DateTime.UtcNow,        UpdatedAt = DateTime.UtcNow
+            });
+        }
+        _db.PayMaster.AddRange(masterList);
+
+        // Timecard defs: (empNo, dep, reg_hrs, abs_hrs, rot_hrs, nsd_hrs, sln_ded, hdmf_ded, comp_ded)
+        var tcDefs = new (string no, string dep, decimal reg, decimal abs, decimal rot,
+                         decimal nsd, decimal sln, decimal hdmf, decimal comp)[] {
+            ("SD0001","01",104,0,16,0,   0,   0,     0),  // Director · OT 16h
+            ("SD0002","01",104,0, 8,0,1000,   0,     0),  // Manager  · OT 8h · SSS loan
+            ("SD0003","01",104,0, 0,0,   0,   0,     0),  // Staff    · clean
+            ("SD0004","01", 96,8, 0,0,   0,   0,     0),  // Staff    · 1-day absent
+            ("SD0005","02",104,0,16,0,   0,   0,     0),  // Supervisor·OT 16h
+            ("SD0006","02",104,0, 8,8,   0,   0,     0),  // Worker   · OT 8h + NSD 8h
+            ("SD0007","02", 96,8, 0,0,   0,   0,     0),  // Worker   · 1-day absent
+            ("SD0008","02",104,0, 8,0,   0,   0,     0),  // Worker   · OT 8h
+            ("SD0009","02", 88,16, 0,0,  0,   0,     0),  // Worker   · 2-day absent
+            ("SD0010","02",104,0, 0,0,   0,   0,     0),  // Helper   · casual, no OT
+            ("SD0011","03",104,0, 8,0,   0,1500,     0),  // Accountant· OT 8h + HDMF loan
+            ("SD0012","03",104,0, 0,0,   0,   0,  2000),  // Bookkeeper· company loan
+            ("SD0013","03",104,0, 8,0,   0,   0,     0),  // Analyst  · OT 8h
+            ("SD0014","03",104,0, 0,16,  0,   0,     0),  // Staff    · NSD 16h
+            ("SD0015","03",104,0, 0,0,   0,   0,     0),  // Encoder  · casual
+        };
+
+        var tcList = new List<PayTmcard>();
+        for (int i = 0; i < tcDefs.Length; i++)
+        {
+            var tc = tcDefs[i];
+            tcList.Add(new PayTmcard {
+                EmpNo = tc.no, EmpNm = emps[i].Item2, DepNo = tc.dep,
+                RegHrs = tc.reg, AbsHrs = tc.abs, RotHrs = tc.rot,
+                SphpHrs = 0, SpotHrs = 0, LghpHrs = 0, LgotHrs = 0,
+                NsdHrs = tc.nsd, LvHrs = 0, LsHrs = 0,
+                OthPay1 = 0, OthPay2 = 0, OthPay3 = 0, OthPay4 = 0,
+                LvCashout = 0, LsCashout = 0,
+                SlnDed = tc.sln, HdmfDed = tc.hdmf, CalDed = 0,
+                CompDed = tc.comp, ComdDed = 0,
+                OthDed1=0,OthDed2=0,OthDed3=0,OthDed4=0,OthDed5=0,
+                OthDed6=0,OthDed7=0,OthDed8=0,OthDed9=0,OthDed10=0,
+                TaxAdd = 0, Withbonus = false,
+                // Computed fields — all zero; filled by /api/payroll/compute
+                RegPay=0,RotPay=0,SphpPay=0,SpotPay=0,LghpPay=0,LgotPay=0,
+                NsdPay=0,LvPay=0,Lv2Pay=0,LsPay=0,GrsPay=0,AbsDed=0,
+                SssEe=0,SssEr=0,MedEe=0,MedEr=0,PgbgEe=0,PgbgEr=0,EcEr=0,
+                TaxEe=0,TotDed=0,NetPay=0,Bonus=0,Bonustax=0,
+                TrnFlag = "U",
+                PeriodYear = 2026, PeriodMonth = 1,
+                CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            });
+        }
+        _db.PayTmcard.AddRange(tcList);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return Ok(new {
+            message = "Sample data seeded successfully.",
+            employees = emps.Length,
+            timecards = tcList.Count,
+            note = "All timecards are unprocessed (trn_flag='U'). Call POST /api/payroll/compute to run calculations."
+        });
+    }
 }
