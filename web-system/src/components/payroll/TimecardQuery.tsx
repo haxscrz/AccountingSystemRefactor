@@ -382,7 +382,7 @@ export default function TimecardQuery() {
           {filtered.length} record{filtered.length !== 1 ? 's' : ''}
           {search.trim() ? ` matching "${search}"` : ` — ${MONTHS[month - 1]} ${year}`}
           {' '}| Total net: <strong style={{ color: 'var(--text,#1a1a1a)' }}>
-            ₱ {filtered.reduce((s, t) => s + (t.net_pay ?? 0), 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+            ₱ {filtered.reduce((s, t) => s + (parseFloat(String(t.net_pay ?? 0)) || 0), 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
           </strong>
         </div>
       )}
