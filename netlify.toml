@@ -1,4 +1,5 @@
 [build]
+  base = "web-system"
   command = "npm run build"
   publish = "dist"
 
