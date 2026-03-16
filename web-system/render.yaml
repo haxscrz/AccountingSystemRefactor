@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: accounting-system-api
+    runtime: dotnet
+    rootDir: web-system/server/AccountingApi
+    buildCommand: dotnet publish -c Release -o out
+    startCommand: dotnet out/AccountingApi.dll
+    envVars:
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:$PORT
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false

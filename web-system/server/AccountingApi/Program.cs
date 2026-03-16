@@ -1,6 +1,7 @@
 using AccountingApi.Services;
 using AccountingApi.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,15 +41,39 @@ builder.Services.AddScoped<TimecardService>();
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<LegacySeedingService>();
 
+var corsAllowedOrigins = (builder.Configuration["CORS_ALLOWED_ORIGINS"] ?? string.Empty)
+    .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("frontend", policy =>
     {
-        policy
-            .SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost" || new Uri(origin).Host == "127.0.0.1")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        if (corsAllowedOrigins.Length > 0)
+        {
+            policy
+                .WithOrigins(corsAllowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+        else
+        {
+            policy
+                .SetIsOriginAllowed(origin =>
+                {
+                    var host = new Uri(origin).Host;
+                    return host == "localhost" || host == "127.0.0.1";
+                })
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
     });
+});
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
 });
 
 var app = builder.Build();
@@ -165,6 +190,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseCors("frontend");
 app.MapControllers();
