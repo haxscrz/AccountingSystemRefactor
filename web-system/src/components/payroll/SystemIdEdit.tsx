@@ -132,8 +132,8 @@ export default function SystemIdEdit() {
           {fld('TaxBon',   'Non-Taxable 13th Month Ceiling', 'number')}
           <div style={{ marginTop: 16, padding: '8px 10px', background: 'var(--surface-raised, #f5f5f5)',
             border: '1px solid var(--border, #d0d0d0)', borderRadius: 4, fontSize: 12, color: 'var(--text-secondary, #5a5a5a)' }}>
-            <div>Employees: <b style={{ color: 'var(--text)' }}>{data.empCount}</b></div>
-            <div>Timecards: <b style={{ color: 'var(--text)' }}>{data.tcCount}</b></div>
+            <div>Employees: <b style={{ color: 'var(--text)' }}>{data.EmpCount}</b></div>
+            <div>Timecards: <b style={{ color: 'var(--text)' }}>{data.TcCount}</b></div>
           </div>
         </div>
       </div>
