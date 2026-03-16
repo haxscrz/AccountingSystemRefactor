@@ -1,7 +1,7 @@
 services:
   - type: web
     name: accounting-system-api
-    runtime: dotnet
+    env: dotnet
     rootDir: web-system/server/AccountingApi
     buildCommand: dotnet publish -c Release -o out
     startCommand: dotnet out/AccountingApi.dll
