@@ -1,7 +1,7 @@
 {
   "tableName": "fs_purcbook",
-  "sourcePath": "FS/CTSI/DATA/PURCBOOK.DBF",
-  "rowCount": 0,
+  "sourcePath": "FS_test/Real Data/data/PURCBOOK.DBF",
+  "rowCount": 3,
   "columns": [
     "J_JV_NO",
     "J_DATE",
@@ -9,5 +9,27 @@
     "J_CK_AMT",
     "J_D_OR_C"
   ],
-  "rows": []
+  "rows": [
+    {
+      "J_JV_NO": "PB#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4706",
+      "J_CK_AMT": 20535.71,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "PB#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "1142",
+      "J_CK_AMT": 2464.29,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "PB#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2112",
+      "J_CK_AMT": 23000,
+      "J_D_OR_C": "C"
+    }
+  ]
 }

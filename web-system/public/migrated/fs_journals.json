@@ -1,7 +1,7 @@
 {
   "tableName": "fs_journals",
-  "sourcePath": "FS/CTSI/DATA/JOURNALS.DBF",
-  "rowCount": 0,
+  "sourcePath": "FS_test/Real Data/data/JOURNALS.DBF",
+  "rowCount": 25,
   "columns": [
     "J_JV_NO",
     "J_DATE",
@@ -9,5 +9,181 @@
     "J_CK_AMT",
     "J_D_OR_C"
   ],
-  "rows": []
+  "rows": [
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4719",
+      "J_CK_AMT": 100000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 100000,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4727",
+      "J_CK_AMT": 140000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 140000,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4727",
+      "J_CK_AMT": 60000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 60000,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4708",
+      "J_CK_AMT": 80000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 80000,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4720",
+      "J_CK_AMT": 10000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2114",
+      "J_CK_AMT": 10000,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4709",
+      "J_CK_AMT": 21341.14,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "1151",
+      "J_CK_AMT": 21341.14,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4717",
+      "J_CK_AMT": 18545.72,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "1150",
+      "J_CK_AMT": 18545.72,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4706",
+      "J_CK_AMT": 4968.5,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 4968.5,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4720",
+      "J_CK_AMT": 568,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2166",
+      "J_CK_AMT": 568,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 2330,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2165",
+      "J_CK_AMT": 2330,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 276.87,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 276.87,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4200",
+      "J_CK_AMT": 190277.26,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2122",
+      "J_CK_AMT": 22833.27,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "JV#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "1123",
+      "J_CK_AMT": 213110.53,
+      "J_D_OR_C": "C"
+    }
+  ]
 }

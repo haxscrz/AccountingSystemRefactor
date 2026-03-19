@@ -1,6 +1,6 @@
 {
   "tableName": "fs_acheckma",
-  "sourcePath": "FS/CTSI/DATA/Acheckma.dbf",
+  "sourcePath": "FS_test/Real Data/data/Acheckma.dbf",
   "rowCount": 0,
   "columns": [
     "J_JV_NO",

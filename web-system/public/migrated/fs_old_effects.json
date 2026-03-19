@@ -1,6 +1,6 @@
 {
-  "tableName": "fs_effects",
-  "sourcePath": "FS_test/Real Data/data/EFFECTS.DBF",
+  "tableName": "fs_old_effects",
+  "sourcePath": "FS_test/Real Data/data/OLD EFFECTS.DBF",
   "rowCount": 26,
   "columns": [
     "GL_REPORT",
@@ -13,13 +13,13 @@
       "GL_REPORT": "BAC",
       "GL_EFFECT": "I1",
       "GL_HEAD": "CASH IN BANK & ON HAND",
-      "GL_AMT": 8514487.77
+      "GL_AMT": 2851406.69
     },
     {
       "GL_REPORT": "BAC",
       "GL_EFFECT": "I2",
       "GL_HEAD": "RECEIVABLES",
-      "GL_AMT": 4055059.49
+      "GL_AMT": 2858341.84
     },
     {
       "GL_REPORT": "BAC",
@@ -37,13 +37,13 @@
       "GL_REPORT": "BAC",
       "GL_EFFECT": "I6",
       "GL_HEAD": "INPUT TAX - VAT",
-      "GL_AMT": 26413.84
+      "GL_AMT": 6486.63
     },
     {
       "GL_REPORT": "BAC",
       "GL_EFFECT": "I7",
       "GL_HEAD": "PREPAID EXPENSES",
-      "GL_AMT": 260821.81
+      "GL_AMT": 83596.88
     },
     {
       "GL_REPORT": "BAC",
@@ -103,13 +103,13 @@
       "GL_REPORT": "BLCC",
       "GL_EFFECT": "O1",
       "GL_HEAD": "PAYABLES",
-      "GL_AMT": 133549.92
+      "GL_AMT": 10000
     },
     {
       "GL_REPORT": "BLCC",
       "GL_EFFECT": "O2",
       "GL_HEAD": "ACCRUED EXPENSES PAYABLE",
-      "GL_AMT": 4806589.08
+      "GL_AMT": 0
     },
     {
       "GL_REPORT": "BLCC",
@@ -121,7 +121,7 @@
       "GL_REPORT": "BLCC",
       "GL_EFFECT": "O4",
       "GL_HEAD": "OUTPUT TAX - VAT",
-      "GL_AMT": 488174.23
+      "GL_AMT": 0
     },
     {
       "GL_REPORT": "BLCC",
@@ -133,7 +133,7 @@
       "GL_REPORT": "BLCC",
       "GL_EFFECT": "O6",
       "GL_HEAD": "OTHER PAYABLES",
-      "GL_AMT": 36.01
+      "GL_AMT": 0
     },
     {
       "GL_REPORT": "BLCD",
@@ -145,7 +145,7 @@
       "GL_REPORT": "BLSC",
       "GL_EFFECT": "OA",
       "GL_HEAD": "CAPITAL STOCK",
-      "GL_AMT": 5000000
+      "GL_AMT": 0
     },
     {
       "GL_REPORT": "BLSC",
@@ -157,13 +157,13 @@
       "GL_REPORT": "BLSE",
       "GL_EFFECT": "OC",
       "GL_HEAD": "RETAINED EARNINGS",
-      "GL_AMT": 4189214.85
+      "GL_AMT": 0
     },
     {
       "GL_REPORT": "BLSE",
       "GL_EFFECT": "OD",
       "GL_HEAD": "CURRENT EARNINGS",
-      "GL_AMT": 153420.3
+      "GL_AMT": 0
     }
   ]
 }

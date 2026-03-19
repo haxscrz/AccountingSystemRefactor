@@ -1,6 +1,6 @@
 {
-  "tableName": "fs_accounts",
-  "sourcePath": "FS_test/Real Data/data/ACCOUNTS.DBF",
+  "tableName": "fs_old_accounts",
+  "sourcePath": "FS_test/Real Data/data/OLD ACCOUNTS.DBF",
   "rowCount": 114,
   "columns": [
     "ACCT_CODE",
@@ -25,7 +25,7 @@
       "GL_EFFECT": "",
       "GL_REPORT": "",
       "FORMULA": "",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1100",
@@ -49,7 +49,7 @@
       "GL_EFFECT": "I1",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1111",
@@ -61,15 +61,15 @@
       "GL_EFFECT": "I1",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1112",
-      "ACCT_DESC": "CASH IN BANK /DL-8491-0024-18",
-      "OPEN_BAL": 8778566.75,
-      "CUR_DEBIT": 1534107.73,
-      "CUR_CREDIT": 1798186.71,
-      "END_BAL": 8778566.75,
+      "ACCT_DESC": "CASH IN BANK /DL 8491-0025-82",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 5000000,
+      "CUR_CREDIT": 2148593.31,
+      "END_BAL": 5000000,
       "GL_EFFECT": "I1",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
@@ -77,7 +77,7 @@
     },
     {
       "ACCT_CODE": "1113",
-      "ACCT_DESC": "CASH IN BANK - MBTC/BPI",
+      "ACCT_DESC": "CASH IN BANK -OTHERS",
       "OPEN_BAL": 0,
       "CUR_DEBIT": 0,
       "CUR_CREDIT": 0,
@@ -103,13 +103,13 @@
       "ACCT_CODE": "1121",
       "ACCT_DESC": "SUBSCRIPTION RECEIVABLE",
       "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
+      "CUR_DEBIT": 5000000,
+      "CUR_CREDIT": 5000000,
+      "END_BAL": 5000000,
       "GL_EFFECT": "I2",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": null
+      "INITIALIZE": false
     },
     {
       "ACCT_CODE": "1122",
@@ -121,19 +121,19 @@
       "GL_EFFECT": "I2",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1123",
       "ACCT_DESC": "ACCTS. RECEIVABLE - TRADE",
-      "OPEN_BAL": 1892952.49,
-      "CUR_DEBIT": 2882335.37,
-      "CUR_CREDIT": 1774820.27,
-      "END_BAL": 1892952.49,
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 2858341.84,
+      "CUR_CREDIT": 0,
+      "END_BAL": 2858341.84,
       "GL_EFFECT": "I2",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1124",
@@ -145,7 +145,7 @@
       "GL_EFFECT": "I2",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1125",
@@ -157,7 +157,7 @@
       "GL_EFFECT": "I2",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1126",
@@ -174,26 +174,26 @@
     {
       "ACCT_CODE": "1127",
       "ACCT_DESC": "ADVANCES TO EMPLOYEES",
-      "OPEN_BAL": 313821.76,
-      "CUR_DEBIT": 81503.95,
-      "CUR_CREDIT": 41536.17,
-      "END_BAL": 313821.76,
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 12788.65,
+      "CUR_CREDIT": 12788.65,
+      "END_BAL": 0,
       "GL_EFFECT": "I2",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1128",
       "ACCT_DESC": "EXPANDED W/ TAX RECEIVABLE",
-      "OPEN_BAL": 672923.48,
-      "CUR_DEBIT": 27878.88,
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
       "CUR_CREDIT": 0,
-      "END_BAL": 672923.48,
+      "END_BAL": 0,
       "GL_EFFECT": "I2",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1129",
@@ -234,26 +234,26 @@
     {
       "ACCT_CODE": "1142",
       "ACCT_DESC": "INPUT TAX - VAT",
-      "OPEN_BAL": 13727.26,
-      "CUR_DEBIT": 12686.58,
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 6486.63,
       "CUR_CREDIT": 0,
-      "END_BAL": 13727.26,
+      "END_BAL": 6486.63,
       "GL_EFFECT": "I6",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1150",
       "ACCT_DESC": "PREPAID TAXES & LICENSES",
-      "OPEN_BAL": 204002.96,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 28545.72,
-      "END_BAL": 204002.96,
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 91596.88,
+      "CUR_CREDIT": 8000,
+      "END_BAL": 83596.88,
       "GL_EFFECT": "I7",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1160",
@@ -385,7 +385,7 @@
       "GL_EFFECT": "IB",
       "GL_REPORT": "BAF",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1340",
@@ -432,7 +432,7 @@
       "END_BAL": 0,
       "GL_EFFECT": "",
       "GL_REPORT": "",
-      "FORMULA": "",
+      "FORMULA": "DC",
       "INITIALIZE": null
     },
     {
@@ -445,7 +445,7 @@
       "GL_EFFECT": "IB",
       "GL_REPORT": "BAF",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1390",
@@ -553,59 +553,47 @@
       "GL_EFFECT": "O1",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2112",
       "ACCT_DESC": "ACCOUNTS PAYABLE - TRADE",
       "OPEN_BAL": 0,
-      "CUR_DEBIT": 29450.08,
-      "CUR_CREDIT": 23000,
-      "END_BAL": -6450.08,
+      "CUR_DEBIT": 61821.75,
+      "CUR_CREDIT": 61821.75,
+      "END_BAL": 0,
       "GL_EFFECT": "O1",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2113",
       "ACCT_DESC": "ACCOUNTS PAYABLE - NT",
       "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
+      "CUR_DEBIT": 60000,
+      "CUR_CREDIT": 60000,
       "END_BAL": 0,
       "GL_EFFECT": "O1",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2114",
       "ACCT_DESC": "ACCOUNTS PAYABLE OTHERS",
-      "OPEN_BAL": 130000,
+      "OPEN_BAL": 0,
       "CUR_DEBIT": 0,
       "CUR_CREDIT": 10000,
-      "END_BAL": 140000,
+      "END_BAL": 10000,
       "GL_EFFECT": "O1",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "2120",
-      "ACCT_DESC": "ACCRUED EXPENSES PAYABLE",
-      "OPEN_BAL": 4523673.69,
-      "CUR_DEBIT": 102330.01,
-      "CUR_CREDIT": 385245.4,
-      "END_BAL": 4806589.08,
-      "GL_EFFECT": "O2",
-      "GL_REPORT": "BLCC",
-      "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2121",
-      "ACCT_DESC": "ACCRUED TAXES & LICENSES",
+      "ACCT_DESC": "ACCRUED TAXES PAYABLE",
       "OPEN_BAL": 0,
       "CUR_DEBIT": 0,
       "CUR_CREDIT": 0,
@@ -613,19 +601,19 @@
       "GL_EFFECT": "O3",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2122",
       "ACCT_DESC": "OUTPUT TAX - VAT",
-      "OPEN_BAL": 202185.85,
-      "CUR_DEBIT": 22833.27,
-      "CUR_CREDIT": 308821.65,
-      "END_BAL": 488174.23,
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 306250.91,
+      "END_BAL": 306250.91,
       "GL_EFFECT": "O4",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2130",
@@ -637,7 +625,7 @@
       "GL_EFFECT": "O5",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2160",
@@ -655,57 +643,57 @@
       "ACCT_CODE": "2161",
       "ACCT_DESC": "SSS LOANS PAYABLE",
       "OPEN_BAL": 0,
-      "CUR_DEBIT": 15471.4,
-      "CUR_CREDIT": 15471.4,
+      "CUR_DEBIT": 16939.11,
+      "CUR_CREDIT": 16939.11,
       "END_BAL": 0,
       "GL_EFFECT": "O6",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2163",
       "ACCT_DESC": "SSS MEDICARE PAYABLE",
       "OPEN_BAL": 0,
-      "CUR_DEBIT": 67711.65,
-      "CUR_CREDIT": 67711.65,
+      "CUR_DEBIT": 71976.71,
+      "CUR_CREDIT": 71976.71,
       "END_BAL": 0,
       "GL_EFFECT": "O6",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2164",
       "ACCT_DESC": "PAG-IBIG FUND PAYABLE",
       "OPEN_BAL": 0,
-      "CUR_DEBIT": 14826.56,
-      "CUR_CREDIT": 14826.56,
+      "CUR_DEBIT": 15304,
+      "CUR_CREDIT": 15304,
       "END_BAL": 0,
       "GL_EFFECT": "O6",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2165",
       "ACCT_DESC": "WITHHOLDING TAX PAYABLE",
       "OPEN_BAL": 0,
-      "CUR_DEBIT": 27268.11,
-      "CUR_CREDIT": 27268.12,
-      "END_BAL": 0.01,
+      "CUR_DEBIT": 32633.41,
+      "CUR_CREDIT": 32633.41,
+      "END_BAL": 0,
       "GL_EFFECT": "O6",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2166",
       "ACCT_DESC": "EXPANDED W/TAX PAYABLE",
-      "OPEN_BAL": 68,
-      "CUR_DEBIT": 2509.07,
-      "CUR_CREDIT": 2477.07,
-      "END_BAL": 36,
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 752.05,
+      "CUR_CREDIT": 972.06,
+      "END_BAL": 220.01,
       "GL_EFFECT": "O6",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
@@ -721,7 +709,7 @@
       "GL_EFFECT": "O6",
       "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "2200",
@@ -786,9 +774,9 @@
     {
       "ACCT_CODE": "3110",
       "ACCT_DESC": "CAPITAL STOCK",
-      "OPEN_BAL": 5000000,
+      "OPEN_BAL": 0,
       "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
+      "CUR_CREDIT": 5000000,
       "END_BAL": 5000000,
       "GL_EFFECT": "OA",
       "GL_REPORT": "BLSC",
@@ -799,13 +787,13 @@
       "ACCT_CODE": "3120",
       "ACCT_DESC": "SUBSCRIPTION RECEIVABLE",
       "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
+      "CUR_DEBIT": 5000000,
+      "CUR_CREDIT": 5000000,
       "END_BAL": 0,
       "GL_EFFECT": "OB",
       "GL_REPORT": "BLSC",
       "FORMULA": "DC",
-      "INITIALIZE": null
+      "INITIALIZE": false
     },
     {
       "ACCT_CODE": "3139",
@@ -822,10 +810,10 @@
     {
       "ACCT_CODE": "3140",
       "ACCT_DESC": "RETAINED EARNINGS",
-      "OPEN_BAL": 2275013.37,
+      "OPEN_BAL": 0,
       "CUR_DEBIT": 0,
       "CUR_CREDIT": 0,
-      "END_BAL": 4189214.85,
+      "END_BAL": 0,
       "GL_EFFECT": "OC",
       "GL_REPORT": "BLSE",
       "FORMULA": "CD",
@@ -836,12 +824,12 @@
       "ACCT_DESC": "CURRENT EARNINGS",
       "OPEN_BAL": 0,
       "CUR_DEBIT": 0,
-      "CUR_CREDIT": 153420.3,
+      "CUR_CREDIT": 84486.67,
       "END_BAL": 0,
       "GL_EFFECT": "OD",
       "GL_REPORT": "BLSE",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "3160",
@@ -877,7 +865,7 @@
       "GL_EFFECT": "OB",
       "GL_REPORT": "BLSC",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "4000",
@@ -904,6 +892,42 @@
       "INITIALIZE": null
     },
     {
+      "ACCT_CODE": "4200",
+      "ACCT_DESC": "SALES",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 2552090.93,
+      "END_BAL": 2552090.93,
+      "GL_EFFECT": "I1",
+      "GL_REPORT": "IS",
+      "FORMULA": "CD",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4300",
+      "ACCT_DESC": "OTHER INCOME",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "I1",
+      "GL_REPORT": "IS",
+      "FORMULA": "CD",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4301",
+      "ACCT_DESC": "INTEREST INCOME",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "I1",
+      "GL_REPORT": "IS",
+      "FORMULA": "CD",
+      "INITIALIZE": null
+    },
+    {
       "ACCT_CODE": "4302",
       "ACCT_DESC": "MISCELLANEOUS INCOME",
       "OPEN_BAL": 0,
@@ -913,7 +937,19 @@
       "GL_EFFECT": "I1",
       "GL_REPORT": "IS",
       "FORMULA": "CD",
-      "INITIALIZE": false
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4500",
+      "ACCT_DESC": "COST OF SALES",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "I1",
+      "GL_REPORT": "IS",
+      "FORMULA": "CD",
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "4600",
@@ -937,7 +973,7 @@
       "GL_EFFECT": "O1",
       "GL_REPORT": "IS",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "4700",
@@ -949,7 +985,247 @@
       "GL_EFFECT": "O1",
       "GL_REPORT": "IS",
       "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4701",
+      "ACCT_DESC": "MO - SALARIES & WAGES",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 94839.73,
+      "CUR_CREDIT": 0,
+      "END_BAL": 94839.73,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4702",
+      "ACCT_DESC": "MO - TRANS & TRAVELLING",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 11000,
+      "CUR_CREDIT": 0,
+      "END_BAL": 11000,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4703",
+      "ACCT_DESC": "MO - SSS;MED.; & PAG-IBIG",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 134940.7,
+      "CUR_CREDIT": 0,
+      "END_BAL": 134940.7,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4704",
+      "ACCT_DESC": "MO - FUEL & LUBRICATION",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4705",
+      "ACCT_DESC": "MO - REPAIRS & MAINTENANCE",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4706",
+      "ACCT_DESC": "MO - FACTORY SUPPLIES",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 145049.71,
+      "CUR_CREDIT": 0,
+      "END_BAL": 145049.71,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4707",
+      "ACCT_DESC": "MO - DEPRECIATION",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4708",
+      "ACCT_DESC": "MO - EMPLOYEES BENEFITS",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 43000,
+      "CUR_CREDIT": 0,
+      "END_BAL": 43000,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4709",
+      "ACCT_DESC": "MO - INSURANCE",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 1190,
+      "CUR_CREDIT": 0,
+      "END_BAL": 1190,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4710",
+      "ACCT_DESC": "0O - ENTERTAINMENT & REP.",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 13487.5,
+      "CUR_CREDIT": 0,
+      "END_BAL": 13487.5,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4711",
+      "ACCT_DESC": "NO - INDIRECT PAYROLL",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4712",
+      "ACCT_DESC": "MO - JANITORIAL",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4713",
+      "ACCT_DESC": "MO - LEGAL AUDIT & PROF. FEE",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
       "INITIALIZE": false
+    },
+    {
+      "ACCT_CODE": "4714",
+      "ACCT_DESC": "MO - BONUS/13TH MO./SL-VL",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 130,
+      "CUR_CREDIT": 0,
+      "END_BAL": 130,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4715",
+      "ACCT_DESC": "MO - RENTAL",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4716",
+      "ACCT_DESC": "MO - STATIONARIES & OFF. SUP",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 13300,
+      "CUR_CREDIT": 0,
+      "END_BAL": 13300,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4717",
+      "ACCT_DESC": "MO - TAXES & LICENSES",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 8000,
+      "CUR_CREDIT": 0,
+      "END_BAL": 8000,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4718",
+      "ACCT_DESC": "MO - PRODUCTION SPOILAGE",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4719",
+      "ACCT_DESC": "MO - PROV. FOR CONTINGENCIES",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 55000,
+      "CUR_CREDIT": 0,
+      "END_BAL": 55000,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4720",
+      "ACCT_DESC": "MO - MISCELLANEOUS EXPENSES",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 10500,
+      "CUR_CREDIT": 0,
+      "END_BAL": 10500,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "4721",
@@ -961,11 +1237,23 @@
       "GL_EFFECT": "O1",
       "GL_REPORT": "IS",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
-      "ACCT_CODE": "4724",
-      "ACCT_DESC": "ORGANIZATION COST",
+      "ACCT_CODE": "4722",
+      "ACCT_DESC": "MO - COMMUNICATION",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 300,
+      "CUR_CREDIT": 0,
+      "END_BAL": 300,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4723",
+      "ACCT_DESC": "MO - BANK SERVICE CHARGES",
       "OPEN_BAL": 0,
       "CUR_DEBIT": 0,
       "CUR_CREDIT": 0,
@@ -973,7 +1261,19 @@
       "GL_EFFECT": "O1",
       "GL_REPORT": "IS",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4724",
+      "ACCT_DESC": "ORGANIZATION COST",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 13250,
+      "CUR_CREDIT": 0,
+      "END_BAL": 13250,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "4725",
@@ -985,7 +1285,7 @@
       "GL_EFFECT": "O1",
       "GL_REPORT": "IS",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "4726",
@@ -994,6 +1294,18 @@
       "CUR_DEBIT": 0,
       "CUR_CREDIT": 0,
       "END_BAL": 0,
+      "GL_EFFECT": "O1",
+      "GL_REPORT": "IS",
+      "FORMULA": "DC",
+      "INITIALIZE": null
+    },
+    {
+      "ACCT_CODE": "4727",
+      "ACCT_DESC": "MO -PAYROLL",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 1923616.64,
+      "CUR_CREDIT": 0.02,
+      "END_BAL": 1923616.62,
       "GL_EFFECT": "O1",
       "GL_REPORT": "IS",
       "FORMULA": "DC",
@@ -1045,342 +1357,30 @@
       "GL_EFFECT": "O1",
       "GL_REPORT": "IS",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
       "ACCT_CODE": "1151",
       "ACCT_DESC": "PREPAID INSURANCE",
-      "OPEN_BAL": 71762.86,
-      "CUR_DEBIT": 34942.85,
-      "CUR_CREDIT": 21341.14,
-      "END_BAL": 71762.86,
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0,
+      "CUR_CREDIT": 0,
+      "END_BAL": 0,
       "GL_EFFECT": "I7",
       "GL_REPORT": "BAC",
       "FORMULA": "DC",
-      "INITIALIZE": false
+      "INITIALIZE": null
     },
     {
-      "ACCT_CODE": "4200",
-      "ACCT_DESC": "SALES",
-      "OPEN_BAL": 1684882.15,
-      "CUR_DEBIT": 190277.26,
-      "CUR_CREDIT": 2573513.72,
-      "END_BAL": 4068118.61,
-      "GL_EFFECT": "I1",
-      "GL_REPORT": "IS",
+      "ACCT_CODE": "2120",
+      "ACCT_DESC": "ACCRUED EXPENSE PAYABLE",
+      "OPEN_BAL": 0,
+      "CUR_DEBIT": 0.03,
+      "CUR_CREDIT": 398874.48,
+      "END_BAL": 398874.45,
+      "GL_EFFECT": "02",
+      "GL_REPORT": "BLCC",
       "FORMULA": "CD",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4300",
-      "ACCT_DESC": "OTHER INCOME",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "I1",
-      "GL_REPORT": "IS",
-      "FORMULA": "CD",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4301",
-      "ACCT_DESC": "INTEREST INCOME",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "I1",
-      "GL_REPORT": "IS",
-      "FORMULA": "CD",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4500",
-      "ACCT_DESC": "COST OF SALES",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "I1",
-      "GL_REPORT": "IS",
-      "FORMULA": "CD",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4701",
-      "ACCT_DESC": "MO - SALARIES & WAGES",
-      "OPEN_BAL": 105194.16,
-      "CUR_DEBIT": 104465.88,
-      "CUR_CREDIT": 0,
-      "END_BAL": 209660.04,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4702",
-      "ACCT_DESC": "MO - TRANS & TRAVELLING",
-      "OPEN_BAL": 12000,
-      "CUR_DEBIT": 11900,
-      "CUR_CREDIT": 0,
-      "END_BAL": 23900,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4703",
-      "ACCT_DESC": "MO - SSS;MED.; & PAG-IBIG",
-      "OPEN_BAL": 118455.12,
-      "CUR_DEBIT": 127773.21,
-      "CUR_CREDIT": 0,
-      "END_BAL": 246228.33,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4704",
-      "ACCT_DESC": "MO - FUEL & LUBRICATION",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4705",
-      "ACCT_DESC": "MO - REPAIRS & MAINTENANCE",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4706",
-      "ACCT_DESC": "MO - FACTORY SUPPLIES",
-      "OPEN_BAL": 25475.26,
-      "CUR_DEBIT": 26304.21,
-      "CUR_CREDIT": 0,
-      "END_BAL": 51779.47,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4707",
-      "ACCT_DESC": "MO - DEPRECIATION",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4708",
-      "ACCT_DESC": "MO - EMPLOYEES BENEFITS",
-      "OPEN_BAL": 85851,
-      "CUR_DEBIT": 89000,
-      "CUR_CREDIT": 0,
-      "END_BAL": 174851,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4709",
-      "ACCT_DESC": "MO - INSURANCE",
-      "OPEN_BAL": 21341.14,
-      "CUR_DEBIT": 21341.14,
-      "CUR_CREDIT": 0,
-      "END_BAL": 42682.28,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4710",
-      "ACCT_DESC": "MO - ENTERTAINMENT",
-      "OPEN_BAL": 18412.83,
-      "CUR_DEBIT": 25246.83,
-      "CUR_CREDIT": 0,
-      "END_BAL": 43659.66,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4711",
-      "ACCT_DESC": "MO - INDIRECT PAYROLL",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4712",
-      "ACCT_DESC": "MO - JANITORIAL",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4713",
-      "ACCT_DESC": "MO - LEGAL AUDIT & PROF. FEE",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4714",
-      "ACCT_DESC": "MO - BONUS/13TH MO./SL-VL",
-      "OPEN_BAL": 150,
-      "CUR_DEBIT": 2513.04,
-      "CUR_CREDIT": 0,
-      "END_BAL": 2663.04,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4715",
-      "ACCT_DESC": "MO - RENTAL",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4716",
-      "ACCT_DESC": "MO - STATIONARIES & OFF. SUP.",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4717",
-      "ACCT_DESC": "MO - TAXES & LICENSES",
-      "OPEN_BAL": 21923.72,
-      "CUR_DEBIT": 28545.72,
-      "CUR_CREDIT": 0,
-      "END_BAL": 50469.44,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4718",
-      "ACCT_DESC": "MO - PRODUCTION SPOILAGE",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 0,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4719",
-      "ACCT_DESC": "MO - PROV. FOR CONTINGENCIES",
-      "OPEN_BAL": 100000,
-      "CUR_DEBIT": 100000,
-      "CUR_CREDIT": 0,
-      "END_BAL": 200000,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4720",
-      "ACCT_DESC": "MO - MISCELLANEOUS EXPENSES",
-      "OPEN_BAL": 10568,
-      "CUR_DEBIT": 10568,
-      "CUR_CREDIT": 0,
-      "END_BAL": 21136,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4722",
-      "ACCT_DESC": "MO - COMMUNICATION",
-      "OPEN_BAL": 0,
-      "CUR_DEBIT": 500,
-      "CUR_CREDIT": 0,
-      "END_BAL": 500,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4723",
-      "ACCT_DESC": "MO - BANK SERVICE CHARGES",
-      "OPEN_BAL": 75,
-      "CUR_DEBIT": 0,
-      "CUR_CREDIT": 0,
-      "END_BAL": 75,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
-      "INITIALIZE": false
-    },
-    {
-      "ACCT_CODE": "4727",
-      "ACCT_DESC": "MO - PAYROLL",
-      "OPEN_BAL": 1348619.27,
-      "CUR_DEBIT": 1498474.78,
-      "CUR_CREDIT": 0,
-      "END_BAL": 2847094.05,
-      "GL_EFFECT": "O1",
-      "GL_REPORT": "IS",
-      "FORMULA": "DC",
       "INITIALIZE": false
     }
   ]

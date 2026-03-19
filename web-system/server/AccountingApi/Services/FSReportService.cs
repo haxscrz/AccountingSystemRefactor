@@ -35,8 +35,8 @@ public sealed class FSReportService
         decimal totalDebit = 0;
         decimal totalCredit = 0;
 
-        // If detailed, preload all journals (pournals in original) for transaction-level details
-        var allJournals = detailed ? await _context.FSJournals.OrderBy(j => j.JDate).ToListAsync() : null;
+        // Detailed report in legacy PRG is based on posted journals (pournals).
+        var allPostedJournals = detailed ? await _context.FSPostedJournals.OrderBy(j => j.JDate).ToListAsync() : null;
 
         foreach (var account in accounts)
         {
@@ -59,13 +59,13 @@ public sealed class FSReportService
             };
 
             // If detailed, include per-transaction details (A_REPDTB.PRG line 145-180)
-            if (detailed && allJournals != null)
+            if (detailed && allPostedJournals != null)
             {
-                line.Transactions = allJournals
+                line.Transactions = allPostedJournals
                     .Where(j => j.AcctCode == account.AcctCode)
                     .Select(j => new TrialBalanceTransaction
                     {
-                        TransactionDate = j.JDate,
+                        TransactionDate = j.JDate ?? DateTime.MinValue,
                         Reference = j.JJvNo,
                         DebitAmount = j.JDOrC.ToUpper() == "D" ? j.JCkAmt : 0,
                         CreditAmount = j.JDOrC.ToUpper() == "C" ? j.JCkAmt : 0
@@ -214,130 +214,116 @@ public sealed class FSReportService
     /// <param name="periodEnding">Period ending date</param>
     public async Task<BalanceSheetReport> GenerateBalanceSheetAsync(DateTime periodEnding)
     {
-        // Get all accounts for Balance Sheet (gl_report starts with 'B')
         var bsAccounts = await _context.FSAccounts
             .Where(a => a.GlReport != null && a.GlReport.StartsWith("B"))
-            .OrderBy(a => a.GlReport)
-            .ThenBy(a => a.AcctCode)
             .ToListAsync();
 
-        // Helper to calculate ending balance
+        var effects = await _context.FSEffects
+            .Where(e => e.GlReport != null && e.GlReport.StartsWith("B"))
+            .ToListAsync();
+
+        // Legacy PRG aggregates account ending balances into effects rows (gl_report + gl_effect),
+        // then prints by gl_head. We mimic that behavior for report parity.
+        var effectRows = effects
+            .Select(e => new EffectAccumulator
+            {
+                GlReport = e.GlReport ?? string.Empty,
+                GlEffect = e.GlEffect ?? string.Empty,
+                GlHead = e.GlHead ?? string.Empty,
+                Amount = 0m
+            })
+            .ToList();
+
+        var unmappedAccounts = new List<FSAccount>();
+
         decimal CalculateEndingBalance(FSAccount account)
+            => account.Formula == "DC"
+                ? account.OpenBal + account.CurDebit - account.CurCredit
+                : account.OpenBal + account.CurCredit - account.CurDebit;
+
+        foreach (var account in bsAccounts)
         {
-            if (account.Formula == "DC")
-                return account.OpenBal + account.CurDebit - account.CurCredit;
+            var endBal = CalculateEndingBalance(account);
+            var match = effectRows.FirstOrDefault(e =>
+                e.GlReport == (account.GlReport ?? string.Empty) &&
+                e.GlEffect == (account.GlEffect ?? string.Empty));
+
+            if (match is not null)
+            {
+                match.Amount += endBal;
+            }
             else
-                return account.OpenBal + account.CurCredit - account.CurDebit;
+            {
+                unmappedAccounts.Add(account);
+            }
         }
 
-        // === ASSETS SECTION (BA) ===
-        var assetAccounts = bsAccounts.Where(a => a.GlReport != null && a.GlReport.StartsWith("BA")).ToList();
+        List<BalanceSheetLine> BuildLines(string prefix, string? negateKeyword = null)
+        {
+            var mapped = effectRows
+                .Where(e => e.GlReport.StartsWith(prefix) && e.Amount != 0)
+                .Select(e =>
+                {
+                    var amount = e.Amount;
+                    if (!string.IsNullOrWhiteSpace(negateKeyword)
+                        && (e.GlHead ?? string.Empty).Contains(negateKeyword, StringComparison.OrdinalIgnoreCase))
+                    {
+                        amount = -amount;
+                    }
 
-        // Current Assets (BAC)
-        var currentAssets = assetAccounts
-            .Where(a => a.GlReport != null && a.GlReport.StartsWith("BAC"))
-            .Select(a => new BalanceSheetLine
-            {
-                AccountCode = a.AcctCode,
-                Description = a.AcctDesc ?? "",
-                Amount = CalculateEndingBalance(a)
-            })
-            .Where(line => line.Amount != 0)
-            .ToList();
+                    return new BalanceSheetLine
+                    {
+                        AccountCode = e.GlEffect ?? string.Empty,
+                        Description = e.GlHead ?? string.Empty,
+                        Amount = amount
+                    };
+                })
+                .OrderBy(l => l.AccountCode)
+                .ThenBy(l => l.Description)
+                .ToList();
+
+            var unmapped = unmappedAccounts
+                .Where(a => (a.GlReport ?? string.Empty).StartsWith(prefix))
+                .Select(a => new BalanceSheetLine
+                {
+                    AccountCode = a.AcctCode,
+                    Description = a.AcctDesc,
+                    Amount = CalculateEndingBalance(a)
+                })
+                .Where(l => l.Amount != 0)
+                .OrderBy(l => l.AccountCode)
+                .ThenBy(l => l.Description)
+                .ToList();
+
+            if (unmapped.Count == 0) return mapped;
+
+            mapped.AddRange(unmapped);
+            return mapped
+                .OrderBy(l => l.AccountCode)
+                .ThenBy(l => l.Description)
+                .ToList();
+        }
+
+        var currentAssets = BuildLines("BAC");
+        var fixedAssets = BuildLines("BAF", negateKeyword: "DEPRECIATION");
+        var otherAssets = BuildLines("BAO");
+
         decimal totalCurrentAssets = currentAssets.Sum(a => a.Amount);
-
-        // Fixed Assets (BAF)
-        var fixedAssets = assetAccounts
-            .Where(a => a.GlReport != null && a.GlReport.StartsWith("BAF"))
-            .Select(a => new BalanceSheetLine
-            {
-                AccountCode = a.AcctCode,
-                Description = a.AcctDesc ?? "",
-                // Depreciation accounts are negative
-                Amount = (a.GlEffect?.Contains("DEPRECIATION") == true) 
-                    ? -CalculateEndingBalance(a) 
-                    : CalculateEndingBalance(a)
-            })
-            .Where(line => line.Amount != 0)
-            .ToList();
         decimal totalFixedAssets = fixedAssets.Sum(a => a.Amount);
-
-        // Other Assets (BAO)
-        var otherAssets = assetAccounts
-            .Where(a => a.GlReport != null && a.GlReport.StartsWith("BAO"))
-            .Select(a => new BalanceSheetLine
-            {
-                AccountCode = a.AcctCode,
-                Description = a.AcctDesc ?? "",
-                Amount = CalculateEndingBalance(a)
-            })
-            .Where(line => line.Amount != 0)
-            .ToList();
         decimal totalOtherAssets = otherAssets.Sum(a => a.Amount);
-
         decimal totalAssets = totalCurrentAssets + totalFixedAssets + totalOtherAssets;
 
-        // === LIABILITIES SECTION (BL) ===
-        var liabilityAccounts = bsAccounts.Where(a => a.GlReport != null && a.GlReport.StartsWith("BL") && !a.GlReport.StartsWith("BLS")).ToList();
+        var currentLiabilities = BuildLines("BLC");
+        var deferredLiabilities = BuildLines("BLD");
 
-        // Current Liabilities (BLC)
-        var currentLiabilities = liabilityAccounts
-            .Where(a => a.GlReport != null && a.GlReport.StartsWith("BLC"))
-            .Select(a => new BalanceSheetLine
-            {
-                AccountCode = a.AcctCode,
-                Description = a.AcctDesc ?? "",
-                Amount = CalculateEndingBalance(a)
-            })
-            .Where(line => line.Amount != 0)
-            .ToList();
         decimal totalCurrentLiabilities = currentLiabilities.Sum(a => a.Amount);
-
-        // Deferred Liabilities (BLD)
-        var deferredLiabilities = liabilityAccounts
-            .Where(a => a.GlReport != null && a.GlReport.StartsWith("BLD"))
-            .Select(a => new BalanceSheetLine
-            {
-                AccountCode = a.AcctCode,
-                Description = a.AcctDesc ?? "",
-                Amount = CalculateEndingBalance(a)
-            })
-            .Where(line => line.Amount != 0)
-            .ToList();
         decimal totalDeferredLiabilities = deferredLiabilities.Sum(a => a.Amount);
-
         decimal totalLiabilities = totalCurrentLiabilities + totalDeferredLiabilities;
 
-        // === STOCKHOLDER'S EQUITY SECTION (BLS) ===
-        var equityAccounts = bsAccounts.Where(a => a.GlReport != null && a.GlReport.StartsWith("BLS")).ToList();
+        var capitalAccounts = BuildLines("BLSC", negateKeyword: "SUBSCRIPTION");
+        var earningsAccounts = BuildLines("BLSE");
 
-        // Capital (BLSC)
-        var capitalAccounts = equityAccounts
-            .Where(a => a.GlReport != null && a.GlReport.StartsWith("BLSC"))
-            .Select(a => new BalanceSheetLine
-            {
-                AccountCode = a.AcctCode,
-                Description = a.AcctDesc ?? "",
-                // Subscription accounts are negative
-                Amount = (a.GlEffect?.Contains("SUBSCRIPTION") == true)
-                    ? -CalculateEndingBalance(a)
-                    : CalculateEndingBalance(a)
-            })
-            .Where(line => line.Amount != 0)
-            .ToList();
         decimal totalCapital = capitalAccounts.Sum(a => a.Amount);
-
-        // Earnings (BLSE)
-        var earningsAccounts = equityAccounts
-            .Where(a => a.GlReport != null && a.GlReport.StartsWith("BLSE"))
-            .Select(a => new BalanceSheetLine
-            {
-                AccountCode = a.AcctCode,
-                Description = a.AcctDesc ?? "",
-                Amount = CalculateEndingBalance(a)
-            })
-            .Where(line => line.Amount != 0)
-            .ToList();
         decimal totalEarnings = earningsAccounts.Sum(a => a.Amount);
 
         decimal totalEquity = totalCapital + totalEarnings;
@@ -366,6 +352,14 @@ public sealed class FSReportService
             TotalLiabilitiesAndEquity = totalLiabilitiesAndEquity,
             InBalance = Math.Abs(totalAssets - totalLiabilitiesAndEquity) < 0.01m
         };
+    }
+
+    private sealed class EffectAccumulator
+    {
+        public string GlReport { get; set; } = string.Empty;
+        public string GlEffect { get; set; } = string.Empty;
+        public string GlHead { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
     }
 }
 

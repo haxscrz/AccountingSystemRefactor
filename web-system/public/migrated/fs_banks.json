@@ -1,6 +1,6 @@
 {
   "tableName": "fs_banks",
-  "sourcePath": "FS/CTSI/DATA/BANKS.DBF",
+  "sourcePath": "FS_test/Real Data/data/BANKS.DBF",
   "rowCount": 0,
   "columns": [
     "BANK_NO",

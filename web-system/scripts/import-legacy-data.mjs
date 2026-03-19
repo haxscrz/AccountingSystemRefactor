@@ -5,11 +5,28 @@ import { DBFFile } from 'dbffile'
 const workspaceRoot = resolve(process.cwd(), '..')
 const outputDir = resolve(process.cwd(), 'public', 'migrated')
 
-const roots = [
+const defaultRoots = [
   { module: 'fs', dir: resolve(workspaceRoot, 'FS', 'CTSI', 'DATA') },
   { module: 'pay', dir: resolve(workspaceRoot, 'PAY', 'RANK') },
   { module: 'pay', dir: resolve(workspaceRoot, 'PAY', 'OTHR') }
 ]
+
+function parseRootList(moduleName, envName) {
+  const raw = process.env[envName]
+  if (!raw) return []
+
+  return raw
+    .split(';')
+    .map(x => x.trim())
+    .filter(Boolean)
+    .map(dir => ({ module: moduleName, dir: resolve(workspaceRoot, dir) }))
+}
+
+const customFsRoots = parseRootList('fs', 'LEGACY_FS_PATHS')
+const customPayRoots = parseRootList('pay', 'LEGACY_PAY_PATHS')
+const roots = customFsRoots.length > 0 || customPayRoots.length > 0
+  ? [...customFsRoots, ...customPayRoots]
+  : defaultRoots
 
 async function findDbfFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true })
@@ -85,6 +102,10 @@ async function main() {
 
   const datasets = []
   for (const root of roots) {
+    if (!(await exists(root.dir))) {
+      console.warn(`Skipping missing path: ${root.dir}`)
+      continue
+    }
     const dbfFiles = await findDbfFiles(root.dir)
     for (const dbfPath of dbfFiles) {
       const result = await convertDbf(root.module, dbfPath)
@@ -102,6 +123,15 @@ async function main() {
   await writeFile(join(outputDir, 'manifest.json'), JSON.stringify(manifest, null, 2), 'utf-8')
   console.log(`\nMigration complete. Datasets: ${datasets.length}`)
   console.log(`Manifest: ${join(outputDir, 'manifest.json')}`)
+}
+
+async function exists(dir) {
+  try {
+    await readdir(dir)
+    return true
+  } catch {
+    return false
+  }
 }
 
 main().catch(error => {

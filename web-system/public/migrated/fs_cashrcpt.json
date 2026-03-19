@@ -1,7 +1,7 @@
 {
   "tableName": "fs_cashrcpt",
-  "sourcePath": "FS/CTSI/DATA/CASHRCPT.DBF",
-  "rowCount": 0,
+  "sourcePath": "FS_test/Real Data/data/CASHRCPT.DBF",
+  "rowCount": 3,
   "columns": [
     "J_JV_NO",
     "J_DATE",
@@ -9,5 +9,27 @@
     "J_CK_AMT",
     "J_D_OR_C"
   ],
-  "rows": []
+  "rows": [
+    {
+      "J_JV_NO": "CRB#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 1533830.86,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "CRB#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "1128",
+      "J_CK_AMT": 27878.88,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "CRB#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "1123",
+      "J_CK_AMT": 1561709.74,
+      "J_D_OR_C": "C"
+    }
+  ]
 }
