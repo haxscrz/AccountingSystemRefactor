@@ -1,6 +1,7 @@
 using AccountingApi.Services;
 using AccountingApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using AccountingApi.Data;
 
@@ -8,6 +9,7 @@ namespace AccountingApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = "CanPayroll")]
 public sealed class PayrollController : ControllerBase
 {
     private readonly LegacyDataService _legacyDataService;

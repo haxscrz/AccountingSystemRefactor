@@ -1,10 +1,12 @@
 using AccountingApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountingApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = "SuperAdminOnly")]
 public sealed class LegacyMigrationController : ControllerBase
 {
     private readonly LegacyDataService _legacyDataService;

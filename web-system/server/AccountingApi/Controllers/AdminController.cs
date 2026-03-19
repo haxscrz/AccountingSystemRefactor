@@ -1,10 +1,12 @@
 using AccountingApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountingApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = "SuperAdminOnly")]
 public sealed class AdminController : ControllerBase
 {
     private readonly DatabaseSeeder _seeder;

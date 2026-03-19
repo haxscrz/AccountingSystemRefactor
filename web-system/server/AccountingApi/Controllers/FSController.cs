@@ -1,6 +1,7 @@
 using AccountingApi.Services;
 using AccountingApi.Models;
 using AccountingApi.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
@@ -10,6 +11,7 @@ namespace AccountingApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Policy = "CanFs")]
 public sealed class FSController : ControllerBase
 {
     private readonly LegacyDataService    _legacyDataService;

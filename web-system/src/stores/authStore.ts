@@ -11,9 +11,12 @@ interface User {
 interface AuthState {
   user: User | null
   isAuthenticated: boolean
-  token: string | null
+  accessToken: string | null
+  refreshToken: string | null
+  accessTokenExpiresAtUtc: string | null
+  refreshTokenExpiresAtUtc: string | null
   login: (username: string, password: string) => Promise<boolean>
-  logout: () => void
+  logout: () => Promise<void>
 }
 
 interface LoginApiResponse {
@@ -25,7 +28,12 @@ interface LoginApiResponse {
     canAccessFs: boolean
     canAccessPayroll: boolean
   } | null
-  token: string | null
+  tokens: {
+    accessToken: string
+    accessTokenExpiresAtUtc: string
+    refreshToken: string
+    refreshTokenExpiresAtUtc: string
+  } | null
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -33,7 +41,10 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      token: null,
+      accessToken: null,
+      refreshToken: null,
+      accessTokenExpiresAtUtc: null,
+      refreshTokenExpiresAtUtc: null,
       login: async (username: string, password: string) => {
         const response = await fetch('/api/auth/login', {
           method: 'POST',
@@ -42,25 +53,64 @@ export const useAuthStore = create<AuthState>()(
         })
 
         if (!response.ok) {
-          set({ user: null, isAuthenticated: false, token: null })
+          set({
+            user: null,
+            isAuthenticated: false,
+            accessToken: null,
+            refreshToken: null,
+            accessTokenExpiresAtUtc: null,
+            refreshTokenExpiresAtUtc: null
+          })
           return false
         }
 
         const data = await response.json() as LoginApiResponse
-        if (!data.success || !data.user || !data.token) {
-          set({ user: null, isAuthenticated: false, token: null })
+        if (!data.success || !data.user || !data.tokens) {
+          set({
+            user: null,
+            isAuthenticated: false,
+            accessToken: null,
+            refreshToken: null,
+            accessTokenExpiresAtUtc: null,
+            refreshTokenExpiresAtUtc: null
+          })
           return false
         }
 
         set({
           user: data.user,
-          token: data.token,
+          accessToken: data.tokens.accessToken,
+          refreshToken: data.tokens.refreshToken,
+          accessTokenExpiresAtUtc: data.tokens.accessTokenExpiresAtUtc,
+          refreshTokenExpiresAtUtc: data.tokens.refreshTokenExpiresAtUtc,
           isAuthenticated: true
         })
         return true
       },
-      logout: () => {
-        set({ user: null, isAuthenticated: false, token: null })
+      logout: async () => {
+        const state = useAuthStore.getState()
+        try {
+          if (state.refreshToken) {
+            await fetch('/api/auth/logout', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(state.accessToken ? { Authorization: `Bearer ${state.accessToken}` } : {})
+              },
+              body: JSON.stringify({ refreshToken: state.refreshToken })
+            })
+          }
+        } catch {
+          // best-effort logout; local cleanup still runs
+        }
+        set({
+          user: null,
+          isAuthenticated: false,
+          accessToken: null,
+          refreshToken: null,
+          accessTokenExpiresAtUtc: null,
+          refreshTokenExpiresAtUtc: null
+        })
       }
     }),
     {

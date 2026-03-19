@@ -2,6 +2,12 @@ using AccountingApi.Services;
 using AccountingApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +52,61 @@ builder.Services.AddScoped<TimecardService>();
 
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<LegacySeedingService>();
+builder.Services.AddScoped<PasswordHashService>();
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<AuditLogService>();
+
+var jwtIssuer = builder.Configuration["JWT_ISSUER"] ?? builder.Configuration["Jwt:Issuer"] ?? "AccountingSystem";
+var jwtAudience = builder.Configuration["JWT_AUDIENCE"] ?? builder.Configuration["Jwt:Audience"] ?? "AccountingSystem.Client";
+var jwtSigningKey = builder.Configuration["JWT_SIGNING_KEY"] ?? builder.Configuration["Jwt:SigningKey"];
+
+if (string.IsNullOrWhiteSpace(jwtSigningKey))
+{
+    throw new InvalidOperationException("JWT_SIGNING_KEY is required. Configure it via environment variables.");
+}
+
+var jwtKeyBytes = Encoding.UTF8.GetBytes(jwtSigningKey);
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(30),
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(jwtKeyBytes),
+            NameClaimType = ClaimTypes.Name,
+            RoleClaimType = ClaimTypes.Role
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanFs", policy => policy.RequireClaim("can_fs", "true"));
+    options.AddPolicy("CanPayroll", policy => policy.RequireClaim("can_payroll", "true"));
+    options.AddPolicy("SuperAdminOnly", policy => policy.RequireRole("superadmin"));
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = 429;
+    options.AddPolicy("auth-login", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+            }));
+});
 
 var corsAllowedOrigins = (builder.Configuration["CORS_ALLOWED_ORIGINS"] ?? string.Empty)
     .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
@@ -146,7 +207,108 @@ using (var initScope = app.Services.CreateScope())
                 updated_at TEXT NOT NULL DEFAULT (datetime('now'))
             )");
 
+        // Security tables
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS app_users (
+                id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                username            TEXT NOT NULL UNIQUE,
+                password_hash       TEXT NOT NULL,
+                password_salt       TEXT NOT NULL,
+                hash_iterations     INTEGER NOT NULL,
+                role                TEXT NOT NULL,
+                can_access_fs       INTEGER NOT NULL DEFAULT 0,
+                can_access_payroll  INTEGER NOT NULL DEFAULT 0,
+                is_active           INTEGER NOT NULL DEFAULT 1,
+                failed_login_count  INTEGER NOT NULL DEFAULT 0,
+                lockout_end_utc     TEXT NULL,
+                last_failed_login_utc TEXT NULL,
+                last_login_utc      TEXT NULL,
+                created_at_utc      TEXT NOT NULL,
+                updated_at_utc      TEXT NOT NULL
+            )");
+
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS app_refresh_tokens (
+                id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id               INTEGER NOT NULL,
+                token_hash            TEXT NOT NULL UNIQUE,
+                expires_at_utc        TEXT NOT NULL,
+                created_at_utc        TEXT NOT NULL,
+                revoked_at_utc        TEXT NULL,
+                replaced_by_token_hash TEXT NULL,
+                created_by_ip         TEXT NULL,
+                user_agent            TEXT NULL
+            )");
+
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS app_audit_logs (
+                id               INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id          INTEGER NULL,
+                username         TEXT NULL,
+                event_type       TEXT NOT NULL,
+                resource         TEXT NOT NULL,
+                success          INTEGER NOT NULL,
+                ip_address       TEXT NULL,
+                user_agent       TEXT NULL,
+                details          TEXT NULL,
+                created_at_utc   TEXT NOT NULL
+            )");
+
+        RunSql("CREATE INDEX IF NOT EXISTS ix_app_users_username ON app_users(username)");
+        RunSql("CREATE INDEX IF NOT EXISTS ix_app_refresh_tokens_hash ON app_refresh_tokens(token_hash)");
+        RunSql("CREATE INDEX IF NOT EXISTS ix_app_refresh_tokens_user_expiry ON app_refresh_tokens(user_id, expires_at_utc)");
+        RunSql("CREATE INDEX IF NOT EXISTS ix_app_audit_created_at ON app_audit_logs(created_at_utc)");
+
         conn.Close();
+    }
+
+    // Ensure auth users exist (passwords via env vars).
+    if (!db.AppUsers.Any())
+    {
+        var hasher = initScope.ServiceProvider.GetRequiredService<PasswordHashService>();
+        var now = DateTime.UtcNow;
+
+        var superadminPassword = builder.Configuration["SUPERADMIN_PASSWORD"];
+        var testerPassword = builder.Configuration["TESTER_PASSWORD"];
+
+        if (string.IsNullOrWhiteSpace(superadminPassword) || string.IsNullOrWhiteSpace(testerPassword))
+        {
+            throw new InvalidOperationException(
+                "No users exist yet. Set SUPERADMIN_PASSWORD and TESTER_PASSWORD environment variables to bootstrap secure accounts.");
+        }
+
+        var superadminHash = hasher.HashPassword(superadminPassword);
+        var testerHash = hasher.HashPassword(testerPassword);
+
+        db.AppUsers.Add(new AccountingApi.Models.AppUser
+        {
+            Username = "superadmin",
+            Role = "superadmin",
+            CanAccessFs = true,
+            CanAccessPayroll = true,
+            IsActive = true,
+            PasswordHash = superadminHash.Hash,
+            PasswordSalt = superadminHash.Salt,
+            HashIterations = superadminHash.Iterations,
+            CreatedAtUtc = now,
+            UpdatedAtUtc = now
+        });
+
+        db.AppUsers.Add(new AccountingApi.Models.AppUser
+        {
+            Username = "tester",
+            Role = "tester",
+            CanAccessFs = true,
+            CanAccessPayroll = false,
+            IsActive = true,
+            PasswordHash = testerHash.Hash,
+            PasswordSalt = testerHash.Salt,
+            HashIterations = testerHash.Iterations,
+            CreatedAtUtc = now,
+            UpdatedAtUtc = now
+        });
+
+        db.SaveChanges();
     }
 
     // Auto-seed from legacy JSON files if the database is empty (fresh clone)
@@ -199,6 +361,43 @@ if (app.Environment.IsDevelopment())
 app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseCors("frontend");
+app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Audit mutating API calls (best-effort, non-blocking)
+app.Use(async (context, next) =>
+{
+    var shouldAudit = context.Request.Path.StartsWithSegments("/api")
+                      && context.Request.Method is "POST" or "PUT" or "PATCH" or "DELETE";
+
+    await next();
+
+    if (!shouldAudit) return;
+
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var audit = scope.ServiceProvider.GetRequiredService<AuditLogService>();
+        var username = context.User.Identity?.IsAuthenticated == true ? context.User.Identity?.Name : null;
+        var uidClaim = context.User.FindFirst("uid")?.Value;
+        _ = int.TryParse(uidClaim, out var uid);
+        await audit.WriteAsync(
+            eventType: "api_write",
+            resource: context.Request.Path,
+            success: context.Response.StatusCode < 400,
+            userId: uid == 0 ? null : uid,
+            username: username,
+            ipAddress: context.Connection.RemoteIpAddress?.ToString(),
+            userAgent: context.Request.Headers.UserAgent.ToString(),
+            details: $"method={context.Request.Method};status={context.Response.StatusCode}");
+    }
+    catch
+    {
+        // best-effort logging only
+    }
+});
+
 app.MapControllers();
 
 app.Run();

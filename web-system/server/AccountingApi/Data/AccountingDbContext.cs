@@ -31,6 +31,11 @@ public sealed class AccountingDbContext : DbContext
     public DbSet<PayPremPaid> PayPremPaid { get; set; } = null!;
     public DbSet<PayDept> PayDept { get; set; } = null!;
 
+    // Security/Auth Tables
+    public DbSet<AppUser> AppUsers { get; set; } = null!;
+    public DbSet<AppRefreshToken> AppRefreshTokens { get; set; } = null!;
+    public DbSet<AppAuditLog> AppAuditLogs { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -87,5 +92,23 @@ public sealed class AccountingDbContext : DbContext
         modelBuilder.Entity<PayDept>()
             .HasIndex(d => d.DepNo)
             .IsUnique();
+
+        // Security/Auth Indexes
+        modelBuilder.Entity<AppUser>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+
+        modelBuilder.Entity<AppRefreshToken>()
+            .HasIndex(t => t.TokenHash)
+            .IsUnique();
+
+        modelBuilder.Entity<AppRefreshToken>()
+            .HasIndex(t => new { t.UserId, t.ExpiresAtUtc });
+
+        modelBuilder.Entity<AppAuditLog>()
+            .HasIndex(l => l.CreatedAtUtc);
+
+        modelBuilder.Entity<AppAuditLog>()
+            .HasIndex(l => new { l.Username, l.CreatedAtUtc });
     }
 }
