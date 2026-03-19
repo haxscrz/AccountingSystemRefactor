@@ -17,8 +17,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
 // Database
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? "Data Source=accounting.db";
+var configuredConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var isAzureAppService = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME"));
+var fallbackConnectionString = isAzureAppService
+    ? "Data Source=/home/accounting.db"
+    : "Data Source=accounting.db";
+var connectionString = string.IsNullOrWhiteSpace(configuredConnectionString)
+    ? fallbackConnectionString
+    : configuredConnectionString;
 builder.Services.AddDbContext<AccountingDbContext>(options =>
     options.UseSqlite(connectionString));
 
