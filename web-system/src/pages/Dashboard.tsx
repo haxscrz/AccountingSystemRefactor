@@ -54,7 +54,7 @@ export default function Dashboard() {
           </div>
 
           <div
-            className="system-card"
+            className={`system-card ${canPayroll ? '' : 'system-card-disabled'}`}
             onClick={() => {
               if (!canPayroll) {
                 window.alert('Your user level is not allowed to use the Payroll feature.')
@@ -62,7 +62,6 @@ export default function Dashboard() {
               }
               navigate('/payroll')
             }}
-            style={canPayroll ? undefined : { opacity: 0.55, filter: 'grayscale(0.35)', cursor: 'not-allowed' }}
             title={canPayroll ? 'Open Payroll System' : 'Access denied by user level'}
           >
             <div className="system-icon">
@@ -80,12 +79,15 @@ export default function Dashboard() {
               <li>13th month & year-end processing</li>
             </ul>
             <button
-              className="btn btn-primary system-button"
+              className={`btn btn-primary system-button ${canPayroll ? '' : 'system-button-disabled'}`}
               disabled={!canPayroll}
               title={canPayroll ? 'Open Payroll System' : 'Your user level is not allowed to use this feature'}
             >
               {canPayroll ? 'Open Payroll System →' : 'Payroll Access Restricted'}
             </button>
+            {!canPayroll && (
+              <p className="access-note">Restricted: user level is not allowed to use Payroll.</p>
+            )}
           </div>
         </div>
 

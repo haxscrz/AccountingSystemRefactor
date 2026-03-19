@@ -71,6 +71,35 @@
   transform: translateY(-1px);
 }
 
+.system-card-disabled {
+  opacity: 0.72;
+  background: #f2f3f5;
+  border-color: #cdd3d8;
+  border-top-color: #a8b1b9;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+  box-shadow: none;
+}
+
+.system-card-disabled:hover {
+  transform: none;
+  box-shadow: none;
+  border-top-color: #a8b1b9;
+  border-color: #cdd3d8;
+}
+
+.system-card-disabled .system-icon {
+  background: #e3e7eb;
+  border-color: #c7d0d9;
+  color: #6b7785;
+}
+
+.system-card-disabled:hover .system-icon {
+  background: #e3e7eb;
+  color: #6b7785;
+  border-color: #c7d0d9;
+}
+
 .system-icon {
   width: 52px;
   height: 52px;
@@ -143,6 +172,21 @@
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.02em;
+}
+
+.system-button-disabled,
+.system-button:disabled {
+  background: #aeb8c2 !important;
+  border-color: #aeb8c2 !important;
+  color: #eef3f8 !important;
+  cursor: not-allowed;
+}
+
+.access-note {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #61707f;
+  text-align: center;
 }
 
 /* ── Info pill bar ── */
