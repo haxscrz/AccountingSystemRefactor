@@ -15,7 +15,7 @@ interface AuthState {
   refreshToken: string | null
   accessTokenExpiresAtUtc: string | null
   refreshTokenExpiresAtUtc: string | null
-  login: (username: string, password: string) => Promise<boolean>
+  login: (username: string, password: string) => Promise<{ success: boolean; message: string }>
   logout: () => Promise<void>
 }
 
@@ -46,13 +46,18 @@ export const useAuthStore = create<AuthState>()(
       accessTokenExpiresAtUtc: null,
       refreshTokenExpiresAtUtc: null,
       login: async (username: string, password: string) => {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-        })
+        const controller = new AbortController()
+        const timeoutId = window.setTimeout(() => controller.abort(), 15000)
 
-        if (!response.ok) {
+        let response: Response
+        try {
+          response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+            signal: controller.signal
+          })
+        } catch {
           set({
             user: null,
             isAuthenticated: false,
@@ -61,7 +66,35 @@ export const useAuthStore = create<AuthState>()(
             accessTokenExpiresAtUtc: null,
             refreshTokenExpiresAtUtc: null
           })
-          return false
+          return { success: false, message: 'Cannot reach server right now. Please try again in a moment.' }
+        } finally {
+          window.clearTimeout(timeoutId)
+        }
+
+        if (!response.ok) {
+          let message = 'Sign in failed.'
+          try {
+            const errorData = await response.json() as { message?: string }
+            if (errorData?.message) {
+              message = errorData.message
+            }
+          } catch {
+            if (response.status === 429) {
+              message = 'Too many login attempts. Please wait one minute and try again.'
+            } else if (response.status >= 500) {
+              message = 'Server error while signing in. Please try again shortly.'
+            }
+          }
+
+          set({
+            user: null,
+            isAuthenticated: false,
+            accessToken: null,
+            refreshToken: null,
+            accessTokenExpiresAtUtc: null,
+            refreshTokenExpiresAtUtc: null
+          })
+          return { success: false, message }
         }
 
         const data = await response.json() as LoginApiResponse
@@ -74,7 +107,7 @@ export const useAuthStore = create<AuthState>()(
             accessTokenExpiresAtUtc: null,
             refreshTokenExpiresAtUtc: null
           })
-          return false
+          return { success: false, message: data.message || 'Invalid username or password' }
         }
 
         set({
@@ -85,7 +118,7 @@ export const useAuthStore = create<AuthState>()(
           refreshTokenExpiresAtUtc: data.tokens.refreshTokenExpiresAtUtc,
           isAuthenticated: true
         })
-        return true
+        return { success: true, message: data.message || 'Login successful' }
       },
       logout: async () => {
         const state = useAuthStore.getState()

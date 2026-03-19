@@ -18,11 +18,11 @@ export default function Login() {
     setLoading(true)
 
     try {
-      const success = await login(username, password)
-      if (success) {
+      const result = await login(username, password)
+      if (result.success) {
         navigate('/dashboard')
       } else {
-        setError('Invalid username or password')
+        setError(result.message || 'Invalid username or password')
       }
     } catch (err) {
       setError('An error occurred. Please try again.')

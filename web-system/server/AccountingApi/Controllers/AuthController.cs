@@ -43,7 +43,10 @@ public sealed class AuthController : ControllerBase
         }
 
         var normalized = request.Username.Trim();
-        var user = await _db.AppUsers.FirstOrDefaultAsync(u => u.Username == normalized, cancellationToken);
+        var normalizedLower = normalized.ToLowerInvariant();
+        var user = await _db.AppUsers.FirstOrDefaultAsync(
+            u => u.Username.ToLower() == normalizedLower,
+            cancellationToken);
         var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
         var userAgent = Request.Headers.UserAgent.ToString();
 

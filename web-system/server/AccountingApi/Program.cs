@@ -262,14 +262,18 @@ using (var initScope = app.Services.CreateScope())
         conn.Close();
     }
 
+    var superadminPassword = builder.Configuration["SUPERADMIN_PASSWORD"];
+    var testerPassword = builder.Configuration["TESTER_PASSWORD"];
+    var resetBootstrapUsers = string.Equals(
+        builder.Configuration["RESET_BOOTSTRAP_USERS"],
+        "true",
+        StringComparison.OrdinalIgnoreCase);
+
     // Ensure auth users exist (passwords via env vars).
     if (!db.AppUsers.Any())
     {
         var hasher = initScope.ServiceProvider.GetRequiredService<PasswordHashService>();
         var now = DateTime.UtcNow;
-
-        var superadminPassword = builder.Configuration["SUPERADMIN_PASSWORD"];
-        var testerPassword = builder.Configuration["TESTER_PASSWORD"];
 
         if (string.IsNullOrWhiteSpace(superadminPassword) || string.IsNullOrWhiteSpace(testerPassword))
         {
@@ -309,6 +313,62 @@ using (var initScope = app.Services.CreateScope())
         });
 
         db.SaveChanges();
+    }
+
+    // Optional emergency reset for known bootstrap users.
+    // Enable only when credentials need to be recovered after deployment.
+    if (resetBootstrapUsers)
+    {
+        if (string.IsNullOrWhiteSpace(superadminPassword) || string.IsNullOrWhiteSpace(testerPassword))
+        {
+            throw new InvalidOperationException(
+                "RESET_BOOTSTRAP_USERS=true requires SUPERADMIN_PASSWORD and TESTER_PASSWORD.");
+        }
+
+        var hasher = initScope.ServiceProvider.GetRequiredService<PasswordHashService>();
+        var now = DateTime.UtcNow;
+
+        void UpsertBootstrapUser(string username, string role, bool canFs, bool canPayroll, string password)
+        {
+            var existing = db.AppUsers.FirstOrDefault(u => u.Username == username);
+            var hash = hasher.HashPassword(password);
+
+            if (existing is null)
+            {
+                db.AppUsers.Add(new AccountingApi.Models.AppUser
+                {
+                    Username = username,
+                    Role = role,
+                    CanAccessFs = canFs,
+                    CanAccessPayroll = canPayroll,
+                    IsActive = true,
+                    FailedLoginCount = 0,
+                    LockoutEndUtc = null,
+                    PasswordHash = hash.Hash,
+                    PasswordSalt = hash.Salt,
+                    HashIterations = hash.Iterations,
+                    CreatedAtUtc = now,
+                    UpdatedAtUtc = now
+                });
+                return;
+            }
+
+            existing.Role = role;
+            existing.CanAccessFs = canFs;
+            existing.CanAccessPayroll = canPayroll;
+            existing.IsActive = true;
+            existing.FailedLoginCount = 0;
+            existing.LockoutEndUtc = null;
+            existing.PasswordHash = hash.Hash;
+            existing.PasswordSalt = hash.Salt;
+            existing.HashIterations = hash.Iterations;
+            existing.UpdatedAtUtc = now;
+        }
+
+        UpsertBootstrapUser("superadmin", "superadmin", true, true, superadminPassword!);
+        UpsertBootstrapUser("tester", "tester", true, false, testerPassword!);
+        db.SaveChanges();
+        Console.WriteLine("[startup] RESET_BOOTSTRAP_USERS enabled: bootstrap account credentials were updated.");
     }
 
     // Auto-seed from legacy JSON files if the database is empty (fresh clone)
