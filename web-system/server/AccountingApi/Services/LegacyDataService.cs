@@ -21,8 +21,21 @@ public sealed class LegacyDataService
     private string ResolveLegacyPath()
     {
         var configured = _configuration["LegacyData:Path"] ?? "../../public/migrated";
-        var combined = Path.GetFullPath(Path.Combine(_environment.ContentRootPath, configured));
-        return combined;
+        var candidates = new[]
+        {
+            Path.GetFullPath(Path.Combine(_environment.ContentRootPath, configured)),
+            Path.GetFullPath(Path.Combine(_environment.ContentRootPath, "public", "migrated")),
+            Path.GetFullPath(Path.Combine(_environment.ContentRootPath, "..", "..", "public", "migrated")),
+            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "public", "migrated")),
+        };
+
+        foreach (var path in candidates)
+        {
+            if (Directory.Exists(path)) return path;
+        }
+
+        // Return first candidate as fallback for diagnostics / future file drops.
+        return candidates[0];
     }
 
     public async Task<LegacyManifest?> GetManifestAsync(CancellationToken cancellationToken = default)
