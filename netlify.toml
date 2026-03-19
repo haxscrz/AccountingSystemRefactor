@@ -5,7 +5,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://YOUR-RENDER-BACKEND.onrender.com/api/:splat"
+  to = "https://acctng-api-demo-2026.azurewebsites.net/api/:splat"
   status = 200
   force = true
 
