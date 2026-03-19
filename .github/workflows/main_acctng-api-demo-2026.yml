@@ -28,7 +28,10 @@ jobs:
         run: npm ci && npm run build
 
       - name: Copy frontend dist to backend wwwroot
-        run: cp -r web-system/dist web-system/server/AccountingApi/wwwroot
+        run: |
+          mkdir -p web-system/server/AccountingApi/wwwroot
+          find web-system/server/AccountingApi/wwwroot -mindepth 1 -delete
+          cp -r web-system/dist/. web-system/server/AccountingApi/wwwroot/
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
