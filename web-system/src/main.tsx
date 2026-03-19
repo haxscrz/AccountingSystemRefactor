@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import axios from 'axios'
 import App from './App'
 import './index.css'
 
@@ -104,6 +105,13 @@ function installApiAuthInterceptor() {
     return json.tokens.accessToken
   }
 
+  const getRefreshedAccessToken = async (): Promise<string | null> => {
+    if (!refreshPromise) {
+      refreshPromise = tryRefreshToken().finally(() => { refreshPromise = null })
+    }
+    return refreshPromise
+  }
+
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     const requestUrl = typeof input === 'string'
       ? input
@@ -124,16 +132,50 @@ function installApiAuthInterceptor() {
     const authRoute = requestUrl.includes('/api/auth/login') || requestUrl.includes('/api/auth/refresh')
     if (!apiRequest || authRoute || firstResponse.status !== 401) return firstResponse
 
-    if (!refreshPromise) {
-      refreshPromise = tryRefreshToken().finally(() => { refreshPromise = null })
-    }
-    const newAccessToken = await refreshPromise
+    const newAccessToken = await getRefreshedAccessToken()
     if (!newAccessToken) return firstResponse
 
     const retryHeaders = new Headers(init?.headers ?? {})
     retryHeaders.set('Authorization', `Bearer ${newAccessToken}`)
     return originalFetch(input, { ...init, headers: retryHeaders })
   }
+
+  axios.interceptors.request.use((config) => {
+    const requestUrl = config.url ?? ''
+    if (!isApiRequest(requestUrl)) return config
+
+    const auth = readPersistedAuthState()
+    if (auth?.accessToken) {
+      config.headers = config.headers ?? {}
+      ;(config.headers as Record<string, string>).Authorization = `Bearer ${auth.accessToken}`
+    }
+
+    return config
+  })
+
+  axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const status = error?.response?.status
+      const originalRequest = error?.config
+      const requestUrl = originalRequest?.url ?? ''
+      const authRoute = requestUrl.includes('/api/auth/login') || requestUrl.includes('/api/auth/refresh')
+
+      if (status !== 401 || authRoute || !originalRequest || originalRequest._retry) {
+        return Promise.reject(error)
+      }
+
+      originalRequest._retry = true
+      const newAccessToken = await getRefreshedAccessToken()
+      if (!newAccessToken) {
+        return Promise.reject(error)
+      }
+
+      originalRequest.headers = originalRequest.headers ?? {}
+      ;(originalRequest.headers as Record<string, string>).Authorization = `Bearer ${newAccessToken}`
+      return axios(originalRequest)
+    }
+  )
 }
 
 installApiAuthInterceptor()
