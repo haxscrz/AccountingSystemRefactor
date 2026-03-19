@@ -425,6 +425,10 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Serve React frontend static files from wwwroot/
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 // Audit mutating API calls (best-effort, non-blocking)
 app.Use(async (context, next) =>
 {
@@ -459,5 +463,20 @@ app.Use(async (context, next) =>
 });
 
 app.MapControllers();
+
+// SPA fallback: serve index.html for non-existent routes (React Router)
+app.MapFallback(async context =>
+{
+    context.Response.ContentType = "text/html";
+    var path = Path.Combine(app.Environment.WebRootPath, "index.html");
+    if (File.Exists(path))
+    {
+        await context.Response.SendFileAsync(path);
+    }
+    else
+    {
+        context.Response.StatusCode = 404;
+    }
+});
 
 app.Run();
