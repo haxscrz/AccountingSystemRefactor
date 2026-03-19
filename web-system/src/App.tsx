@@ -6,7 +6,7 @@ import FSSystem from './pages/FSSystem'
 import PayrollSystem from './pages/PayrollSystem'
 
 function App() {
-  const { isAuthenticated } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore()
 
   return (
     <BrowserRouter>
@@ -18,11 +18,11 @@ function App() {
         />
         <Route 
           path="/fs/*" 
-          element={isAuthenticated ? <FSSystem /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? (user?.canAccessFs ? <FSSystem /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} 
         />
         <Route 
           path="/payroll/*" 
-          element={isAuthenticated ? <PayrollSystem /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? (user?.canAccessPayroll ? <PayrollSystem /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} 
         />
         <Route path="/" element={<Navigate to="/login" />} />
       </Routes>

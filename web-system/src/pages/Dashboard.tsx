@@ -5,6 +5,7 @@ import './Dashboard.css'
 export default function Dashboard() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const canPayroll = !!user?.canAccessPayroll
 
   const handleLogout = () => {
     logout()
@@ -52,7 +53,18 @@ export default function Dashboard() {
             </button>
           </div>
 
-          <div className="system-card" onClick={() => navigate('/payroll')}>
+          <div
+            className="system-card"
+            onClick={() => {
+              if (!canPayroll) {
+                window.alert('Your user level is not allowed to use the Payroll feature.')
+                return
+              }
+              navigate('/payroll')
+            }}
+            style={canPayroll ? undefined : { opacity: 0.55, filter: 'grayscale(0.35)', cursor: 'not-allowed' }}
+            title={canPayroll ? 'Open Payroll System' : 'Access denied by user level'}
+          >
             <div className="system-icon">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -67,8 +79,12 @@ export default function Dashboard() {
               <li>Payslips & registers</li>
               <li>13th month & year-end processing</li>
             </ul>
-            <button className="btn btn-primary system-button">
-              Open Payroll System →
+            <button
+              className="btn btn-primary system-button"
+              disabled={!canPayroll}
+              title={canPayroll ? 'Open Payroll System' : 'Your user level is not allowed to use this feature'}
+            >
+              {canPayroll ? 'Open Payroll System →' : 'Payroll Access Restricted'}
             </button>
           </div>
         </div>

@@ -80,7 +80,7 @@ export default function Login() {
         </form>
 
         <div className="login-footer">
-          <p>Demo credentials: admin / admin</p>
+          <p>Users: superadmin / SUPERadmin, tester / tester</p>
           <p>Company: CTSI | Version 2.0</p>
         </div>
       </div>
