@@ -245,6 +245,23 @@ export default function EmployeeMaster() {
     }
   }
 
+  const matchStatusFilter = (status: string | undefined): boolean => {
+    const s = (status ?? '').toUpperCase()
+    if (statusFilter === '') return true
+    if (statusFilter === 'A') return s === 'A' || s === 'C' // legacy data uses C = current/active
+    if (statusFilter === 'R') return s === 'R'
+    if (statusFilter === 'L') return s === 'L'
+    return false
+  }
+
+  const statusLabel = (status: string | undefined): string => {
+    const s = (status ?? '').toUpperCase()
+    if (s === 'A' || s === 'C') return 'Active'
+    if (s === 'R') return 'Resigned'
+    if (s === 'L') return 'On Leave'
+    return s || 'Unknown'
+  }
+
   return (
     <div className="card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -289,7 +306,7 @@ export default function EmployeeMaster() {
         <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
           {(() => {
             const fil = employees.filter(e => {
-              const matchStatus = statusFilter === '' || (e.status ?? '') === statusFilter
+              const matchStatus = matchStatusFilter(e.status)
               const q = search.trim().toLowerCase()
               const matchSearch = !q || e.emp_no.toLowerCase().includes(q) || e.emp_nm.toLowerCase().includes(q)
               return matchStatus && matchSearch
@@ -316,7 +333,7 @@ export default function EmployeeMaster() {
         <tbody>
           {employees
             .filter(e => {
-              const matchStatus = statusFilter === '' || (e.status ?? '') === statusFilter
+              const matchStatus = matchStatusFilter(e.status)
               const q = search.trim().toLowerCase()
               const matchSearch = !q || e.emp_no.toLowerCase().includes(q) || e.emp_nm.toLowerCase().includes(q)
               return matchStatus && matchSearch
@@ -330,7 +347,7 @@ export default function EmployeeMaster() {
               <td style={{ textAlign: 'right' }}>&#8369; {parseFloat(String(emp.b_rate || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
               <td style={{ textAlign: 'right' }}>&#8369; {parseFloat(String(emp.cola || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
               <td>{emp.date_hire}</td>
-              <td><span className="badge badge-success">{emp.status === 'A' ? 'Active' : emp.status === 'R' ? 'Resigned' : 'On Leave'}</span></td>
+              <td><span className="badge badge-success">{statusLabel(emp.status)}</span></td>
               <td>
                 <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '12px', marginRight: '4px' }} onClick={() => handleEdit(emp)}>
                   Edit
