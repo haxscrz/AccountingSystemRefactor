@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { useCompanyStore } from '../stores/companyStore'
+import { useFsUnsavedStore } from '../stores/fsUnsavedStore'
 import { getCompanyNameByCode } from '../config/companies'
 import CompanyBadge from '../components/CompanyBadge'
 import './Dashboard.css'
@@ -11,6 +12,7 @@ export default function Dashboard() {
   const clearSelectedCompany = useCompanyStore((state) => state.clearSelectedCompany)
   const selectedCompanyCode = useCompanyStore((state) => state.selectedCompanyCode)
   const canPayroll = !!user?.canAccessPayroll
+  const hasUnsavedChanges = useFsUnsavedStore((state) => state.hasUnsavedChanges)
   const selectedCompanyName = getCompanyNameByCode(selectedCompanyCode)
 
   const handleLogout = () => {
@@ -19,6 +21,10 @@ export default function Dashboard() {
   }
 
   const handleSwitchCompany = () => {
+    if (hasUnsavedChanges) {
+      const proceed = window.confirm('You have unsaved FS changes. Switching company may lose your current edits. Continue?')
+      if (!proceed) return
+    }
     clearSelectedCompany()
     navigate('/select-company')
   }

@@ -46,14 +46,14 @@ public sealed class AccountingDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<FSAccount>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
-        modelBuilder.Entity<FSCheckMas>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
-        modelBuilder.Entity<FSCheckVou>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSCheckMas>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
+        modelBuilder.Entity<FSCheckVou>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
         modelBuilder.Entity<FSPostedJournal>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
-        modelBuilder.Entity<FSCashRcpt>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
-        modelBuilder.Entity<FSSaleBook>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
-        modelBuilder.Entity<FSPurcBook>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
-        modelBuilder.Entity<FSAdjustment>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
-        modelBuilder.Entity<FSJournal>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSCashRcpt>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
+        modelBuilder.Entity<FSSaleBook>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
+        modelBuilder.Entity<FSPurcBook>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
+        modelBuilder.Entity<FSAdjustment>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
+        modelBuilder.Entity<FSJournal>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
         modelBuilder.Entity<FSEffect>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
         modelBuilder.Entity<FSScheduleEntry>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
         modelBuilder.Entity<FSSysId>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);

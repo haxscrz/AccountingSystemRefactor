@@ -206,6 +206,26 @@ using (var initScope = app.Services.CreateScope())
             RunSql($"CREATE INDEX IF NOT EXISTS ix_{table}_company_code ON {table}(company_code)");
         }
 
+        var softDeleteTables = new[]
+        {
+            "fs_checkmas", "fs_checkvou", "fs_cashrcpt", "fs_salebook", "fs_journals", "fs_purcbook", "fs_adjstmnt"
+        };
+
+        foreach (var table in softDeleteTables)
+        {
+            var cols = GetColumns(table);
+            if (!cols.Contains("is_deleted"))
+            {
+                AddColumn(table, "is_deleted", "INTEGER NOT NULL DEFAULT 0");
+            }
+            if (!cols.Contains("deleted_at"))
+            {
+                AddColumn(table, "deleted_at", "TEXT NULL");
+            }
+
+            RunSql($"CREATE INDEX IF NOT EXISTS ix_{table}_is_deleted ON {table}(company_code, is_deleted)");
+        }
+
         // Rebuild uniqueness to be company-scoped.
         RunSql("DROP INDEX IF EXISTS IX_fs_accounts_acct_code");
         RunSql("DROP INDEX IF EXISTS IX_pay_master_emp_no");

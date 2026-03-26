@@ -122,6 +122,12 @@ public sealed class FSCheckMas : CompanyScopedEntity
     
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
+
+    [Column("is_deleted")]
+    public bool IsDeleted { get; set; }
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 }
 
 [Table("fs_checkvou")]
@@ -158,6 +164,12 @@ public sealed class FSCheckVou : CompanyScopedEntity
     
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
+
+    [Column("is_deleted")]
+    public bool IsDeleted { get; set; }
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 }
 
 [Table("fs_pournals")]
@@ -229,6 +241,12 @@ public sealed class FSCashRcpt : CompanyScopedEntity
     
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
+
+    [Column("is_deleted")]
+    public bool IsDeleted { get; set; }
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 }
 
 [Table("fs_salebook")]
@@ -268,6 +286,12 @@ public sealed class FSSaleBook : CompanyScopedEntity
     
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
+
+    [Column("is_deleted")]
+    public bool IsDeleted { get; set; }
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 }
 
 [Table("fs_purcbook")]
@@ -307,6 +331,12 @@ public sealed class FSPurcBook : CompanyScopedEntity
     
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
+
+    [Column("is_deleted")]
+    public bool IsDeleted { get; set; }
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 }
 
 [Table("fs_adjstmnt")]
@@ -346,6 +376,12 @@ public sealed class FSAdjustment : CompanyScopedEntity
     
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
+
+    [Column("is_deleted")]
+    public bool IsDeleted { get; set; }
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 }
 
 [Table("fs_journals")]
@@ -385,6 +421,12 @@ public sealed class FSJournal : CompanyScopedEntity
     
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
+
+    [Column("is_deleted")]
+    public bool IsDeleted { get; set; }
+
+    [Column("deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 }
 
 [Table("fs_effects")]

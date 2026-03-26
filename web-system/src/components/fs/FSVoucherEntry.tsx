@@ -1,6 +1,7 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback, useMemo } from 'react'
 import axios from 'axios'
 import './FSVoucherEntry.css'
+import { useFsUnsavedStore } from '../../stores/fsUnsavedStore'
 
 // --- Types ---
 interface CheckMaster {
@@ -124,6 +125,14 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
   // Unbalanced checks (for QUIT validation)
   const [unbalancedChecks, setUnbalancedChecks] = useState<{ ckNo: string; balance: number }[]>([])
   const [showUnbalanced, setShowUnbalanced] = useState(false)
+  const [showPostingPreview, setShowPostingPreview] = useState(false)
+  const [showRecycleBin, setShowRecycleBin] = useState(false)
+  const [deletedMasters, setDeletedMasters] = useState<CheckMaster[]>([])
+  const [showClone, setShowClone] = useState(false)
+  const [cloneJvNo, setCloneJvNo] = useState('')
+  const [cloneCkNo, setCloneCkNo] = useState('')
+  const [cloneDate, setCloneDate] = useState(new Date().toISOString().split('T')[0])
+  const setHasUnsavedChanges = useFsUnsavedStore((state) => state.setHasUnsavedChanges)
 
   // Current master
   const currentMaster = masters[currentMasterIdx] ?? null
@@ -132,6 +141,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
   const totalDebit  = lines.reduce((s, l) => s + (l.jDOrC === 'D' ? l.jCkAmt : 0), 0)
   const totalCredit = lines.reduce((s, l) => s + (l.jDOrC === 'C' ? l.jCkAmt : 0), 0)
   const isLineBalanced = Math.abs(totalDebit - totalCredit) < 0.01
+  const accountLookup = useMemo(() => new Map(accounts.map((a) => [a.acctCode.toUpperCase(), a.acctDesc])), [accounts])
 
   // ---- Data Loading ----
   const loadMasters = useCallback(async () => {
@@ -187,6 +197,60 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
     if (currentMaster) void loadLines(currentMaster.jCkNo)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMasterIdx])
+
+  useEffect(() => {
+    const hasDraft =
+      mode !== 'view' ||
+      !!addLineRow.acctCode.trim() || !!addLineRow.debit.trim() || !!addLineRow.credit.trim() ||
+      !!editLineRow.acctCode.trim() || !!editLineRow.debit.trim() || !!editLineRow.credit.trim()
+
+    setHasUnsavedChanges(hasDraft || editingLineId !== null)
+
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!hasDraft && editingLineId === null) return
+      event.preventDefault()
+      event.returnValue = ''
+    }
+
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload)
+      setHasUnsavedChanges(false)
+    }
+  }, [mode, addLineRow, editLineRow, editingLineId, setHasUnsavedChanges])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase()
+      if (event.ctrlKey && key === 's') {
+        event.preventDefault()
+        if (mode === 'addMaster') {
+          void handleSaveMaster()
+        } else if (mode === 'editMaster') {
+          void handleUpdateMaster()
+        } else if (editingLineId !== null) {
+          void handleUpdateLine()
+        } else {
+          void handleSaveAddLine()
+        }
+      }
+      if (event.ctrlKey && key === 'f') {
+        event.preventDefault()
+        setShowFind(true)
+      }
+      if (event.altKey && event.key === 'ArrowLeft') {
+        event.preventDefault()
+        void handlePrevCDV()
+      }
+      if (event.altKey && event.key === 'ArrowRight') {
+        event.preventDefault()
+        void handleNextCDV()
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [mode, editingLineId, currentMasterIdx, masters.length, addLineRow, editLineRow, masterForm])
 
   // ---- Navigation ----
   const handleNextCDV = async () => {
@@ -275,6 +339,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
   const handleSaveAddLine = async () => {
     if (!currentMaster) { setMessage('No check selected'); return }
     if (!addLineRow.acctCode.trim()) { setMessage('Account Code is required'); return }
+    if (!accountLookup.has(addLineRow.acctCode.trim().toUpperCase())) { setMessage('Please choose a valid account code from the list.'); return }
     const dv = parseFloat(addLineRow.debit  || '0')
     const cv = parseFloat(addLineRow.credit || '0')
     if (dv === 0 && cv === 0) { setMessage('Enter either a Debit or Credit amount'); return }
@@ -295,7 +360,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       await loadUnbalanced()
       setMessage(`Line added: ${created.acctCode}`)
     } catch (err: any) {
-      setMessage(`Save failed: ${err.response?.data?.error ?? err.message}`)
+      setMessage(`Unable to save line item: ${err.response?.data?.error ?? err.message}`)
     } finally {
       setSaving(false)
     }
@@ -318,6 +383,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
     const targetLine = lines.find(l => l.id === editingLineId)
     if (!targetLine) return
     if (!editLineRow.acctCode.trim()) { setMessage('Account Code is required'); return }
+    if (!accountLookup.has(editLineRow.acctCode.trim().toUpperCase())) { setMessage('Please choose a valid account code from the list.'); return }
     const dv = parseFloat(editLineRow.debit  || '0')
     const cv = parseFloat(editLineRow.credit || '0')
     if (dv === 0 && cv === 0) { setMessage('Enter either a Debit or Credit amount'); return }
@@ -338,7 +404,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       await loadUnbalanced()
       setMessage('Line updated.')
     } catch (err: any) {
-      setMessage(`Update failed: ${err.response?.data?.error ?? err.message}`)
+      setMessage(`Unable to update line item: ${err.response?.data?.error ?? err.message}`)
     } finally {
       setSaving(false)
     }
@@ -401,7 +467,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
         await loadLines(newMasters[Math.max(0, currentMasterIdx - 1)]?.jCkNo ?? '')
       }
       await loadUnbalanced()
-      setMessage('Check deleted.')
+      setMessage('Check moved to recycle bin.')
     } catch (err: any) {
       setMessage(`Delete failed: ${err.message}`)
     }
@@ -416,7 +482,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       if (editingLineId === line.id) setEditingLineId(null)
       await loadMasters()
       await loadUnbalanced()
-      setMessage('Line deleted.')
+      setMessage('Line moved to recycle bin.')
     } catch (err: any) {
       setMessage(`Delete failed: ${err.message}`)
     }
@@ -429,7 +495,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       setShowUnbalanced(true)
       return
     }
-    window.history.back()
+    setShowPostingPreview(true)
   }
 
   // ---- Account browse ----
@@ -445,6 +511,45 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       } catch { /* ignore */ }
     }
     setShowAcctBrowse(true)
+  }
+
+  const loadDeletedChecks = async () => {
+    try {
+      const resp = await axios.get(`${API_BASE}/vouchers/deleted`)
+      setDeletedMasters((resp.data?.checks ?? []).map(mapMaster))
+    } catch {
+      setDeletedMasters([])
+    }
+  }
+
+  const restoreCheck = async (checkNo: string) => {
+    try {
+      await axios.post(`${API_BASE}/vouchers/restore/master/${encodeURIComponent(checkNo)}`)
+      setMessage(`Check ${checkNo} restored.`)
+      await loadDeletedChecks()
+      await loadMasters()
+    } catch (err: any) {
+      setMessage(err.response?.data?.message ?? 'Unable to restore selected check.')
+    }
+  }
+
+  const cloneCurrentCheck = async () => {
+    if (!currentMaster) { setMessage('No check selected to clone.'); return }
+    if (!cloneJvNo.trim() || !cloneCkNo.trim()) { setMessage('Please provide new CDV and check numbers.'); return }
+    try {
+      await axios.post(`${API_BASE}/vouchers/clone/${encodeURIComponent(currentMaster.jCkNo)}`, null, {
+        params: {
+          newJvNo: cloneJvNo.trim().toUpperCase(),
+          newCkNo: cloneCkNo.trim().toUpperCase(),
+          newDate: cloneDate
+        }
+      })
+      setShowClone(false)
+      setMessage(`Cloned ${currentMaster.jCkNo} to ${cloneCkNo.trim().toUpperCase()}.`)
+      await loadMasters()
+    } catch (err: any) {
+      setMessage(err.response?.data?.error ?? err.response?.data?.message ?? 'Unable to clone selected check.')
+    }
   }
 
   // ============================
@@ -562,6 +667,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                               <input
                                 style={{ ...lineInput('#fbbf24'), textAlign: 'left', width: '70px', fontFamily: 'monospace' }}
                                 value={editLineRow.acctCode}
+                                list="voucher-account-list"
                                 onChange={e => setEditLineRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))}
                                 maxLength={4}
                                 onKeyDown={e => { if (e.key === 'Enter') void handleUpdateLine() }}
@@ -628,6 +734,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                             style={{ ...lineInput('#86efac'), textAlign: 'left', width: '70px', fontFamily: 'monospace' }}
                             placeholder="ACCT"
                             value={addLineRow.acctCode}
+                            list="voucher-account-list"
                             onChange={e => setAddLineRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))}
                             maxLength={4}
                             onKeyDown={e => { if (e.key === 'Enter') void handleSaveAddLine() }}
@@ -679,7 +786,13 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                 </table>
                 <p style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>
                   Double-click a row to edit inline. In the green row: enter an amount in <strong style={{color:'#1e40af'}}>Debit</strong> OR <strong style={{color:'#9d174d'}}>Credit</strong> — typing in one clears the other automatically.
+                  Shortcuts: Ctrl+S save, Ctrl+F find, Alt+Left/Alt+Right previous/next CDV.
                 </p>
+                <datalist id="voucher-account-list">
+                  {accounts.map((a) => (
+                    <option key={a.acctCode} value={a.acctCode}>{a.acctDesc}</option>
+                  ))}
+                </datalist>
               </div>
             )}
 
@@ -689,6 +802,8 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                 <button className="btn btn-primary" onClick={handleAddMaster}>ADD</button>
                 <button className="btn btn-secondary" onClick={() => { setFindJv(''); setShowFind(true) }}>FIND</button>
                 <button className="btn btn-secondary" onClick={handleEditMaster} disabled={!currentMaster}>EDIT</button>
+                <button className="btn btn-secondary" onClick={() => { setCloneJvNo(''); setCloneCkNo(''); setCloneDate(new Date().toISOString().split('T')[0]); setShowClone(true) }} disabled={!currentMaster}>CLONE</button>
+                <button className="btn btn-secondary" onClick={() => { void loadDeletedChecks(); setShowRecycleBin(true) }}>RECYCLE BIN</button>
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 <button className="btn btn-secondary" onClick={handlePrevCDV} disabled={masters.length === 0}>Prev-CDV</button>
@@ -863,6 +978,84 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                 </table>
               )
             }
+          </div>
+        </div>
+      )}
+
+      {showPostingPreview && (
+        <div className="modal-overlay" onClick={() => setShowPostingPreview(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Posting Preview</h3>
+              <button className="modal-close" onClick={() => setShowPostingPreview(false)}>—</button>
+            </div>
+            <p style={{ fontSize: 13, marginBottom: 10 }}>Review this voucher before leaving the entry screen.</p>
+            <table className="data-table" style={{ fontSize: 13, marginBottom: 12 }}>
+              <tbody>
+                <tr><td>Total Debit</td><td style={{ textAlign: 'right' }}>{totalDebit.toFixed(2)}</td></tr>
+                <tr><td>Total Credit</td><td style={{ textAlign: 'right' }}>{totalCredit.toFixed(2)}</td></tr>
+                <tr><td>Variance</td><td style={{ textAlign: 'right', color: isLineBalanced ? '#166534' : '#991b1b' }}>{(totalDebit - totalCredit).toFixed(2)}</td></tr>
+              </tbody>
+            </table>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button className="btn btn-secondary" onClick={() => setShowPostingPreview(false)}>Back</button>
+              <button className="btn btn-primary" onClick={() => window.history.back()} disabled={!isLineBalanced}>Confirm Exit</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showClone && (
+        <div className="modal-overlay" onClick={() => setShowClone(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Clone Voucher</h3>
+              <button className="modal-close" onClick={() => setShowClone(false)}>—</button>
+            </div>
+            <div className="form-group">
+              <label className="form-label">New CDV No.</label>
+              <input className="form-input" value={cloneJvNo} onChange={e => setCloneJvNo(e.target.value.toUpperCase())} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">New Check No.</label>
+              <input className="form-input" value={cloneCkNo} onChange={e => setCloneCkNo(e.target.value.toUpperCase())} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Date</label>
+              <input type="date" className="form-input" value={cloneDate} onChange={e => setCloneDate(e.target.value)} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button className="btn btn-secondary" onClick={() => setShowClone(false)}>Cancel</button>
+              <button className="btn btn-primary" onClick={() => void cloneCurrentCheck()}>Clone</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRecycleBin && (
+        <div className="modal-overlay" onClick={() => setShowRecycleBin(false)}>
+          <div className="modal" style={{ maxWidth: '760px', maxHeight: '80vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Deleted Vouchers</h3>
+              <button className="modal-close" onClick={() => setShowRecycleBin(false)}>—</button>
+            </div>
+            <table className="data-table" style={{ fontSize: 12 }}>
+              <thead><tr><th>CDV</th><th>Check</th><th>Date</th><th>Payee</th><th style={{ textAlign: 'right' }}>Amount</th><th></th></tr></thead>
+              <tbody>
+                {deletedMasters.length === 0 ? (
+                  <tr><td colSpan={6} style={{ textAlign: 'center' }}>No deleted vouchers found.</td></tr>
+                ) : deletedMasters.map((m) => (
+                  <tr key={m.id}>
+                    <td>{m.jJvNo}</td>
+                    <td>{m.jCkNo}</td>
+                    <td>{displayDate(m.jDate)}</td>
+                    <td>{m.jPayTo}</td>
+                    <td style={{ textAlign: 'right' }}>{m.jCkAmt.toFixed(2)}</td>
+                    <td><button className="btn btn-secondary" onClick={() => void restoreCheck(m.jCkNo)}>Restore</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

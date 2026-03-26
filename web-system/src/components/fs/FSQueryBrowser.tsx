@@ -87,46 +87,22 @@ const SEARCH_LABEL: Record<QueryType, string> = {
 }
 
 // Which field is searched / seeked (matches original index-based seek)
-const SEARCH_KEY: Record<QueryType, string> = {
-  accounts:   'acctCode',
-  cdv:        'jJvNo',
-  receipt:    'jDate',
-  sales:      'jDate',
-  general:    'jDate',
-  purchase:   'jDate',
-  adjustment: 'jDate',
-}
-
-async function fetchData(qt: QueryType): Promise<any[]> {
-  switch (qt) {
-    case 'accounts':
-      return (await axios.get(`${API_BASE}/accounts`)).data?.data ?? []
-    case 'cdv':
-      return (await axios.get(`${API_BASE}/vouchers/masters`)).data?.data ?? []
-    case 'receipt':
-      return (await axios.get(`${API_BASE}/journals/receipts`)).data?.data ?? []
-    case 'sales':
-      return (await axios.get(`${API_BASE}/journals/sales`)).data?.data ?? []
-    case 'general':
-      return (await axios.get(`${API_BASE}/journals/general`)).data?.data ?? []
-    case 'purchase':
-      return (await axios.get(`${API_BASE}/journals/purchase`)).data?.data ?? []
-    case 'adjustment':
-      return (await axios.get(`${API_BASE}/journals/adjustments`)).data?.data ?? []
-  }
-}
-
 export default function FSQueryBrowser() {
   const { queryType } = useParams<{ queryType: string }>()
   const qt = (queryType ?? 'accounts') as QueryType
   const columns  = COLUMNS[qt]     ?? JOURNAL_COLS
   const title    = TITLES[qt]      ?? 'Query'
   const searchLabel = SEARCH_LABEL[qt] ?? 'Search:'
-  const searchKey   = SEARCH_KEY[qt]   ?? 'id'
 
   const [rows,     setRows]     = useState<any[]>([])
   const [filtered, setFiltered] = useState<any[]>([])
   const [search,   setSearch]   = useState('')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
+  const [includeDeleted, setIncludeDeleted] = useState(false)
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(50)
+  const [total, setTotal] = useState(0)
   const [loading,  setLoading]  = useState(true)
   const [error,    setError]    = useState('')
 
@@ -135,33 +111,39 @@ export default function FSQueryBrowser() {
     setLoading(true)
     setError('')
     setSearch('')
+    setFromDate('')
+    setToDate('')
+    setIncludeDeleted(false)
+    setPage(1)
     setRows([])
     setFiltered([])
 
-    fetchData(qt)
-      .then(data => {
-        setRows(data)
-        setFiltered(data)
-      })
-      .catch(e => setError(e.message ?? 'Failed to load data'))
-      .finally(() => setLoading(false))
+    setLoading(false)
   }, [qt])
 
-  // Client-side prefix filter (mirrors original's softseek)
+  // Server-side filtering/pagination for large datasets
   useEffect(() => {
-    if (!search.trim()) {
-      setFiltered(rows)
-      return
-    }
-    const s = search.toLowerCase()
-    setFiltered(
-      rows.filter(r => {
-        const raw = r[searchKey]
-        if (raw == null) return false
-        return String(raw).toLowerCase().startsWith(s)
+    setLoading(true)
+    setError('')
+    axios.get(`${API_BASE}/query/${qt}`, {
+      params: {
+        search: search.trim() || undefined,
+        from: fromDate || undefined,
+        to: toDate || undefined,
+        page,
+        pageSize,
+        includeDeleted
+      }
+    })
+      .then(resp => {
+        const data = resp.data?.data ?? []
+        setRows(data)
+        setFiltered(data)
+        setTotal(resp.data?.total ?? data.length)
       })
-    )
-  }, [search, rows, searchKey])
+      .catch(e => setError(e.response?.data?.error ?? e.message ?? 'Failed to load data'))
+      .finally(() => setLoading(false))
+  }, [qt, search, fromDate, toDate, page, pageSize, includeDeleted])
 
   const getCellVal = (row: any, col: ColumnDef): string => {
     const raw = row[col.key]
@@ -198,19 +180,25 @@ export default function FSQueryBrowser() {
           type="text"
           className="form-input"
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={e => { setPage(1); setSearch(e.target.value) }}
           placeholder="Type to seek…"
           style={{ width: 220 }}
         />
+        <input type="date" className="form-input" value={fromDate} onChange={e => { setPage(1); setFromDate(e.target.value) }} style={{ width: 160 }} />
+        <input type="date" className="form-input" value={toDate} onChange={e => { setPage(1); setToDate(e.target.value) }} style={{ width: 160 }} />
+        {qt !== 'accounts' && (
+          <label style={{ fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <input type="checkbox" checked={includeDeleted} onChange={e => { setPage(1); setIncludeDeleted(e.target.checked) }} />
+            Recycle Bin
+          </label>
+        )}
         {search && (
           <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 10px' }} onClick={() => setSearch('')}>
             Clear
           </button>
         )}
         <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 4 }}>
-          {filtered.length === rows.length
-            ? `${rows.length} record(s)`
-            : `${filtered.length} of ${rows.length} record(s)`}
+          {total} record(s)
         </span>
       </div>
 
@@ -257,6 +245,19 @@ export default function FSQueryBrowser() {
           </table>
         </div>
       )}
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
+        <button className="btn btn-secondary" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Previous</button>
+        <span style={{ fontSize: 12 }}>Page {page}</span>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <select className="form-input" value={pageSize} onChange={e => { setPage(1); setPageSize(parseInt(e.target.value, 10)) }} style={{ width: 90 }}>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          <button className="btn btn-secondary" disabled={page * pageSize >= total} onClick={() => setPage(p => p + 1)}>Next</button>
+        </div>
+      </div>
     </div>
   )
 }

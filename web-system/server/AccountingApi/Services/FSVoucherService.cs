@@ -256,15 +256,22 @@ public class FSVoucherService : IFSVoucherService
         if (checkMaster == null)
             return false;
 
-        // Delete all associated voucher lines first
+        // Soft-delete all associated voucher lines first
+        var now = DateTime.UtcNow;
         var lines = await _context.FSCheckVou
             .Where(v => v.JCkNo == checkNo.Trim())
             .ToListAsync();
 
-        _context.FSCheckVou.RemoveRange(lines);
+        foreach (var line in lines)
+        {
+            line.IsDeleted = true;
+            line.DeletedAt = now;
+            line.UpdatedAt = now;
+        }
 
-        // Delete check master
-        _context.FSCheckMas.Remove(checkMaster);
+        checkMaster.IsDeleted = true;
+        checkMaster.DeletedAt = now;
+        checkMaster.UpdatedAt = now;
 
         await _context.SaveChangesAsync();
 
@@ -377,9 +384,10 @@ public class FSVoucherService : IFSVoucherService
         if (line == null)
             return false;
 
-        var checkNo = line.JCkNo; // Save checkNo before deleting line
-        
-        _context.FSCheckVou.Remove(line);
+        var checkNo = line.JCkNo;
+        line.IsDeleted = true;
+        line.DeletedAt = DateTime.UtcNow;
+        line.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
         // Auto-recalculate check master's j_ck_amt after deleting line

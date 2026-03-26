@@ -1,6 +1,7 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
+import { useFsUnsavedStore } from '../../stores/fsUnsavedStore'
 
 // --- Types ---
 interface JournalRecord {
@@ -114,6 +115,13 @@ export default function FSJournalEntry() {
   const [isLoading, setIsLoading] = useState(true)
   const [message, setMessage] = useState('')
   const [saving, setSaving] = useState(false)
+  const [showRecycleBin, setShowRecycleBin] = useState(false)
+  const [deletedRows, setDeletedRows] = useState<JournalRecord[]>([])
+  const [showClone, setShowClone] = useState(false)
+  const [cloneFromRef, setCloneFromRef] = useState('')
+  const [cloneToRef, setCloneToRef] = useState('')
+  const [cloneDate, setCloneDate] = useState(today)
+  const setHasUnsavedChanges = useFsUnsavedStore((state) => state.setHasUnsavedChanges)
 
   // Inline editing state
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -131,10 +139,16 @@ export default function FSJournalEntry() {
   const [showFind, setShowFind] = useState(false)
   const [findDate, setFindDate] = useState('')
 
+  const accountLookup = useMemo(() => new Map(accounts.map((a) => [a.acctCode.toUpperCase(), a.acctDesc])), [accounts])
+
   // Derived totals
   const totalDebit  = records.reduce((s, r) => s + (r.jDOrC === 'D' ? r.jCkAmt : 0), 0)
   const totalCredit = records.reduce((s, r) => s + (r.jDOrC === 'C' ? r.jCkAmt : 0), 0)
   const isBalanced  = Math.abs(totalDebit - totalCredit) < 0.01
+  const addPendingDebit = parseFloat(addRow.debit || '0')
+  const addPendingCredit = parseFloat(addRow.credit || '0')
+  const projectedDebit = totalDebit + (Number.isFinite(addPendingDebit) ? addPendingDebit : 0)
+  const projectedCredit = totalCredit + (Number.isFinite(addPendingCredit) ? addPendingCredit : 0)
 
   // ---- Data loading ----
   const loadRecords = useCallback(async () => {
@@ -161,6 +175,57 @@ export default function FSJournalEntry() {
     void loadRecords()
   }, [loadRecords])
 
+  useEffect(() => {
+    const hasDraft =
+      !!addRow.acctCode.trim() || !!addRow.debit.trim() || !!addRow.credit.trim() ||
+      !!editRow.acctCode.trim() || !!editRow.debit.trim() || !!editRow.credit.trim()
+    setHasUnsavedChanges(hasDraft || editingId !== null)
+
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!hasDraft && editingId === null) return
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload)
+      setHasUnsavedChanges(false)
+    }
+  }, [addRow, editRow, editingId, setHasUnsavedChanges])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase()
+      if (event.ctrlKey && key === 's') {
+        event.preventDefault()
+        if (editingId !== null) {
+          void handleSaveEdit()
+        } else {
+          void handleSaveAdd()
+        }
+      }
+      if (event.ctrlKey && key === 'f') {
+        event.preventDefault()
+        setShowFind(true)
+      }
+      if (event.key === 'Escape' && editingId !== null) {
+        cancelEdit()
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [editingId, addRow, editRow])
+
+  const loadDeletedRows = async () => {
+    try {
+      const resp = await axios.get(`${API_BASE}/journals/deleted/${endpoint}`)
+      setDeletedRows((resp.data?.data ?? []).map(mapRecord))
+    } catch {
+      setDeletedRows([])
+    }
+  }
+
   // ---- Account browse ----
   const openAcctBrowse = async (target: 'add' | 'edit') => {
     setAcctTarget(target)
@@ -179,6 +244,7 @@ export default function FSJournalEntry() {
   // ---- ADD ROW ----
   const handleSaveAdd = async () => {
     if (!addRow.acctCode.trim()) { setMessage('Account Code is required'); return }
+    if (!accountLookup.has(addRow.acctCode.trim().toUpperCase())) { setMessage('Please choose a valid account code from the list.'); return }
     const dv = parseFloat(addRow.debit  || '0')
     const cv = parseFloat(addRow.credit || '0')
     if (dv === 0 && cv === 0) { setMessage('Enter either a Debit or Credit amount'); return }
@@ -198,7 +264,7 @@ export default function FSJournalEntry() {
       setAddRow(r => ({ ...r, acctCode: '', debit: '', credit: '' }))
       setMessage(`Added: ${created.jJvNo} / ${created.acctCode}`)
     } catch (err: any) {
-      setMessage(`Save failed: ${err.response?.data?.error ?? err.message}`)
+      setMessage(`Unable to save this entry: ${err.response?.data?.error ?? err.message}`)
     } finally {
       setSaving(false)
     }
@@ -221,6 +287,7 @@ export default function FSJournalEntry() {
   const handleSaveEdit = async () => {
     if (editingId === null) return
     if (!editRow.acctCode.trim()) { setMessage('Account Code is required'); return }
+    if (!accountLookup.has(editRow.acctCode.trim().toUpperCase())) { setMessage('Please choose a valid account code from the list.'); return }
     const dv = parseFloat(editRow.debit  || '0')
     const cv = parseFloat(editRow.credit || '0')
     if (dv === 0 && cv === 0) { setMessage('Enter either a Debit or Credit amount'); return }
@@ -240,7 +307,7 @@ export default function FSJournalEntry() {
       setEditingId(null)
       setMessage('Row updated.')
     } catch (err: any) {
-      setMessage(`Update failed: ${err.response?.data?.error ?? err.message}`)
+      setMessage(`Unable to update this entry: ${err.response?.data?.error ?? err.message}`)
     } finally {
       setSaving(false)
     }
@@ -255,9 +322,40 @@ export default function FSJournalEntry() {
       await axios.delete(`${API_BASE}/journals/${endpoint}/${r.id}`)
       setRecords(prev => prev.filter(x => x.id !== r.id))
       if (editingId === r.id) setEditingId(null)
-      setMessage('Row deleted.')
+      setMessage('Row moved to recycle bin.')
     } catch (err: any) {
       setMessage(`Delete failed: ${err.message}`)
+    }
+  }
+
+  const handleRestore = async (id: number) => {
+    try {
+      await axios.post(`${API_BASE}/journals/${endpoint}/restore/${id}`)
+      setMessage('Entry restored successfully.')
+      await loadDeletedRows()
+      await loadRecords()
+    } catch (err: any) {
+      setMessage(err.response?.data?.message ?? 'Unable to restore selected entry.')
+    }
+  }
+
+  const handleClone = async () => {
+    if (!cloneFromRef.trim() || !cloneToRef.trim()) {
+      setMessage('Please enter both source and target reference numbers for clone.')
+      return
+    }
+    try {
+      await axios.post(`${API_BASE}/journals/${endpoint}/clone/${encodeURIComponent(cloneFromRef.trim())}`, null, {
+        params: {
+          newJvNo: cloneToRef.trim().toUpperCase(),
+          newDate: cloneDate
+        }
+      })
+      setShowClone(false)
+      setMessage(`Cloned ${cloneFromRef.trim().toUpperCase()} to ${cloneToRef.trim().toUpperCase()}.`)
+      await loadRecords()
+    } catch (err: any) {
+      setMessage(err.response?.data?.error ?? err.response?.data?.message ?? 'Unable to clone transaction.')
     }
   }
 
@@ -301,6 +399,8 @@ export default function FSJournalEntry() {
           <p className="subtitle" style={{ margin: '3px 0 0' }}>A_EDTJNL.PRG — {records.length} record{records.length !== 1 ? 's' : ''}</p>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
+          <button className="btn btn-secondary" onClick={() => { setCloneFromRef(addRow.jJvNo || ''); setCloneToRef(''); setCloneDate(today); setShowClone(true) }}>CLONE</button>
+          <button className="btn btn-secondary" onClick={() => { void loadDeletedRows(); setShowRecycleBin(true) }}>RECYCLE BIN</button>
           <button className="btn btn-secondary" onClick={() => { setFindDate(''); setShowFind(true) }}>FIND</button>
           <button
             className="btn btn-secondary"
@@ -366,6 +466,7 @@ export default function FSJournalEntry() {
                 <td style={{ padding: '4px 6px' }}>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     <input style={{ ...cellInput('#f59e0b'), textAlign: 'left', flex: 1 }} value={editRow.acctCode}
+                      list="journal-account-list"
                       onChange={e => setEditRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))} maxLength={4} placeholder="0000" />
                     <button type="button" onClick={() => openAcctBrowse('edit')}
                       style={{ padding: '3px 6px', fontSize: '11px', cursor: 'pointer', border: '1px solid #ddd', borderRadius: '3px', background: '#f9fafb', flexShrink: 0 }}>…</button>
@@ -428,6 +529,7 @@ export default function FSJournalEntry() {
               <td style={{ padding: '5px 6px' }}>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <input style={{ ...cellInput('#86efac'), textAlign: 'left', flex: 1 }} value={addRow.acctCode} placeholder="Acct"
+                    list="journal-account-list"
                     onChange={e => setAddRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))} maxLength={4}
                     onKeyDown={e => { if (e.key === 'Enter') void handleSaveAdd() }} />
                   <button type="button" onClick={() => openAcctBrowse('add')}
@@ -481,8 +583,16 @@ export default function FSJournalEntry() {
         </table>
       </div>
       <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '6px' }}>
-        Double-click any row to edit inline. Fill the green row to add new entries (press Enter to save).
+        Double-click any row to edit inline. Fill the green row to add new entries (press Enter to save). Shortcuts: Ctrl+S save, Ctrl+F find, Esc cancel edit.
       </p>
+      <p style={{ fontSize: '12px', color: '#0f172a', marginTop: '4px' }}>
+        Projected totals with current draft: Debit {projectedDebit.toFixed(2)} | Credit {projectedCredit.toFixed(2)} | Variance {(projectedDebit - projectedCredit).toFixed(2)}
+      </p>
+      <datalist id="journal-account-list">
+        {accounts.map((a) => (
+          <option key={a.acctCode} value={a.acctCode}>{a.acctDesc}</option>
+        ))}
+      </datalist>
 
       {/* â”€â”€ FIND Dialog â”€â”€ */}
       {showFind && (
@@ -534,6 +644,61 @@ export default function FSJournalEntry() {
                 </table>
               )
             }
+          </div>
+        </div>
+      )}
+
+      {showClone && (
+        <div className="modal-overlay" onClick={() => setShowClone(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Clone Transaction</h3>
+              <button className="modal-close" onClick={() => setShowClone(false)}>—</button>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Source Ref</label>
+              <input className="form-input" value={cloneFromRef} onChange={e => setCloneFromRef(e.target.value.toUpperCase())} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">New Ref</label>
+              <input className="form-input" value={cloneToRef} onChange={e => setCloneToRef(e.target.value.toUpperCase())} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Posting Date</label>
+              <input type="date" className="form-input" value={cloneDate} onChange={e => setCloneDate(e.target.value)} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button className="btn btn-secondary" onClick={() => setShowClone(false)}>Cancel</button>
+              <button className="btn btn-primary" onClick={() => void handleClone()}>Clone</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRecycleBin && (
+        <div className="modal-overlay" onClick={() => setShowRecycleBin(false)}>
+          <div className="modal" style={{ maxWidth: '760px', maxHeight: '80vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Recycle Bin</h3>
+              <button className="modal-close" onClick={() => setShowRecycleBin(false)}>—</button>
+            </div>
+            <table className="data-table" style={{ fontSize: 12 }}>
+              <thead><tr><th>Ref</th><th>Date</th><th>Acct</th><th style={{ textAlign: 'right' }}>Amt</th><th>D/C</th><th></th></tr></thead>
+              <tbody>
+                {deletedRows.length === 0 ? (
+                  <tr><td colSpan={6} style={{ textAlign: 'center' }}>No deleted entries found.</td></tr>
+                ) : deletedRows.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.jJvNo}</td>
+                    <td>{displayDate(row.jDate)}</td>
+                    <td>{row.acctCode}</td>
+                    <td style={{ textAlign: 'right' }}>{row.jCkAmt.toFixed(2)}</td>
+                    <td>{row.jDOrC}</td>
+                    <td><button className="btn btn-secondary" onClick={() => void handleRestore(row.id)}>Restore</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

@@ -135,7 +135,9 @@ public class FSJournalService : IFSJournalService
         if (entry == null)
             return false;
 
-        _context.FSCashRcpt.Remove(entry);
+        entry.IsDeleted = true;
+        entry.DeletedAt = DateTime.UtcNow;
+        entry.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
         return true;
@@ -210,7 +212,9 @@ public class FSJournalService : IFSJournalService
         if (entry == null)
             return false;
 
-        _context.FSSaleBook.Remove(entry);
+        entry.IsDeleted = true;
+        entry.DeletedAt = DateTime.UtcNow;
+        entry.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
         return true;
@@ -285,7 +289,9 @@ public class FSJournalService : IFSJournalService
         if (entry == null)
             return false;
 
-        _context.FSJournals.Remove(entry);
+        entry.IsDeleted = true;
+        entry.DeletedAt = DateTime.UtcNow;
+        entry.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
         return true;
@@ -360,7 +366,9 @@ public class FSJournalService : IFSJournalService
         if (entry == null)
             return false;
 
-        _context.FSPurcBook.Remove(entry);
+        entry.IsDeleted = true;
+        entry.DeletedAt = DateTime.UtcNow;
+        entry.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
         return true;
@@ -435,7 +443,9 @@ public class FSJournalService : IFSJournalService
         if (entry == null)
             return false;
 
-        _context.FSAdjustment.Remove(entry);
+        entry.IsDeleted = true;
+        entry.DeletedAt = DateTime.UtcNow;
+        entry.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
         return true;

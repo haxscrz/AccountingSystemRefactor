@@ -23,6 +23,7 @@ public sealed class FSController : ControllerBase
     private readonly AccountingDbContext  _db;
     private readonly IConfiguration       _config;
     private readonly LegacySeedingService _seedingService;
+    private readonly ICompanyContextAccessor _companyContextAccessor;
 
     public FSController(
         LegacyDataService legacyDataService,
@@ -33,7 +34,8 @@ public sealed class FSController : ControllerBase
         FSReportService reportService,
         AccountingDbContext db,
         IConfiguration config,
-        LegacySeedingService seedingService)
+        LegacySeedingService seedingService,
+        ICompanyContextAccessor companyContextAccessor)
     {
         _legacyDataService = legacyDataService;
         _accountService    = (FSAccountService)accountService;
@@ -44,6 +46,7 @@ public sealed class FSController : ControllerBase
         _db                = db;
         _config            = config;
         _seedingService    = seedingService;
+        _companyContextAccessor = companyContextAccessor;
     }
 
     [HttpGet("chart-of-accounts")]
@@ -99,6 +102,34 @@ public sealed class FSController : ControllerBase
             dataset.RowCount,
             Rows = dataset.Rows
         });
+    }
+
+    [HttpGet("query/{queryType}")]
+    public async Task<IActionResult> QueryData(
+        string queryType,
+        [FromQuery] string? search,
+        [FromQuery] DateTime? from,
+        [FromQuery] DateTime? to,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50,
+        [FromQuery] bool includeDeleted = false)
+    {
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 250);
+
+        object result = queryType.ToLowerInvariant() switch
+        {
+            "accounts" => await QueryAccountsAsync(search, page, pageSize),
+            "cdv" => await QueryCdvAsync(search, from, to, page, pageSize, includeDeleted),
+            "receipt" => await QueryJournalAsync(_db.FSCashRcpt, search, from, to, page, pageSize, includeDeleted),
+            "sales" => await QueryJournalAsync(_db.FSSaleBook, search, from, to, page, pageSize, includeDeleted),
+            "general" => await QueryJournalAsync(_db.FSJournals, search, from, to, page, pageSize, includeDeleted),
+            "purchase" => await QueryJournalAsync(_db.FSPurcBook, search, from, to, page, pageSize, includeDeleted),
+            "adjustment" => await QueryJournalAsync(_db.FSAdjustment, search, from, to, page, pageSize, includeDeleted),
+            _ => throw new ArgumentException($"Unsupported query type '{queryType}'")
+        };
+
+        return Ok(result);
     }
 
     #region Chart of Accounts (9 fields: acct_code, acct_desc, open_bal, cur_debit, cur_credit, gl_report, gl_effect, formula, initialize)
@@ -454,7 +485,122 @@ public sealed class FSController : ControllerBase
         if (!deleted)
             return NotFound(new { message = $"Line item {lineId} not found" });
 
-        return Ok(new { message = "Line item deleted successfully" });
+        return Ok(new { message = "Line moved to recycle bin" });
+    }
+
+    [HttpGet("vouchers/deleted")]
+    public async Task<IActionResult> GetDeletedVouchers()
+    {
+        var companyCode = _companyContextAccessor.CompanyCode;
+        var checks = await _db.FSCheckMas
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .Where(x => x.CompanyCode == companyCode && x.IsDeleted)
+            .OrderByDescending(x => x.DeletedAt)
+            .ToListAsync();
+
+        var lines = await _db.FSCheckVou
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .Where(x => x.CompanyCode == companyCode && x.IsDeleted)
+            .OrderByDescending(x => x.DeletedAt)
+            .ToListAsync();
+
+        return Ok(new { checks, lines });
+    }
+
+    [HttpPost("vouchers/restore/master/{checkNo}")]
+    public async Task<IActionResult> RestoreCheckMaster(string checkNo)
+    {
+        var companyCode = _companyContextAccessor.CompanyCode;
+        var check = await _db.FSCheckMas
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(x => x.CompanyCode == companyCode && x.JCkNo == checkNo && x.IsDeleted);
+
+        if (check == null)
+            return NotFound(new { message = $"Deleted check '{checkNo}' not found" });
+
+        check.IsDeleted = false;
+        check.DeletedAt = null;
+        check.UpdatedAt = DateTime.UtcNow;
+
+        var lines = await _db.FSCheckVou
+            .IgnoreQueryFilters()
+            .Where(x => x.CompanyCode == companyCode && x.JCkNo == checkNo && x.IsDeleted)
+            .ToListAsync();
+        foreach (var line in lines)
+        {
+            line.IsDeleted = false;
+            line.DeletedAt = null;
+            line.UpdatedAt = DateTime.UtcNow;
+        }
+
+        await _db.SaveChangesAsync();
+        return Ok(new { message = $"Check '{checkNo}' restored successfully" });
+    }
+
+    [HttpPost("vouchers/restore/line/{lineId:int}")]
+    public async Task<IActionResult> RestoreVoucherLine(int lineId)
+    {
+        var companyCode = _companyContextAccessor.CompanyCode;
+        var line = await _db.FSCheckVou
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(x => x.CompanyCode == companyCode && x.Id == lineId && x.IsDeleted);
+
+        if (line == null)
+            return NotFound(new { message = $"Deleted line '{lineId}' not found" });
+
+        line.IsDeleted = false;
+        line.DeletedAt = null;
+        line.UpdatedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+
+        return Ok(new { message = "Line restored successfully" });
+    }
+
+    [HttpPost("vouchers/clone/{checkNo}")]
+    public async Task<IActionResult> CloneVoucher(string checkNo, [FromQuery] string newJvNo, [FromQuery] string newCkNo, [FromQuery] DateTime? newDate)
+    {
+        if (string.IsNullOrWhiteSpace(newJvNo) || string.IsNullOrWhiteSpace(newCkNo))
+            return BadRequest(new { error = "Please provide both new JV number and new check number." });
+
+        var source = await _voucherService.GetCheckMasterByCheckNoAsync(checkNo);
+        if (source == null)
+            return NotFound(new { message = $"Check '{checkNo}' not found" });
+
+        var sourceLines = await _voucherService.GetVoucherLinesAsync(checkNo);
+        var cloneMaster = new FSCheckMas
+        {
+            JJvNo = newJvNo.Trim().ToUpperInvariant(),
+            JCkNo = newCkNo.Trim().ToUpperInvariant(),
+            JDate = newDate ?? source.JDate,
+            JPayTo = source.JPayTo,
+            JDesc = source.JDesc,
+            JCkAmt = 0,
+            BankNo = source.BankNo,
+            SupNo = source.SupNo
+        };
+
+        try
+        {
+            await _voucherService.CreateCheckMasterAsync(cloneMaster);
+            foreach (var sourceLine in sourceLines)
+            {
+                await _voucherService.AddVoucherLineAsync(new FSCheckVou
+                {
+                    JCkNo = cloneMaster.JCkNo,
+                    AcctCode = sourceLine.AcctCode,
+                    JCkAmt = sourceLine.JCkAmt,
+                    JDOrC = sourceLine.JDOrC
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+
+        return Ok(new { message = $"Voucher '{checkNo}' cloned to '{cloneMaster.JCkNo}'.", data = cloneMaster });
     }
 
     #endregion
@@ -611,7 +757,7 @@ public sealed class FSController : ControllerBase
         if (!deleted)
             return NotFound(new { message = $"Cash receipt {id} not found" });
 
-        return Ok(new { message = "Cash receipt deleted successfully" });
+        return Ok(new { message = "Cash receipt moved to recycle bin" });
     }
 
     [HttpPut("journals/sales/{id}")]
@@ -639,7 +785,7 @@ public sealed class FSController : ControllerBase
         if (!deleted)
             return NotFound(new { message = $"Sales book entry {id} not found" });
 
-        return Ok(new { message = "Sales book entry deleted successfully" });
+        return Ok(new { message = "Sales book entry moved to recycle bin" });
     }
 
     [HttpPut("journals/general/{id}")]
@@ -667,7 +813,7 @@ public sealed class FSController : ControllerBase
         if (!deleted)
             return NotFound(new { message = $"Journal entry {id} not found" });
 
-        return Ok(new { message = "Journal entry deleted successfully" });
+        return Ok(new { message = "Journal entry moved to recycle bin" });
     }
 
     [HttpPut("journals/purchase/{id}")]
@@ -695,7 +841,7 @@ public sealed class FSController : ControllerBase
         if (!deleted)
             return NotFound(new { message = $"Purchase book entry {id} not found" });
 
-        return Ok(new { message = "Purchase book entry deleted successfully" });
+        return Ok(new { message = "Purchase book entry moved to recycle bin" });
     }
 
     [HttpPut("journals/adjustments/{id}")]
@@ -723,7 +869,265 @@ public sealed class FSController : ControllerBase
         if (!deleted)
             return NotFound(new { message = $"Adjustment entry {id} not found" });
 
-        return Ok(new { message = "Adjustment entry deleted successfully" });
+        return Ok(new { message = "Adjustment entry moved to recycle bin" });
+    }
+
+    [HttpGet("journals/deleted/{journalType}")]
+    public async Task<IActionResult> GetDeletedJournals(string journalType)
+    {
+        var companyCode = _companyContextAccessor.CompanyCode;
+        var normalizedType = journalType.Trim().ToLowerInvariant();
+
+        object? data = normalizedType switch
+        {
+            "receipt" or "receipts" => (object)await _db.FSCashRcpt.IgnoreQueryFilters().AsNoTracking().Where(x => x.CompanyCode == companyCode && x.IsDeleted).OrderByDescending(x => x.DeletedAt).ToListAsync(),
+            "sales" => (object)await _db.FSSaleBook.IgnoreQueryFilters().AsNoTracking().Where(x => x.CompanyCode == companyCode && x.IsDeleted).OrderByDescending(x => x.DeletedAt).ToListAsync(),
+            "general" or "journal" => (object)await _db.FSJournals.IgnoreQueryFilters().AsNoTracking().Where(x => x.CompanyCode == companyCode && x.IsDeleted).OrderByDescending(x => x.DeletedAt).ToListAsync(),
+            "purchase" => (object)await _db.FSPurcBook.IgnoreQueryFilters().AsNoTracking().Where(x => x.CompanyCode == companyCode && x.IsDeleted).OrderByDescending(x => x.DeletedAt).ToListAsync(),
+            "adjustment" or "adjustments" => (object)await _db.FSAdjustment.IgnoreQueryFilters().AsNoTracking().Where(x => x.CompanyCode == companyCode && x.IsDeleted).OrderByDescending(x => x.DeletedAt).ToListAsync(),
+            _ => null
+        };
+
+        if (data is null)
+            return BadRequest(new { error = $"Unknown journal type '{journalType}'" });
+
+        return Ok(new { data });
+    }
+
+    [HttpPost("journals/{journalType}/restore/{id:int}")]
+    public async Task<IActionResult> RestoreJournalEntry(string journalType, int id)
+    {
+        var companyCode = _companyContextAccessor.CompanyCode;
+        var normalizedType = journalType.Trim().ToLowerInvariant();
+        var now = DateTime.UtcNow;
+
+        bool restored = normalizedType switch
+        {
+            "receipt" or "receipts" => await RestoreAsync(_db.FSCashRcpt.IgnoreQueryFilters(), id, companyCode, now),
+            "sales" => await RestoreAsync(_db.FSSaleBook.IgnoreQueryFilters(), id, companyCode, now),
+            "general" or "journal" => await RestoreAsync(_db.FSJournals.IgnoreQueryFilters(), id, companyCode, now),
+            "purchase" => await RestoreAsync(_db.FSPurcBook.IgnoreQueryFilters(), id, companyCode, now),
+            "adjustment" or "adjustments" => await RestoreAsync(_db.FSAdjustment.IgnoreQueryFilters(), id, companyCode, now),
+            _ => false
+        };
+
+        if (!restored)
+            return NotFound(new { message = "Deleted entry not found for this journal type" });
+
+        await _db.SaveChangesAsync();
+        return Ok(new { message = "Entry restored successfully" });
+    }
+
+    [HttpPost("journals/{journalType}/clone/{jvNo}")]
+    public async Task<IActionResult> CloneJournal(string journalType, string jvNo, [FromQuery] string newJvNo, [FromQuery] DateTime? newDate)
+    {
+        if (string.IsNullOrWhiteSpace(newJvNo))
+            return BadRequest(new { error = "Please provide new JV number." });
+
+        var normalizedType = journalType.Trim().ToLowerInvariant();
+        var targetJvNo = newJvNo.Trim().ToUpperInvariant();
+        try
+        {
+            switch (normalizedType)
+            {
+                case "receipt":
+                    var receiptRows = await _db.FSCashRcpt.Where(x => x.JJvNo == jvNo).AsNoTracking().ToListAsync();
+                    if (receiptRows.Count == 0) return NotFound(new { message = $"Reference '{jvNo}' not found" });
+                    foreach (var row in receiptRows)
+                    {
+                        await _journalService.CreateCashReceiptAsync(new FSCashRcpt
+                        {
+                            JJvNo = targetJvNo,
+                            JDate = newDate ?? row.JDate,
+                            AcctCode = row.AcctCode,
+                            JCkAmt = row.JCkAmt,
+                            JDOrC = row.JDOrC
+                        });
+                    }
+                    break;
+                case "sales":
+                    var salesRows = await _db.FSSaleBook.Where(x => x.JJvNo == jvNo).AsNoTracking().ToListAsync();
+                    if (salesRows.Count == 0) return NotFound(new { message = $"Reference '{jvNo}' not found" });
+                    foreach (var row in salesRows)
+                    {
+                        await _journalService.CreateSalesBookAsync(new FSSaleBook
+                        {
+                            JJvNo = targetJvNo,
+                            JDate = newDate ?? row.JDate,
+                            AcctCode = row.AcctCode,
+                            JCkAmt = row.JCkAmt,
+                            JDOrC = row.JDOrC
+                        });
+                    }
+                    break;
+                case "general":
+                    var generalRows = await _db.FSJournals.Where(x => x.JJvNo == jvNo).AsNoTracking().ToListAsync();
+                    if (generalRows.Count == 0) return NotFound(new { message = $"Reference '{jvNo}' not found" });
+                    foreach (var row in generalRows)
+                    {
+                        await _journalService.CreateJournalAsync(new FSJournal
+                        {
+                            JJvNo = targetJvNo,
+                            JDate = newDate ?? row.JDate,
+                            AcctCode = row.AcctCode,
+                            JCkAmt = row.JCkAmt,
+                            JDOrC = row.JDOrC
+                        });
+                    }
+                    break;
+                case "purchase":
+                    var purchaseRows = await _db.FSPurcBook.Where(x => x.JJvNo == jvNo).AsNoTracking().ToListAsync();
+                    if (purchaseRows.Count == 0) return NotFound(new { message = $"Reference '{jvNo}' not found" });
+                    foreach (var row in purchaseRows)
+                    {
+                        await _journalService.CreatePurchaseBookAsync(new FSPurcBook
+                        {
+                            JJvNo = targetJvNo,
+                            JDate = newDate ?? row.JDate,
+                            AcctCode = row.AcctCode,
+                            JCkAmt = row.JCkAmt,
+                            JDOrC = row.JDOrC
+                        });
+                    }
+                    break;
+                case "adjustment":
+                    var adjustmentRows = await _db.FSAdjustment.Where(x => x.JJvNo == jvNo).AsNoTracking().ToListAsync();
+                    if (adjustmentRows.Count == 0) return NotFound(new { message = $"Reference '{jvNo}' not found" });
+                    foreach (var row in adjustmentRows)
+                    {
+                        await _journalService.CreateAdjustmentAsync(new FSAdjustment
+                        {
+                            JJvNo = targetJvNo,
+                            JDate = newDate ?? row.JDate,
+                            AcctCode = row.AcctCode,
+                            JCkAmt = row.JCkAmt,
+                            JDOrC = row.JDOrC
+                        });
+                    }
+                    break;
+                default:
+                    return BadRequest(new { error = $"Unknown journal type '{journalType}'" });
+            }
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+
+        return Ok(new { message = $"Journal '{jvNo}' cloned to '{targetJvNo}'" });
+    }
+
+    private static async Task<bool> RestoreAsync<T>(IQueryable<T> query, int id, string companyCode, DateTime now) where T : class
+    {
+        var entity = await query.FirstOrDefaultAsync(x =>
+            EF.Property<int>(x, "Id") == id &&
+            EF.Property<string>(x, "CompanyCode") == companyCode &&
+            EF.Property<bool>(x, "IsDeleted"));
+
+        if (entity == null)
+            return false;
+
+        typeof(T).GetProperty("IsDeleted")?.SetValue(entity, false);
+        typeof(T).GetProperty("DeletedAt")?.SetValue(entity, null);
+        typeof(T).GetProperty("UpdatedAt")?.SetValue(entity, now);
+        return true;
+    }
+
+    private async Task<object> QueryAccountsAsync(string? search, int page, int pageSize)
+    {
+        var query = _db.FSAccounts.AsNoTracking().AsQueryable();
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            query = query.Where(x => x.AcctCode.Contains(term) || (x.AcctDesc != null && x.AcctDesc.Contains(term)));
+        }
+
+        var total = await query.CountAsync();
+        var rows = await query
+            .OrderBy(x => x.AcctCode)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new
+            {
+                x.Id,
+                x.AcctCode,
+                x.AcctDesc,
+                x.OpenBal,
+                x.CurDebit,
+                x.CurCredit,
+                EndBal = x.OpenBal + x.CurDebit - x.CurCredit,
+                x.GlReport,
+                x.GlEffect
+            })
+            .ToListAsync();
+
+        return new { data = rows, total, page, pageSize };
+    }
+
+    private async Task<object> QueryCdvAsync(string? search, DateTime? from, DateTime? to, int page, int pageSize, bool includeDeleted)
+    {
+        var companyCode = _companyContextAccessor.CompanyCode;
+        IQueryable<FSCheckMas> query = includeDeleted
+            ? _db.FSCheckMas.IgnoreQueryFilters().Where(x => x.CompanyCode == companyCode)
+            : _db.FSCheckMas;
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            query = query.Where(x => x.JJvNo.Contains(term) || x.JCkNo.Contains(term) || (x.JPayTo != null && x.JPayTo.Contains(term)));
+        }
+        if (from.HasValue) query = query.Where(x => x.JDate >= from.Value.Date);
+        if (to.HasValue) query = query.Where(x => x.JDate <= to.Value.Date);
+        if (includeDeleted) query = query.Where(x => x.IsDeleted);
+
+        var total = await query.CountAsync();
+        var rows = await query
+            .AsNoTracking()
+            .OrderByDescending(x => x.JDate)
+            .ThenBy(x => x.JCkNo)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new { data = rows, total, page, pageSize };
+    }
+
+    private async Task<object> QueryJournalAsync<T>(DbSet<T> source, string? search, DateTime? from, DateTime? to, int page, int pageSize, bool includeDeleted) where T : class
+    {
+        var companyCode = _companyContextAccessor.CompanyCode;
+        IQueryable<T> query = includeDeleted
+            ? source.IgnoreQueryFilters().Where(x => EF.Property<string>(x, "CompanyCode") == companyCode)
+            : source;
+
+        if (includeDeleted)
+        {
+            query = query.Where(x => EF.Property<bool>(x, "IsDeleted"));
+        }
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            query = query.Where(x => EF.Property<string>(x, "JJvNo").Contains(term) || EF.Property<string>(x, "AcctCode").Contains(term));
+        }
+        if (from.HasValue)
+        {
+            query = query.Where(x => EF.Property<DateTime>(x, "JDate") >= from.Value.Date);
+        }
+        if (to.HasValue)
+        {
+            query = query.Where(x => EF.Property<DateTime>(x, "JDate") <= to.Value.Date);
+        }
+
+        var total = await query.CountAsync();
+        var rows = await query
+            .AsNoTracking()
+            .OrderByDescending(x => EF.Property<DateTime>(x, "JDate"))
+            .ThenBy(x => EF.Property<string>(x, "JJvNo"))
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new { data = rows, total, page, pageSize };
     }
 
     #endregion

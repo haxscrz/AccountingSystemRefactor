@@ -15,6 +15,7 @@ import FSMonthEnd from '../components/fs/FSMonthEnd'
 import FSGroupCodes from '../components/fs/FSGroupCodes'
 import FSSubsidiaryGroups from '../components/fs/FSSubsidiaryGroups'
 import FSQueryBrowser from '../components/fs/FSQueryBrowser'
+import FSAuditLogs from '../components/fs/FSAuditLogs'
 import './FSSystem.css'
 
 export default function FSSystem() {
@@ -98,7 +99,8 @@ export default function FSSystem() {
         title: 'Administration',
         items: [
           { label: 'Backup Database', onClick: () => handleBackup() },
-          { label: 'Month-End Processing', onClick: () => navigate('/fs/month-end') }
+          { label: 'Month-End Processing', onClick: () => navigate('/fs/month-end') },
+          { label: 'Audit Logs', onClick: () => navigate('/fs/audit-logs') }
         ]
       }
     ],
@@ -201,6 +203,7 @@ export default function FSSystem() {
           <Route path="/month-end" element={<FSMonthEnd />} />
           <Route path="/reports/:reportType" element={<FSReports />} />
           <Route path="/query/:queryType" element={<FSQueryBrowser />} />
+          <Route path="/audit-logs" element={<FSAuditLogs />} />
         </Routes>
       </div>
 
