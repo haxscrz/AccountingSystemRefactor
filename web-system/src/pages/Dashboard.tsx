@@ -8,6 +8,7 @@ import './Dashboard.css'
 export default function Dashboard() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const clearSelectedCompany = useCompanyStore((state) => state.clearSelectedCompany)
   const selectedCompanyCode = useCompanyStore((state) => state.selectedCompanyCode)
   const canPayroll = !!user?.canAccessPayroll
   const selectedCompanyName = getCompanyNameByCode(selectedCompanyCode)
@@ -15,6 +16,11 @@ export default function Dashboard() {
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const handleSwitchCompany = () => {
+    clearSelectedCompany()
+    navigate('/select-company')
   }
 
   return (
@@ -29,7 +35,7 @@ export default function Dashboard() {
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <CompanyBadge />
-          <button onClick={() => navigate('/select-company')} className="btn btn-secondary">
+          <button onClick={handleSwitchCompany} className="btn btn-secondary">
             Switch Company
           </button>
           <button onClick={handleLogout} className="btn btn-secondary">
