@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { useCompanyStore } from '../stores/companyStore'
 import { getCompanyNameByCode } from '../config/companies'
+import CompanyBadge from '../components/CompanyBadge'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -27,6 +28,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
+          <CompanyBadge />
           <button onClick={() => navigate('/select-company')} className="btn btn-secondary">
             Switch Company
           </button>

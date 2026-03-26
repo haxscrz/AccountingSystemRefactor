@@ -210,6 +210,44 @@ button { cursor: pointer; }
   color: #ffffff;
 }
 
+.company-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(52vw, 460px);
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.95);
+}
+
+.company-badge-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.72);
+}
+
+.company-badge-name {
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 920px) {
+  .company-badge {
+    max-width: 46vw;
+  }
+
+  .company-badge-label {
+    display: none;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════
    RIBBON  (Word-style tabs + grouped commands)
 ═══════════════════════════════════════════════════════ */

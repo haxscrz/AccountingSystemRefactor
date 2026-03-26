@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/authStore'
 import { useCompanyStore } from '../stores/companyStore'
 import { getCompanyNameByCode } from '../config/companies'
 import RibbonNav from '../components/RibbonNav'
+import CompanyBadge from '../components/CompanyBadge'
 import PayrollMainMenu from '../components/payroll/PayrollMainMenu'
 import PayrollTypeSelector from '../components/payroll/PayrollTypeSelector'
 import TimecardEntry from '../components/payroll/TimecardEntry'
@@ -88,6 +89,7 @@ export default function PayrollSystem() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <CompanyBadge />
             <button onClick={() => navigate('/dashboard')} className="btn btn-secondary">
               &larr; Back to Dashboard
             </button>
@@ -216,6 +218,7 @@ export default function PayrollSystem() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <CompanyBadge />
           <button onClick={() => navigate('/dashboard')} className="btn btn-secondary">
             &larr; Back to Dashboard
           </button>

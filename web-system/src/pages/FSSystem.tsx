@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/authStore'
 import { useCompanyStore } from '../stores/companyStore'
 import { getCompanyNameByCode } from '../config/companies'
 import RibbonNav from '../components/RibbonNav'
+import CompanyBadge from '../components/CompanyBadge'
 import FSMainMenu from '../components/fs/FSMainMenu'
 import FSVoucherEntry from '../components/fs/FSVoucherEntry'
 import FSJournalEntry from '../components/fs/FSJournalEntry'
@@ -170,6 +171,7 @@ export default function FSSystem() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <CompanyBadge />
           <button onClick={() => navigate('/dashboard')} className="btn btn-secondary">
             ← Back to Dashboard
           </button>

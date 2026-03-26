@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { COMPANIES } from '../config/companies'
 import { useAuthStore } from '../stores/authStore'
 import { useCompanyStore } from '../stores/companyStore'
+import CompanyBadge from '../components/CompanyBadge'
 import './CompanySelection.css'
 
 export default function CompanySelection() {
@@ -29,9 +30,12 @@ export default function CompanySelection() {
             <p>Signed in as {user?.username}. Choose a company workspace to continue.</p>
           </div>
         </div>
-        <button onClick={handleLogout} className="btn btn-secondary">
-          Logout
-        </button>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <CompanyBadge />
+          <button onClick={handleLogout} className="btn btn-secondary">
+            Logout
+          </button>
+        </div>
       </header>
 
       <main className="company-selection-main">
