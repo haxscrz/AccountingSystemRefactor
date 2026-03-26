@@ -7,10 +7,12 @@ namespace AccountingApi.Services;
 public sealed class TimecardService
 {
     private readonly AccountingDbContext _context;
+    private readonly ICompanyContextAccessor _companyContextAccessor;
 
-    public TimecardService(AccountingDbContext context)
+    public TimecardService(AccountingDbContext context, ICompanyContextAccessor companyContextAccessor)
     {
         _context = context;
+        _companyContextAccessor = companyContextAccessor;
     }
 
     public async Task<List<Dictionary<string, object?>>> GetTimecardsAsync(int year, int month, CancellationToken cancellationToken = default)
@@ -21,8 +23,8 @@ public sealed class TimecardService
         var sql = @"
             SELECT t.*, m.emp_nm, m.dep_no 
             FROM pay_tmcard t
-            LEFT JOIN pay_master m ON t.emp_no = m.emp_no
-            WHERE t.period_year = @year AND t.period_month = @month
+            LEFT JOIN pay_master m ON t.emp_no = m.emp_no AND t.company_code = m.company_code
+            WHERE t.company_code = @company_code AND t.period_year = @year AND t.period_month = @month
             ORDER BY t.emp_no";
 
         using var command = connection.CreateCommand();
@@ -37,6 +39,7 @@ public sealed class TimecardService
         monthParam.ParameterName = "@month";
         monthParam.Value = month;
         command.Parameters.Add(monthParam);
+        AddParameter(command, "@company_code", _companyContextAccessor.CompanyCode);
 
         var timecards = new List<Dictionary<string, object?>>();
         using var reader = await command.ExecuteReaderAsync(cancellationToken);
@@ -62,8 +65,8 @@ public sealed class TimecardService
         var sql = @"
             SELECT t.*, m.emp_nm, m.dep_no 
             FROM pay_tmcard t
-            LEFT JOIN pay_master m ON t.emp_no = m.emp_no
-            WHERE t.emp_no = @emp_no AND t.period_year = @year AND t.period_month = @month";
+            LEFT JOIN pay_master m ON t.emp_no = m.emp_no AND t.company_code = m.company_code
+            WHERE t.company_code = @company_code AND t.emp_no = @emp_no AND t.period_year = @year AND t.period_month = @month";
 
         using var command = connection.CreateCommand();
         command.CommandText = sql;
@@ -71,6 +74,7 @@ public sealed class TimecardService
         AddParameter(command, "@emp_no", empNo);
         AddParameter(command, "@year", year);
         AddParameter(command, "@month", month);
+        AddParameter(command, "@company_code", _companyContextAccessor.CompanyCode);
 
         using var reader = await command.ExecuteReaderAsync(cancellationToken);
         
@@ -97,9 +101,10 @@ public sealed class TimecardService
         var month = GetIntValue(timecard.GetValueOrDefault("period_month", DateTime.Now.Month), DateTime.Now.Month);
 
         // Check if exists
-        var checkSql = "SELECT COUNT(*) FROM pay_tmcard WHERE emp_no = @emp_no AND period_year = @year AND period_month = @month";
+        var checkSql = "SELECT COUNT(*) FROM pay_tmcard WHERE company_code = @company_code AND emp_no = @emp_no AND period_year = @year AND period_month = @month";
         using var checkCmd = connection.CreateCommand();
         checkCmd.CommandText = checkSql;
+        AddParameter(checkCmd, "@company_code", _companyContextAccessor.CompanyCode);
         AddParameter(checkCmd, "@emp_no", empNo);
         AddParameter(checkCmd, "@year", year);
         AddParameter(checkCmd, "@month", month);
@@ -126,13 +131,13 @@ public sealed class TimecardService
                     tax_add = @tax_add, withbonus = @withbonus,
                     trn_flag = 'U',
                     updated_at = datetime('now')
-                WHERE emp_no = @emp_no AND period_year = @year AND period_month = @month";
+                WHERE company_code = @company_code AND emp_no = @emp_no AND period_year = @year AND period_month = @month";
         }
         else
         {
             sql = @"
                 INSERT INTO pay_tmcard (
-                    emp_no, emp_nm, dep_no, period_year, period_month,
+                    company_code, emp_no, emp_nm, dep_no, period_year, period_month,
                     reg_hrs, abs_hrs, rot_hrs, sphp_hrs, spot_hrs, lghp_hrs, lgot_hrs, nsd_hrs,
                     lv_hrs, ls_hrs, oth_pay1, oth_pay2, oth_pay3, oth_pay4,
                     lv_cashout, ls_cashout,
@@ -146,7 +151,7 @@ public sealed class TimecardService
                     tot_ded, net_pay, bonus, bonustax,
                     trn_flag, created_at, updated_at
                 ) VALUES (
-                    @emp_no, @emp_nm, @dep_no, @year, @month,
+                    @company_code, @emp_no, @emp_nm, @dep_no, @year, @month,
                     @reg_hrs, @abs_hrs, @rot_hrs, @sphp_hrs, @spot_hrs, @lghp_hrs, @lgot_hrs, @nsd_hrs,
                     @lv_hrs, @ls_hrs, @oth_pay1, @oth_pay2, @oth_pay3, @oth_pay4,
                     @lv_cashout, @ls_cashout,
@@ -165,6 +170,7 @@ public sealed class TimecardService
         using var command = connection.CreateCommand();
         command.CommandText = sql;
 
+        AddParameter(command, "@company_code", _companyContextAccessor.CompanyCode);
         AddTimecardParameters(command, timecard);
 
         await command.ExecuteNonQueryAsync(cancellationToken);
@@ -176,7 +182,7 @@ public sealed class TimecardService
         var connection = _context.Database.GetDbConnection();
         await connection.OpenAsync(cancellationToken);
 
-        var sql = "DELETE FROM pay_tmcard WHERE emp_no = @emp_no AND period_year = @year AND period_month = @month";
+        var sql = "DELETE FROM pay_tmcard WHERE company_code = @company_code AND emp_no = @emp_no AND period_year = @year AND period_month = @month";
 
         using var command = connection.CreateCommand();
         command.CommandText = sql;
@@ -184,6 +190,7 @@ public sealed class TimecardService
         AddParameter(command, "@emp_no", empNo);
         AddParameter(command, "@year", year);
         AddParameter(command, "@month", month);
+        AddParameter(command, "@company_code", _companyContextAccessor.CompanyCode);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         

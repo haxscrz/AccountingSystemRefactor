@@ -15,6 +15,8 @@ public static class CompanyCatalog
         "metaleon"
     };
 
+    public static IReadOnlyCollection<string> AllCodes => ValidCodes;
+
     public static bool IsValid(string? code)
     {
         if (string.IsNullOrWhiteSpace(code))

@@ -14,11 +14,13 @@ public sealed class LegacySeedingService
 {
     private readonly AccountingDbContext _db;
     private readonly LegacyDataService   _legacyData;
+    private readonly ICompanyContextAccessor _companyContextAccessor;
 
-    public LegacySeedingService(AccountingDbContext db, LegacyDataService legacyData)
+    public LegacySeedingService(AccountingDbContext db, LegacyDataService legacyData, ICompanyContextAccessor companyContextAccessor)
     {
         _db          = db;
         _legacyData  = legacyData;
+        _companyContextAccessor = companyContextAccessor;
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────
@@ -82,19 +84,21 @@ public sealed class LegacySeedingService
     /// Returns a summary dictionary of table → rows inserted.
     /// Returns an empty dictionary when no JSON files are found.
     /// </summary>
-    public async Task<Dictionary<string, int>> SeedAsync(CancellationToken cancellationToken = default)
+    public async Task<Dictionary<string, int>> SeedAsync(CancellationToken cancellationToken = default, string? companyCodeOverride = null)
     {
         var now    = DateTime.UtcNow;
+        var companyCode = CompanyCatalog.NormalizeOrDefault(companyCodeOverride ?? _companyContextAccessor.CompanyCode);
         var seeded = new Dictionary<string, int>();
 
         // ── fs_accounts ──────────────────────────────────────────────────────
         var acDs = await _legacyData.GetDatasetByKeyAsync("fs_accounts", cancellationToken);
         if (acDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_accounts", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_accounts WHERE company_code = {companyCode}", cancellationToken);
             var rows = acDs.Rows
                 .Select(r => new FSAccount
                 {
+                    CompanyCode = companyCode,
                     AcctCode   = Str(r, "ACCT_CODE"),
                     AcctDesc   = Str(r, "ACCT_DESC"),
                     OpenBal    = Dec(r, "OPEN_BAL"),
@@ -120,10 +124,11 @@ public sealed class LegacySeedingService
         var crDs = await _legacyData.GetDatasetByKeyAsync("fs_cashrcpt", cancellationToken);
         if (crDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_cashrcpt", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_cashrcpt WHERE company_code = {companyCode}", cancellationToken);
             var rows = crDs.Rows
                 .Select(r => new FSCashRcpt
                 {
+                    CompanyCode = companyCode,
                     JJvNo = Str(r, "J_JV_NO"), JDate = Dt(r, "J_DATE", now),
                     AcctCode = Str(r, "ACCT_CODE"), JCkAmt = Dec(r, "J_CK_AMT"),
                     JDOrC = Str(r, "J_D_OR_C", "D"), CreatedAt = now, UpdatedAt = now
@@ -138,10 +143,11 @@ public sealed class LegacySeedingService
         var sbDs = await _legacyData.GetDatasetByKeyAsync("fs_salebook", cancellationToken);
         if (sbDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_salebook", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_salebook WHERE company_code = {companyCode}", cancellationToken);
             var rows = sbDs.Rows
                 .Select(r => new FSSaleBook
                 {
+                    CompanyCode = companyCode,
                     JJvNo = Str(r, "J_JV_NO"), JDate = Dt(r, "J_DATE", now),
                     AcctCode = Str(r, "ACCT_CODE"), JCkAmt = Dec(r, "J_CK_AMT"),
                     JDOrC = Str(r, "J_D_OR_C", "D"), CreatedAt = now, UpdatedAt = now
@@ -156,10 +162,11 @@ public sealed class LegacySeedingService
         var pbDs = await _legacyData.GetDatasetByKeyAsync("fs_purcbook", cancellationToken);
         if (pbDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_purcbook", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_purcbook WHERE company_code = {companyCode}", cancellationToken);
             var rows = pbDs.Rows
                 .Select(r => new FSPurcBook
                 {
+                    CompanyCode = companyCode,
                     JJvNo = Str(r, "J_JV_NO"), JDate = Dt(r, "J_DATE", now),
                     AcctCode = Str(r, "ACCT_CODE"), JCkAmt = Dec(r, "J_CK_AMT"),
                     JDOrC = Str(r, "J_D_OR_C", "D"), CreatedAt = now, UpdatedAt = now
@@ -174,10 +181,11 @@ public sealed class LegacySeedingService
         var adjDs = await _legacyData.GetDatasetByKeyAsync("fs_adjstmnt", cancellationToken);
         if (adjDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_adjstmnt", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_adjstmnt WHERE company_code = {companyCode}", cancellationToken);
             var rows = adjDs.Rows
                 .Select(r => new FSAdjustment
                 {
+                    CompanyCode = companyCode,
                     JJvNo = Str(r, "J_JV_NO"), JDate = Dt(r, "J_DATE", now),
                     AcctCode = Str(r, "ACCT_CODE"), JCkAmt = Dec(r, "J_CK_AMT"),
                     JDOrC = Str(r, "J_D_OR_C", "D"), CreatedAt = now, UpdatedAt = now
@@ -192,10 +200,11 @@ public sealed class LegacySeedingService
         var jnDs = await _legacyData.GetDatasetByKeyAsync("fs_journals", cancellationToken);
         if (jnDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_journals", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_journals WHERE company_code = {companyCode}", cancellationToken);
             var rows = jnDs.Rows
                 .Select(r => new FSJournal
                 {
+                    CompanyCode = companyCode,
                     JJvNo = Str(r, "J_JV_NO"), JDate = Dt(r, "J_DATE", now),
                     AcctCode = Str(r, "ACCT_CODE"), JCkAmt = Dec(r, "J_CK_AMT"),
                     JDOrC = Str(r, "J_D_OR_C", "D"), CreatedAt = now, UpdatedAt = now
@@ -210,10 +219,11 @@ public sealed class LegacySeedingService
         var pjDs = await _legacyData.GetDatasetByKeyAsync("fs_pournals", cancellationToken);
         if (pjDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_pournals", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_pournals WHERE company_code = {companyCode}", cancellationToken);
             var rows = pjDs.Rows
                 .Select(r => new FSPostedJournal
                 {
+                    CompanyCode = companyCode,
                     JJvNo = Str(r, "J_JV_NO"), JDate = Dt(r, "J_DATE", now),
                     AcctCode = Str(r, "ACCT_CODE"), JCkAmt = Dec(r, "J_CK_AMT"),
                     JDOrC = Str(r, "J_D_OR_C", "D"), CreatedAt = now
@@ -229,10 +239,11 @@ public sealed class LegacySeedingService
                 ?? await _legacyData.GetDatasetByKeyAsync("fs_acheckma", cancellationToken);
         if (cmDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_checkmas", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_checkmas WHERE company_code = {companyCode}", cancellationToken);
             var rows = cmDs.Rows
                 .Select(r => new FSCheckMas
                 {
+                    CompanyCode = companyCode,
                     JJvNo  = Str(r, "J_JV_NO"), JCkNo = Str(r, "J_CK_NO"),
                     JDate  = Dt(r, "J_DATE", now), JPayTo = Str(r, "J_PAY_TO"),
                     JCkAmt = Dec(r, "J_CK_AMT"), JDesc = Str(r, "J_DESC"),
@@ -250,10 +261,11 @@ public sealed class LegacySeedingService
                 ?? await _legacyData.GetDatasetByKeyAsync("fs_acheckvo", cancellationToken);
         if (cvDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_checkvou", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_checkvou WHERE company_code = {companyCode}", cancellationToken);
             var rows = cvDs.Rows
                 .Select(r => new FSCheckVou
                 {
+                    CompanyCode = companyCode,
                     JCkNo = Str(r, "J_CK_NO"), AcctCode = Str(r, "ACCT_CODE"),
                     JCkAmt = Dec(r, "J_CK_AMT"), JDOrC = Str(r, "J_D_OR_C", "D"),
                     CreatedAt = now, UpdatedAt = now
@@ -268,10 +280,11 @@ public sealed class LegacySeedingService
         var efDs = await _legacyData.GetDatasetByKeyAsync("fs_effects", cancellationToken);
         if (efDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_effects", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_effects WHERE company_code = {companyCode}", cancellationToken);
             var rows = efDs.Rows
                 .Select(r => new FSEffect
                 {
+                    CompanyCode = companyCode,
                     GlReport = Str(r, "GL_REPORT"), GlEffect = Str(r, "GL_EFFECT"),
                     GlHead   = Str(r, "GL_HEAD")
                 })
@@ -285,10 +298,11 @@ public sealed class LegacySeedingService
         var scDs = await _legacyData.GetDatasetByKeyAsync("fs_schedule", cancellationToken);
         if (scDs != null)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_schedule", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_schedule WHERE company_code = {companyCode}", cancellationToken);
             var rows = scDs.Rows
                 .Select(r => new FSScheduleEntry
                 {
+                    CompanyCode = companyCode,
                     GlHead   = Str(r, "GL_HEAD"),
                     AcctCode = Str(r, "ACCT_CODE"),
                     AcctDesc = Str(r, "ACCT_DESC")
@@ -307,7 +321,7 @@ public sealed class LegacySeedingService
             var existing = await _db.PaySysId.FirstOrDefaultAsync(cancellationToken);
             if (existing is null)
             {
-                existing = new PaySysId();
+                existing = new PaySysId { CompanyCode = companyCode };
                 _db.PaySysId.Add(existing);
             }
             existing.PresMo    = (int)Dec(r, "PRES_MO");
@@ -339,10 +353,11 @@ public sealed class LegacySeedingService
                 ?? await _legacyData.GetDatasetByKeyAsync("pay_mastfile", cancellationToken);
         if (pmDs != null && pmDs.Rows.Count > 0)
         {
-            await _db.Database.ExecuteSqlRawAsync("DELETE FROM pay_master", cancellationToken);
+            await _db.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM pay_master WHERE company_code = {companyCode}", cancellationToken);
             var rows = pmDs.Rows
                 .Select(r => new PayMaster
                 {
+                    CompanyCode     = companyCode,
                     EmpNo           = Str(r, "EMP_NO"),
                     EmpNm           = Str(r, "EMP_NM"),
                     DepNo           = Str(r, "DEP_NO"),

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AccountingApi.Models;
 
 [Table("pay_master")]
-public sealed class PayMaster
+public sealed class PayMaster : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -334,7 +334,7 @@ public sealed class PayMaster
 }
 
 [Table("pay_tmcard")]
-public sealed class PayTmcard
+public sealed class PayTmcard : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -548,7 +548,7 @@ public sealed class PayTmcard
 }
 
 [Table("pay_sys_id")]
-public sealed class PaySysId
+public sealed class PaySysId : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -628,7 +628,7 @@ public sealed class PaySysId
 /// preflag = 'S' for SSS, 'T' for Pag-IBIG/HDMF.
 /// </summary>
 [Table("pay_prempaid")]
-public sealed class PayPremPaid
+public sealed class PayPremPaid : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -675,7 +675,7 @@ public sealed class PayPremPaid
 /// dep_no and dep_nm are the editable keys; financial totals are updated by PostTransactions.
 /// </summary>
 [Table("pay_dept")]
-public sealed class PayDept
+public sealed class PayDept : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -732,7 +732,7 @@ public sealed class PayDept
 }
 
 [Table("pay_taxtab")]
-public sealed class PayTaxTab
+public sealed class PayTaxTab : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }

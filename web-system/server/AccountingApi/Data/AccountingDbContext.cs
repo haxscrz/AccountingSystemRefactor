@@ -5,8 +5,13 @@ namespace AccountingApi.Data;
 
 public sealed class AccountingDbContext : DbContext
 {
-    public AccountingDbContext(DbContextOptions<AccountingDbContext> options) : base(options)
+    private readonly ICompanyContextAccessor _companyContextAccessor;
+
+    public AccountingDbContext(
+        DbContextOptions<AccountingDbContext> options,
+        ICompanyContextAccessor companyContextAccessor) : base(options)
     {
+        _companyContextAccessor = companyContextAccessor;
     }
 
     // FS System Tables
@@ -40,57 +45,77 @@ public sealed class AccountingDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<FSAccount>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSCheckMas>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSCheckVou>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSPostedJournal>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSCashRcpt>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSSaleBook>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSPurcBook>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSAdjustment>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSJournal>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSEffect>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSScheduleEntry>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSSysId>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+
+        modelBuilder.Entity<PayMaster>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<PayTmcard>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<PaySysId>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<PayTaxTab>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<PayPremPaid>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<PayDept>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+
         // FS System Indexes
         modelBuilder.Entity<FSAccount>()
-            .HasIndex(a => a.AcctCode)
+            .HasIndex(a => new { a.CompanyCode, a.AcctCode })
             .IsUnique();
 
         modelBuilder.Entity<FSCheckMas>()
-            .HasIndex(c => c.JCkNo);
+            .HasIndex(c => new { c.CompanyCode, c.JCkNo });
 
         modelBuilder.Entity<FSCheckVou>()
-            .HasIndex(c => new { c.JCkNo, c.AcctCode });
+            .HasIndex(c => new { c.CompanyCode, c.JCkNo, c.AcctCode });
 
         modelBuilder.Entity<FSPostedJournal>()
-            .HasIndex(p => new { p.JJvNo, p.AcctCode });
+            .HasIndex(p => new { p.CompanyCode, p.JJvNo, p.AcctCode });
 
         modelBuilder.Entity<FSCashRcpt>()
-            .HasIndex(c => c.JJvNo);
+            .HasIndex(c => new { c.CompanyCode, c.JJvNo });
 
         modelBuilder.Entity<FSSaleBook>()
-            .HasIndex(s => s.JJvNo);
+            .HasIndex(s => new { s.CompanyCode, s.JJvNo });
 
         modelBuilder.Entity<FSPurcBook>()
-            .HasIndex(p => p.JJvNo);
+            .HasIndex(p => new { p.CompanyCode, p.JJvNo });
 
         modelBuilder.Entity<FSAdjustment>()
-            .HasIndex(a => a.JJvNo);
+            .HasIndex(a => new { a.CompanyCode, a.JJvNo });
 
         modelBuilder.Entity<FSJournal>()
-            .HasIndex(j => j.JJvNo);
+            .HasIndex(j => new { j.CompanyCode, j.JJvNo });
 
         modelBuilder.Entity<FSEffect>()
-            .HasIndex(e => new { e.GlReport, e.GlEffect });
+            .HasIndex(e => new { e.CompanyCode, e.GlReport, e.GlEffect });
 
         modelBuilder.Entity<FSScheduleEntry>()
-            .HasIndex(s => new { s.GlHead, s.AcctCode });
+            .HasIndex(s => new { s.CompanyCode, s.GlHead, s.AcctCode });
 
         // Payroll System Indexes
         modelBuilder.Entity<PayMaster>()
-            .HasIndex(m => m.EmpNo)
+            .HasIndex(m => new { m.CompanyCode, m.EmpNo })
             .IsUnique();
 
         modelBuilder.Entity<PayTmcard>()
-            .HasIndex(t => new { t.EmpNo, t.PeriodYear, t.PeriodMonth });
+            .HasIndex(t => new { t.CompanyCode, t.EmpNo, t.PeriodYear, t.PeriodMonth });
 
         modelBuilder.Entity<PayTmcard>()
-            .HasIndex(t => t.TrnFlag);
+            .HasIndex(t => new { t.CompanyCode, t.TrnFlag });
 
         modelBuilder.Entity<PayTaxTab>()
-            .HasIndex(t => new { t.Exemption, t.Sequence });
+            .HasIndex(t => new { t.CompanyCode, t.Exemption, t.Sequence });
 
         modelBuilder.Entity<PayDept>()
-            .HasIndex(d => d.DepNo)
+            .HasIndex(d => new { d.CompanyCode, d.DepNo })
             .IsUnique();
 
         // Security/Auth Indexes
@@ -110,5 +135,47 @@ public sealed class AccountingDbContext : DbContext
 
         modelBuilder.Entity<AppAuditLog>()
             .HasIndex(l => new { l.Username, l.CreatedAtUtc });
+    }
+
+    public override int SaveChanges()
+    {
+        ApplyCompanyScope();
+        return base.SaveChanges();
+    }
+
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        ApplyCompanyScope();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        ApplyCompanyScope();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        ApplyCompanyScope();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    private void ApplyCompanyScope()
+    {
+        var companyCode = _companyContextAccessor.CompanyCode;
+        foreach (var entry in ChangeTracker.Entries<ICompanyScopedEntity>())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CompanyCode = companyCode;
+                continue;
+            }
+
+            if (entry.State == EntityState.Modified)
+            {
+                entry.Property(nameof(ICompanyScopedEntity.CompanyCode)).IsModified = false;
+            }
+        }
     }
 }

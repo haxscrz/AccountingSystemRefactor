@@ -7,10 +7,12 @@ namespace AccountingApi.Services;
 public sealed class EmployeeService
 {
     private readonly AccountingDbContext _context;
+    private readonly ICompanyContextAccessor _companyContextAccessor;
 
-    public EmployeeService(AccountingDbContext context)
+    public EmployeeService(AccountingDbContext context, ICompanyContextAccessor companyContextAccessor)
     {
         _context = context;
+        _companyContextAccessor = companyContextAccessor;
     }
 
     public async Task<List<Dictionary<string, object?>>> GetAllEmployeesAsync(CancellationToken cancellationToken = default)
@@ -20,10 +22,12 @@ public sealed class EmployeeService
 
         var sql = @"
             SELECT * FROM pay_master 
+            WHERE company_code = @company_code
             ORDER BY emp_no";
 
         using var command = connection.CreateCommand();
         command.CommandText = sql;
+        AddParameter(command, "@company_code", _companyContextAccessor.CompanyCode);
 
         var employees = new List<Dictionary<string, object?>>();
         using var reader = await command.ExecuteReaderAsync(cancellationToken);
@@ -48,7 +52,7 @@ public sealed class EmployeeService
 
         var sql = @"
             SELECT * FROM pay_master 
-            WHERE emp_no = @emp_no";
+            WHERE company_code = @company_code AND emp_no = @emp_no";
 
         using var command = connection.CreateCommand();
         command.CommandText = sql;
@@ -57,6 +61,7 @@ public sealed class EmployeeService
         empNoParam.ParameterName = "@emp_no";
         empNoParam.Value = empNo;
         command.Parameters.Add(empNoParam);
+        AddParameter(command, "@company_code", _companyContextAccessor.CompanyCode);
 
         using var reader = await command.ExecuteReaderAsync(cancellationToken);
         
@@ -79,10 +84,10 @@ public sealed class EmployeeService
         await connection.OpenAsync(cancellationToken);
 
         // Check if employee already exists
-        var checkSql = "SELECT COUNT(*) FROM pay_master WHERE emp_no = @emp_no";
+        var checkSql = "SELECT COUNT(*) FROM pay_master WHERE company_code = @company_code AND emp_no = @emp_no";
         using var checkCmd = connection.CreateCommand();
         checkCmd.CommandText = checkSql;
-        
+        AddParameter(checkCmd, "@company_code", _companyContextAccessor.CompanyCode);
         AddParameter(checkCmd, "@emp_no", employee.GetValueOrDefault("emp_no", ""));
 
         var count = Convert.ToInt32(await checkCmd.ExecuteScalarAsync(cancellationToken));
@@ -93,6 +98,7 @@ public sealed class EmployeeService
 
         var sql = @"
             INSERT INTO pay_master (
+                  company_code,
                  emp_no, emp_nm, dep_no, position, b_rate, cola, emp_stat, status,
                  date_hire, date_resign, sss_no, tin_no, phic_no, pgbg_no, 
                  sss_member, pgbg,
@@ -112,6 +118,7 @@ public sealed class EmployeeService
                  spouse, address, birthdate,
                  created_at, updated_at
             ) VALUES (
+                  @company_code,
                  @emp_no, @emp_nm, @dep_no, @position, @b_rate, @cola, @emp_stat, @status,
                  @date_hire, @date_resign, @sss_no, @tin_no, @phic_no, @pgbg_no,
                  @sss_member, @pgbg,
@@ -135,6 +142,7 @@ public sealed class EmployeeService
         using var command = connection.CreateCommand();
         command.CommandText = sql;
 
+        AddParameter(command, "@company_code", _companyContextAccessor.CompanyCode);
         AddEmployeeParameters(command, employee);
 
         await command.ExecuteNonQueryAsync(cancellationToken);
@@ -168,11 +176,12 @@ public sealed class EmployeeService
                  sick_leave = @sick_leave, vacation_leave = @vacation_leave,
                  spouse = @spouse, address = @address, birthdate = @birthdate,
                  updated_at = datetime('now')
-            WHERE emp_no = @emp_no_filter";
+            WHERE company_code = @company_code AND emp_no = @emp_no_filter";
 
         using var command = connection.CreateCommand();
         command.CommandText = sql;
 
+        AddParameter(command, "@company_code", _companyContextAccessor.CompanyCode);
         AddEmployeeParameters(command, employee);
         
         var filterParam = command.CreateParameter();
@@ -195,7 +204,7 @@ public sealed class EmployeeService
         var connection = _context.Database.GetDbConnection();
         await connection.OpenAsync(cancellationToken);
 
-        var sql = "DELETE FROM pay_master WHERE emp_no = @emp_no";
+        var sql = "DELETE FROM pay_master WHERE company_code = @company_code AND emp_no = @emp_no";
 
         using var command = connection.CreateCommand();
         command.CommandText = sql;
@@ -204,6 +213,7 @@ public sealed class EmployeeService
         param.ParameterName = "@emp_no";
         param.Value = empNo;
         command.Parameters.Add(param);
+        AddParameter(command, "@company_code", _companyContextAccessor.CompanyCode);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         

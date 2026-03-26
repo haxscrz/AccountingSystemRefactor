@@ -7,10 +7,12 @@ namespace AccountingApi.Services;
 public sealed class FSPostingService
 {
     private readonly AccountingDbContext _context;
+    private readonly ICompanyContextAccessor _companyContextAccessor;
 
-    public FSPostingService(AccountingDbContext context)
+    public FSPostingService(AccountingDbContext context, ICompanyContextAccessor companyContextAccessor)
     {
         _context = context;
+        _companyContextAccessor = companyContextAccessor;
     }
 
     public async Task<FSSysId?> GetSysIdAsync(CancellationToken cancellationToken = default)
@@ -41,12 +43,14 @@ public sealed class FSPostingService
     {
         try
         {
+            var companyCode = _companyContextAccessor.CompanyCode;
+
             // Step 1: Clear posted journals table
-            await _context.Database.ExecuteSqlRawAsync("DELETE FROM fs_pournals", cancellationToken);
+            await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_pournals WHERE company_code = {companyCode}", cancellationToken);
 
             // Step 2: Zero out current period balances in accounts
-            await _context.Database.ExecuteSqlRawAsync(
-                "UPDATE fs_accounts SET cur_debit = 0, cur_credit = 0", 
+            await _context.Database.ExecuteSqlInterpolatedAsync(
+                $"UPDATE fs_accounts SET cur_debit = 0, cur_credit = 0 WHERE company_code = {companyCode}", 
                 cancellationToken);
 
             int totalRecords = 0;
@@ -219,6 +223,8 @@ public sealed class FSPostingService
     {
         try
         {
+            var companyCode = _companyContextAccessor.CompanyCode;
+
             // Step 1: Get or create sys_id record
             var sysId = await _context.FSSysId.FirstOrDefaultAsync(cancellationToken);
             if (sysId is null)
@@ -266,13 +272,13 @@ public sealed class FSPostingService
             }
 
             // Step 4: Clear all transaction files (ZAP equivalent)
-            await _context.Database.ExecuteSqlRawAsync("DELETE FROM fs_checkvou", cancellationToken);
-            await _context.Database.ExecuteSqlRawAsync("DELETE FROM fs_checkmas", cancellationToken);
-            await _context.Database.ExecuteSqlRawAsync("DELETE FROM fs_cashrcpt", cancellationToken);
-            await _context.Database.ExecuteSqlRawAsync("DELETE FROM fs_salebook", cancellationToken);
-            await _context.Database.ExecuteSqlRawAsync("DELETE FROM fs_purcbook", cancellationToken);
-            await _context.Database.ExecuteSqlRawAsync("DELETE FROM fs_adjstmnt", cancellationToken);
-            await _context.Database.ExecuteSqlRawAsync("DELETE FROM fs_journals", cancellationToken);
+            await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_checkvou WHERE company_code = {companyCode}", cancellationToken);
+            await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_checkmas WHERE company_code = {companyCode}", cancellationToken);
+            await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_cashrcpt WHERE company_code = {companyCode}", cancellationToken);
+            await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_salebook WHERE company_code = {companyCode}", cancellationToken);
+            await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_purcbook WHERE company_code = {companyCode}", cancellationToken);
+            await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_adjstmnt WHERE company_code = {companyCode}", cancellationToken);
+            await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_journals WHERE company_code = {companyCode}", cancellationToken);
 
             // Step 5: Update system period
             var nextMonth = month + 1;

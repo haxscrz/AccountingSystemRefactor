@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace AccountingApi.Models;
 
 [Table("fs_accounts")]
-public sealed class FSAccount
+public sealed class FSAccount : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -78,7 +78,7 @@ public sealed class FSAccount
 }
 
 [Table("fs_checkmas")]
-public sealed class FSCheckMas
+public sealed class FSCheckMas : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -125,7 +125,7 @@ public sealed class FSCheckMas
 }
 
 [Table("fs_checkvou")]
-public sealed class FSCheckVou
+public sealed class FSCheckVou : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -161,7 +161,7 @@ public sealed class FSCheckVou
 }
 
 [Table("fs_pournals")]
-public sealed class FSPostedJournal
+public sealed class FSPostedJournal : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -193,7 +193,7 @@ public sealed class FSPostedJournal
 }
 
 [Table("fs_cashrcpt")]
-public sealed class FSCashRcpt
+public sealed class FSCashRcpt : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -232,7 +232,7 @@ public sealed class FSCashRcpt
 }
 
 [Table("fs_salebook")]
-public sealed class FSSaleBook
+public sealed class FSSaleBook : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -271,7 +271,7 @@ public sealed class FSSaleBook
 }
 
 [Table("fs_purcbook")]
-public sealed class FSPurcBook
+public sealed class FSPurcBook : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -310,7 +310,7 @@ public sealed class FSPurcBook
 }
 
 [Table("fs_adjstmnt")]
-public sealed class FSAdjustment
+public sealed class FSAdjustment : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -349,7 +349,7 @@ public sealed class FSAdjustment
 }
 
 [Table("fs_journals")]
-public sealed class FSJournal
+public sealed class FSJournal : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -388,7 +388,7 @@ public sealed class FSJournal
 }
 
 [Table("fs_effects")]
-public sealed class FSEffect
+public sealed class FSEffect : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -409,7 +409,7 @@ public sealed class FSEffect
 }
 
 [Table("fs_schedule")]
-public sealed class FSScheduleEntry
+public sealed class FSScheduleEntry : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }
@@ -430,7 +430,7 @@ public sealed class FSScheduleEntry
 }
 
 [Table("fs_sys_id")]
-public sealed class FSSysId
+public sealed class FSSysId : CompanyScopedEntity
 {
     [Key]
     public int Id { get; set; }

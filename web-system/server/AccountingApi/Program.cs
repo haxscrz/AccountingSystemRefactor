@@ -11,8 +11,6 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-const string CompanyCodeItemKey = "SelectedCompanyCode";
-
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -26,30 +24,9 @@ builder.Services.AddOpenApi();
 
 // Database
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddSingleton<CompanyDatabasePathResolver>();
-builder.Services.AddDbContext<AccountingDbContext>((serviceProvider, options) =>
-{
-    var resolver = serviceProvider.GetRequiredService<CompanyDatabasePathResolver>();
-    var accessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-
-    var context = accessor.HttpContext;
-    if (context is null)
-    {
-        // Startup and background operations must use base DB (auth/bootstrap/seeding path).
-        options.UseSqlite(resolver.GetBaseConnectionString());
-        return;
-    }
-
-    var selectedCompanyCode = context?.Items[CompanyCodeItemKey] as string;
-
-    // Authentication remains in the base database so login/refresh works before company selection.
-    var isAuthRequest = context?.Request.Path.StartsWithSegments("/api/auth") == true;
-    var connectionString = isAuthRequest
-        ? resolver.GetBaseConnectionString()
-        : resolver.GetConnectionStringForCompany(selectedCompanyCode);
-
-    options.UseSqlite(connectionString);
-});
+builder.Services.AddScoped<ICompanyContextAccessor, CompanyContextAccessor>();
+builder.Services.AddDbContext<AccountingDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Services
 builder.Services.AddSingleton<LegacyDataService>();
@@ -162,50 +139,9 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 
-string? EnsureDirectory(string path)
-{
-    var directory = Path.GetDirectoryName(path);
-    if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
-    {
-        Directory.CreateDirectory(directory);
-    }
-
-    return directory;
-}
-
-void EnsureCompanyDatabaseExists(IServiceProvider serviceProvider, string companyCode)
-{
-    var resolver = serviceProvider.GetRequiredService<CompanyDatabasePathResolver>();
-    var baseConnectionString = resolver.GetBaseConnectionString();
-    var companyDbPath = resolver.GetPathForCompany(companyCode);
-
-    if (File.Exists(companyDbPath))
-    {
-        return;
-    }
-
-    var basePath = baseConnectionString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-        .Select(part => part.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase)
-            ? part.Substring("Data Source=".Length).Trim()
-            : null)
-        .FirstOrDefault(path => !string.IsNullOrWhiteSpace(path));
-
-    EnsureDirectory(companyDbPath);
-
-    if (!string.IsNullOrWhiteSpace(basePath) && File.Exists(basePath))
-    {
-        File.Copy(basePath, companyDbPath);
-    }
-}
-
 // Ensure all tables exist on first run (fresh DB from GitHub clone)
 using (var initScope = app.Services.CreateScope())
 {
-    foreach (var companyCode in new[] { "cyberfridge", "johntrix", "thermalex", "gmixteam", "dynamiq", "metaleon" })
-    {
-        EnsureCompanyDatabaseExists(initScope.ServiceProvider, companyCode);
-    }
-
     var db = initScope.ServiceProvider.GetRequiredService<AccountingDbContext>();
 
     // Creates ALL tables defined in DbContext if they don't exist yet.
@@ -249,6 +185,34 @@ using (var initScope = app.Services.CreateScope())
         if (!sysIdCols.Contains("work_hours"))  AddColumn("pay_sys_id", "work_hours", "INTEGER DEFAULT 80");
         if (!sysIdCols.Contains("need_backup")) AddColumn("pay_sys_id", "need_backup","INTEGER DEFAULT 0");
         if (!sysIdCols.Contains("sys_nm"))      AddColumn("pay_sys_id", "sys_nm",     "TEXT NOT NULL DEFAULT ''");
+
+        // Multi-company (single DB): add tenant discriminator to all business tables.
+        var tenantTables = new[]
+        {
+            "fs_accounts", "fs_checkmas", "fs_checkvou", "fs_pournals", "fs_cashrcpt", "fs_salebook",
+            "fs_purcbook", "fs_adjstmnt", "fs_journals", "fs_effects", "fs_schedule", "fs_sys_id",
+            "pay_master", "pay_tmcard", "pay_sys_id", "pay_taxtab", "pay_prempaid", "pay_dept"
+        };
+
+        foreach (var table in tenantTables)
+        {
+            var cols = GetColumns(table);
+            if (!cols.Contains("company_code"))
+            {
+                AddColumn(table, "company_code", $"TEXT NOT NULL DEFAULT '{CompanyCatalog.DefaultCompanyCode}'");
+            }
+
+            RunSql($"UPDATE {table} SET company_code = '{CompanyCatalog.DefaultCompanyCode}' WHERE company_code IS NULL OR trim(company_code) = ''");
+            RunSql($"CREATE INDEX IF NOT EXISTS ix_{table}_company_code ON {table}(company_code)");
+        }
+
+        // Rebuild uniqueness to be company-scoped.
+        RunSql("DROP INDEX IF EXISTS IX_fs_accounts_acct_code");
+        RunSql("DROP INDEX IF EXISTS IX_pay_master_emp_no");
+        RunSql("DROP INDEX IF EXISTS IX_pay_dept_dep_no");
+        RunSql("CREATE UNIQUE INDEX IF NOT EXISTS IX_fs_accounts_company_acct_code ON fs_accounts(company_code, acct_code)");
+        RunSql("CREATE UNIQUE INDEX IF NOT EXISTS IX_pay_master_company_emp_no ON pay_master(company_code, emp_no)");
+        RunSql("CREATE UNIQUE INDEX IF NOT EXISTS IX_pay_dept_company_dep_no ON pay_dept(company_code, dep_no)");
 
         // Create pay_prempaid if it doesn't exist
         RunSql(@"
@@ -316,6 +280,28 @@ using (var initScope = app.Services.CreateScope())
         RunSql("CREATE INDEX IF NOT EXISTS ix_app_refresh_tokens_hash ON app_refresh_tokens(token_hash)");
         RunSql("CREATE INDEX IF NOT EXISTS ix_app_refresh_tokens_user_expiry ON app_refresh_tokens(user_id, expires_at_utc)");
         RunSql("CREATE INDEX IF NOT EXISTS ix_app_audit_created_at ON app_audit_logs(created_at_utc)");
+
+        var resetAllBusinessData = string.Equals(
+            builder.Configuration["RESET_ALL_BUSINESS_DATA_ON_STARTUP"],
+            "true",
+            StringComparison.OrdinalIgnoreCase);
+
+        if (resetAllBusinessData)
+        {
+            var businessTables = new[]
+            {
+                "fs_checkvou", "fs_checkmas", "fs_cashrcpt", "fs_salebook", "fs_purcbook", "fs_adjstmnt", "fs_journals", "fs_pournals",
+                "fs_schedule", "fs_effects", "fs_accounts", "fs_sys_id",
+                "pay_tmcard", "pay_master", "pay_dept", "pay_prempaid", "pay_taxtab", "pay_sys_id"
+            };
+
+            foreach (var table in businessTables)
+            {
+                RunSql($"DELETE FROM {table}");
+            }
+
+            Console.WriteLine("[startup] RESET_ALL_BUSINESS_DATA_ON_STARTUP enabled: all FS/Payroll business data was deleted.");
+        }
 
         conn.Close();
     }
@@ -429,46 +415,86 @@ using (var initScope = app.Services.CreateScope())
         Console.WriteLine("[startup] RESET_BOOTSTRAP_USERS enabled: bootstrap account credentials were updated.");
     }
 
-    // Auto-seed from legacy JSON files if the database is empty (fresh clone)
-    if (!db.FSAccounts.Any())
+    var legacyAutoSeedOnEmpty = string.Equals(
+        builder.Configuration["LEGACY_AUTO_SEED_ON_EMPTY"],
+        "true",
+        StringComparison.OrdinalIgnoreCase);
+
+    var seedLegacyToCompany = builder.Configuration["SEED_LEGACY_TO_COMPANY_ON_STARTUP"];
+
+    // Optional explicit seed target (used for one-time controlled imports, e.g. THERMALEX only).
+    if (!string.IsNullOrWhiteSpace(seedLegacyToCompany) && CompanyCatalog.IsValid(seedLegacyToCompany))
     {
         var seeder = initScope.ServiceProvider.GetRequiredService<LegacySeedingService>();
-        var result = seeder.SeedAsync().GetAwaiter().GetResult();
-        var total  = result.Values.Sum();
+        var normalizedCompany = CompanyCatalog.NormalizeOrDefault(seedLegacyToCompany);
+        var result = seeder.SeedAsync(companyCodeOverride: normalizedCompany).GetAwaiter().GetResult();
+        var total = result.Values.Sum();
+
         if (total > 0)
-            Console.WriteLine($"[startup] Auto-seeded {total} legacy records across {result.Count} tables.");
+            Console.WriteLine($"[startup] Seeded {total} legacy records into company '{normalizedCompany}' across {result.Count} tables.");
         else
-            Console.WriteLine("[startup] No legacy JSON files found — starting with empty database.");
+            Console.WriteLine($"[startup] No legacy JSON files found for SEED_LEGACY_TO_COMPANY_ON_STARTUP={normalizedCompany}.");
+    }
+    else if (legacyAutoSeedOnEmpty && !db.FSAccounts.IgnoreQueryFilters().Any())
+    {
+        // Disabled by default to avoid accidental cross-company seeding.
+        var seeder = initScope.ServiceProvider.GetRequiredService<LegacySeedingService>();
+        var result = seeder.SeedAsync(companyCodeOverride: CompanyCatalog.DefaultCompanyCode).GetAwaiter().GetResult();
+        var total = result.Values.Sum();
+        if (total > 0)
+            Console.WriteLine($"[startup] Auto-seeded {total} legacy records into '{CompanyCatalog.DefaultCompanyCode}'.");
+        else
+            Console.WriteLine("[startup] LEGACY_AUTO_SEED_ON_EMPTY=true but no legacy JSON files were found.");
     }
 
     // Ensure fs_sys_id has at least one row (main menu needs it)
-    if (!db.FSSysId.Any())
+    foreach (var companyCode in CompanyCatalog.AllCodes)
     {
+        var hasFsSysId = db.FSSysId
+            .IgnoreQueryFilters()
+            .Any(x => x.CompanyCode == companyCode);
+
+        if (hasFsSysId)
+        {
+            continue;
+        }
+
         var now = DateTime.UtcNow;
         db.FSSysId.Add(new AccountingApi.Models.FSSysId
         {
+            CompanyCode = companyCode,
             PresMo    = now.Month,
             PresYr    = now.Year,
             BegDate   = new DateTime(now.Year, now.Month, 1),
             EndDate   = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month)),
             UpdatedAt = now
         });
-        db.SaveChanges();
     }
+    db.SaveChanges();
 
     // Ensure pay_sys_id has at least one row (payroll module needs it)
-    if (!db.PaySysId.Any())
+    foreach (var companyCode in CompanyCatalog.AllCodes)
     {
+        var hasPaySysId = db.PaySysId
+            .IgnoreQueryFilters()
+            .Any(x => x.CompanyCode == companyCode);
+
+        if (hasPaySysId)
+        {
+            continue;
+        }
+
         var now = DateTime.UtcNow;
         db.PaySysId.Add(new AccountingApi.Models.PaySysId
         {
+            CompanyCode = companyCode,
             PresMo   = now.Month,
             PresYr   = now.Year,
             BegDate  = new DateTime(now.Year, now.Month, 1),
             EndDate  = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month))
         });
-        db.SaveChanges();
     }
+    db.SaveChanges();
 }
 
 if (app.Environment.IsDevelopment())
@@ -503,12 +529,12 @@ app.Use(async (context, next) =>
         await context.Response.WriteAsJsonAsync(new
         {
             message = $"Missing or invalid {CompanyCatalog.HeaderName} header.",
-            acceptedCompanyCodes = new[] { "cyberfridge", "johntrix", "thermalex", "gmixteam", "dynamiq", "metaleon" }
+            acceptedCompanyCodes = CompanyCatalog.AllCodes
         });
         return;
     }
 
-    context.Items[CompanyCodeItemKey] = companyCode!.Trim().ToLowerInvariant();
+    context.Items[CompanyContextKeys.SelectedCompanyCodeItem] = companyCode!.Trim().ToLowerInvariant();
     await next();
 });
 
