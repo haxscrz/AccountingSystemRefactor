@@ -3,6 +3,10 @@ import { getCompanyNameByCode } from '../config/companies'
 
 export default function CompanyBadge() {
   const selectedCompanyCode = useCompanyStore((state) => state.selectedCompanyCode)
+  if (!selectedCompanyCode) {
+    return null
+  }
+
   const companyName = getCompanyNameByCode(selectedCompanyCode)
 
   return (
