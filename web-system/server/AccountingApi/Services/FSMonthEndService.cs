@@ -89,10 +89,17 @@ public class MonthEndResult
 public class FSMonthEndService : IFSMonthEndService
 {
     private readonly AccountingDbContext _context;
+    private readonly ICompanyContextAccessor _companyContextAccessor;
+    private readonly FSPostingService _postingService;
 
-    public FSMonthEndService(AccountingDbContext context)
+    public FSMonthEndService(
+        AccountingDbContext context,
+        ICompanyContextAccessor companyContextAccessor,
+        FSPostingService postingService)
     {
         _context = context;
+        _companyContextAccessor = companyContextAccessor;
+        _postingService = postingService;
     }
 
     /// <summary>
@@ -177,18 +184,10 @@ public class FSMonthEndService : IFSMonthEndService
     /// </summary>
     public async Task<int> PostAllTransactionsAsync()
     {
-        var postedCount = 0;
-
         try
         {
-            // In a complete implementation, this would:
-            // 1. Create pournals entries from all transaction tables
-            // 2. Update FSAccounts balances (cur_debit, cur_credit)
-            // 3. Calculate end_bal per formula (formula='DC' or 'CD')
-            // 4. Store posted journal references for audit trail
-
-            // For now, return placeholder
-            return postedCount;
+            var result = await _postingService.PostTransactionsAsync();
+            return result.Success ? result.RecordsPosted : -1;
         }
         catch
         {
@@ -304,17 +303,23 @@ public class FSMonthEndService : IFSMonthEndService
     {
         try
         {
+            var companyCode = _companyContextAccessor.CompanyCode;
+            if (!CompanyCatalog.IsValid(companyCode))
+            {
+                return -1;
+            }
+
             var clearCount = 0;
 
             // Clear all transaction detail lines first, then masters
-            clearCount += await _context.FSCheckVou.ExecuteDeleteAsync();
-            clearCount += await _context.FSCheckMas.ExecuteDeleteAsync();
-            clearCount += await _context.FSCashRcpt.ExecuteDeleteAsync();
-            clearCount += await _context.FSSaleBook.ExecuteDeleteAsync();
-            clearCount += await _context.FSJournals.ExecuteDeleteAsync();
-            clearCount += await _context.FSPurcBook.ExecuteDeleteAsync();
-            clearCount += await _context.FSAdjustment.ExecuteDeleteAsync();
-            clearCount += await _context.FSPostedJournals.ExecuteDeleteAsync();
+            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_checkvou WHERE company_code = {companyCode}");
+            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_checkmas WHERE company_code = {companyCode}");
+            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_cashrcpt WHERE company_code = {companyCode}");
+            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_salebook WHERE company_code = {companyCode}");
+            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_journals WHERE company_code = {companyCode}");
+            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_purcbook WHERE company_code = {companyCode}");
+            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_adjstmnt WHERE company_code = {companyCode}");
+            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_pournals WHERE company_code = {companyCode}");
 
             return clearCount;
         }

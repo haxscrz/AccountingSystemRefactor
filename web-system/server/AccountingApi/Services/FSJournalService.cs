@@ -102,12 +102,6 @@ public class FSJournalService : IFSJournalService
         entry.JJvNo = entry.JJvNo.Trim();
         entry.AcctCode = entry.AcctCode.Trim();
 
-        var exists = await _context.FSCashRcpt
-            .AnyAsync(c => c.JJvNo == entry.JJvNo);
-
-        if (exists)
-            throw new InvalidOperationException($"JV Number '{entry.JJvNo}' already exists");
-
         entry.CreatedAt = DateTime.UtcNow;
 
         _context.FSCashRcpt.Add(entry);
@@ -182,12 +176,6 @@ public class FSJournalService : IFSJournalService
 
         entry.JJvNo = entry.JJvNo.Trim();
         entry.AcctCode = entry.AcctCode.Trim();
-
-        var exists = await _context.FSSaleBook
-            .AnyAsync(s => s.JJvNo == entry.JJvNo);
-
-        if (exists)
-            throw new InvalidOperationException($"JV Number '{entry.JJvNo}' already exists");
 
         entry.CreatedAt = DateTime.UtcNow;
 
@@ -264,12 +252,6 @@ public class FSJournalService : IFSJournalService
         entry.JJvNo = entry.JJvNo.Trim();
         entry.AcctCode = entry.AcctCode.Trim();
 
-        var exists = await _context.FSJournals
-            .AnyAsync(j => j.JJvNo == entry.JJvNo);
-
-        if (exists)
-            throw new InvalidOperationException($"JV Number '{entry.JJvNo}' already exists");
-
         entry.CreatedAt = DateTime.UtcNow;
 
         _context.FSJournals.Add(entry);
@@ -344,12 +326,6 @@ public class FSJournalService : IFSJournalService
 
         entry.JJvNo = entry.JJvNo.Trim();
         entry.AcctCode = entry.AcctCode.Trim();
-
-        var exists = await _context.FSPurcBook
-            .AnyAsync(p => p.JJvNo == entry.JJvNo);
-
-        if (exists)
-            throw new InvalidOperationException($"JV Number '{entry.JJvNo}' already exists");
 
         entry.CreatedAt = DateTime.UtcNow;
 
@@ -426,12 +402,6 @@ public class FSJournalService : IFSJournalService
         entry.JJvNo = entry.JJvNo.Trim();
         entry.AcctCode = entry.AcctCode.Trim();
 
-        var exists = await _context.FSAdjustment
-            .AnyAsync(a => a.JJvNo == entry.JJvNo);
-
-        if (exists)
-            throw new InvalidOperationException($"JV Number '{entry.JJvNo}' already exists");
-
         entry.CreatedAt = DateTime.UtcNow;
 
         _context.FSAdjustment.Add(entry);
@@ -486,9 +456,68 @@ public class FSJournalService : IFSJournalService
         if (string.IsNullOrWhiteSpace(jvNo))
             return new();
 
-        // This is a generic method stub - in practice, you would query the specific table
-        var balance = new JournalBalance();
-        return await Task.FromResult(balance);
+        var refNo = jvNo.Trim();
+        if (typeof(T) == typeof(FSCashRcpt))
+        {
+            var lines = await _context.FSCashRcpt
+                .Where(x => x.JJvNo == refNo)
+                .ToListAsync();
+            return new JournalBalance
+            {
+                TotalDebit = lines.Where(x => x.JDOrC == "D").Sum(x => x.JCkAmt),
+                TotalCredit = lines.Where(x => x.JDOrC == "C").Sum(x => x.JCkAmt)
+            };
+        }
+
+        if (typeof(T) == typeof(FSSaleBook))
+        {
+            var lines = await _context.FSSaleBook
+                .Where(x => x.JJvNo == refNo)
+                .ToListAsync();
+            return new JournalBalance
+            {
+                TotalDebit = lines.Where(x => x.JDOrC == "D").Sum(x => x.JCkAmt),
+                TotalCredit = lines.Where(x => x.JDOrC == "C").Sum(x => x.JCkAmt)
+            };
+        }
+
+        if (typeof(T) == typeof(FSJournal))
+        {
+            var lines = await _context.FSJournals
+                .Where(x => x.JJvNo == refNo)
+                .ToListAsync();
+            return new JournalBalance
+            {
+                TotalDebit = lines.Where(x => x.JDOrC == "D").Sum(x => x.JCkAmt),
+                TotalCredit = lines.Where(x => x.JDOrC == "C").Sum(x => x.JCkAmt)
+            };
+        }
+
+        if (typeof(T) == typeof(FSPurcBook))
+        {
+            var lines = await _context.FSPurcBook
+                .Where(x => x.JJvNo == refNo)
+                .ToListAsync();
+            return new JournalBalance
+            {
+                TotalDebit = lines.Where(x => x.JDOrC == "D").Sum(x => x.JCkAmt),
+                TotalCredit = lines.Where(x => x.JDOrC == "C").Sum(x => x.JCkAmt)
+            };
+        }
+
+        if (typeof(T) == typeof(FSAdjustment))
+        {
+            var lines = await _context.FSAdjustment
+                .Where(x => x.JJvNo == refNo)
+                .ToListAsync();
+            return new JournalBalance
+            {
+                TotalDebit = lines.Where(x => x.JDOrC == "D").Sum(x => x.JCkAmt),
+                TotalCredit = lines.Where(x => x.JDOrC == "C").Sum(x => x.JCkAmt)
+            };
+        }
+
+        throw new NotSupportedException($"Unsupported journal type '{typeof(T).Name}' for balance validation.");
     }
 
     /// <summary>

@@ -44,6 +44,10 @@ public sealed class FSPostingService
         try
         {
             var companyCode = _companyContextAccessor.CompanyCode;
+            if (!CompanyCatalog.IsValid(companyCode))
+            {
+                return (false, "Invalid company context.", 0);
+            }
 
             // Step 1: Clear posted journals table
             await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_pournals WHERE company_code = {companyCode}", cancellationToken);
@@ -64,7 +68,8 @@ public sealed class FSPostingService
 
                 var postedJournal = new FSPostedJournal
                 {
-                    JJvNo = voucher.JCkNo,
+                    CompanyCode = companyCode,
+                    JJvNo = checkMaster?.JJvNo ?? voucher.JCkNo,
                     JDate = checkMaster?.JDate,
                     AcctCode = voucher.AcctCode,
                     JCkAmt = voucher.JCkAmt,
@@ -84,6 +89,7 @@ public sealed class FSPostingService
             {
                 var postedJournal = new FSPostedJournal
                 {
+                    CompanyCode = companyCode,
                     JJvNo = receipt.JJvNo,
                     JDate = receipt.JDate,
                     AcctCode = receipt.AcctCode,
@@ -103,6 +109,7 @@ public sealed class FSPostingService
             {
                 var postedJournal = new FSPostedJournal
                 {
+                    CompanyCode = companyCode,
                     JJvNo = sale.JJvNo,
                     JDate = sale.JDate,
                     AcctCode = sale.AcctCode,
@@ -122,6 +129,7 @@ public sealed class FSPostingService
             {
                 var postedJournal = new FSPostedJournal
                 {
+                    CompanyCode = companyCode,
                     JJvNo = journal.JJvNo,
                     JDate = journal.JDate,
                     AcctCode = journal.AcctCode,
@@ -141,6 +149,7 @@ public sealed class FSPostingService
             {
                 var postedJournal = new FSPostedJournal
                 {
+                    CompanyCode = companyCode,
                     JJvNo = purchase.JJvNo,
                     JDate = purchase.JDate,
                     AcctCode = purchase.AcctCode,
@@ -160,6 +169,7 @@ public sealed class FSPostingService
             {
                 var postedJournal = new FSPostedJournal
                 {
+                    CompanyCode = companyCode,
                     JJvNo = adjustment.JJvNo,
                     JDate = adjustment.JDate,
                     AcctCode = adjustment.AcctCode,
@@ -224,6 +234,10 @@ public sealed class FSPostingService
         try
         {
             var companyCode = _companyContextAccessor.CompanyCode;
+            if (!CompanyCatalog.IsValid(companyCode))
+            {
+                return (false, "Invalid company context.");
+            }
 
             // Step 1: Get or create sys_id record
             var sysId = await _context.FSSysId.FirstOrDefaultAsync(cancellationToken);
@@ -236,6 +250,22 @@ public sealed class FSPostingService
             if (sysId.PresMo != month || sysId.PresYr != year)
             {
                 return (false, $"Month-end mismatch. System is on {sysId.PresYr}-{sysId.PresMo:00}, but you requested {year}-{month:00}.");
+            }
+
+            var unpostedCount = await _context.FSCheckMas.CountAsync(cancellationToken)
+                               + await _context.FSCashRcpt.CountAsync(cancellationToken)
+                               + await _context.FSSaleBook.CountAsync(cancellationToken)
+                               + await _context.FSJournals.CountAsync(cancellationToken)
+                               + await _context.FSPurcBook.CountAsync(cancellationToken)
+                               + await _context.FSAdjustment.CountAsync(cancellationToken);
+
+            if (unpostedCount > 0)
+            {
+                var postingResult = await PostTransactionsAsync(cancellationToken);
+                if (!postingResult.Success)
+                {
+                    return (false, $"Month-end aborted: {postingResult.Message}");
+                }
             }
 
             // Step 2: Calculate retained earnings (from account 3150 per PRG logic)
@@ -279,6 +309,7 @@ public sealed class FSPostingService
             await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_purcbook WHERE company_code = {companyCode}", cancellationToken);
             await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_adjstmnt WHERE company_code = {companyCode}", cancellationToken);
             await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_journals WHERE company_code = {companyCode}", cancellationToken);
+            await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_pournals WHERE company_code = {companyCode}", cancellationToken);
 
             // Step 5: Update system period
             var nextMonth = month + 1;
