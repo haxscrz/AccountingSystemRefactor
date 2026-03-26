@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import React from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
+import { readSelectedCompanyName } from '../../utils/companyContext'
 
 //  Types 
 
@@ -198,9 +199,10 @@ function SubOptionSelector({ parentTitle, options, onSelect }: {
 
 //  Report Header 
 function ReportHeader({ si, title }: { si: SysInfo; title: string }) {
+  const selectedCompanyName = readSelectedCompanyName()
   return (
     <div style={{ marginBottom: 6, fontFamily: 'monospace', fontSize: 9 }}>
-      <div style={{ fontWeight: 700, fontSize: 10 }}>{si.company || 'COMPANY NAME'}</div>
+      <div style={{ fontWeight: 700, fontSize: 10 }}>{selectedCompanyName || si.company || 'COMPANY NAME'}</div>
       <div style={{ fontWeight: 700 }}>{title}</div>
       <div>Payroll Period: {si.begDate} - {si.endDate}</div>
     </div>
@@ -482,7 +484,7 @@ function PaySlips({ data }: { data: ReportData }) {
           <table style={{ width:'100%', borderCollapse:'collapse', marginBottom:4 }}>
             <tbody>
               <tr>
-                <td style={{ ...SLH, width:140 }}>{si.company||'COMPANY'}</td>
+                <td style={{ ...SLH, width:140 }}>{readSelectedCompanyName() || si.company || 'COMPANY'}</td>
                 <td style={{ ...SLH, textAlign:'center' }}>P A Y S L I P  {si.begDate} to {si.endDate}</td>
                 <td style={{ ...SLH, width:200 }}>*** RECEIPT OF PAY ***</td>
               </tr>

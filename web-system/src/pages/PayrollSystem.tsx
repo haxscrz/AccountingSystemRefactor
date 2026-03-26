@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Routes, Route } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
+import { useCompanyStore } from '../stores/companyStore'
+import { getCompanyNameByCode } from '../config/companies'
 import RibbonNav from '../components/RibbonNav'
 import PayrollMainMenu from '../components/payroll/PayrollMainMenu'
 import PayrollTypeSelector from '../components/payroll/PayrollTypeSelector'
@@ -27,11 +29,16 @@ import './PayrollSystem.css'
 export default function PayrollSystem() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const selectedCompanyCode = useCompanyStore((state) => state.selectedCompanyCode)
   const [activeTab, setActiveTab] = useState('main')
   const [payrollType, setPayrollType] = useState<'regular' | 'casual' | null>(null)
   const [isCompactHeader, setIsCompactHeader] = useState(false)
   const [statusPeriod, setStatusPeriod] = useState('Loading...')
-  const [companyName, setCompanyName] = useState('PAY System')
+  const [companyName, setCompanyName] = useState(getCompanyNameByCode(selectedCompanyCode))
+
+  useEffect(() => {
+    setCompanyName(getCompanyNameByCode(selectedCompanyCode))
+  }, [selectedCompanyCode])
 
   useEffect(() => {
     const onScroll = () => {
@@ -52,11 +59,11 @@ export default function PayrollSystem() {
       .then(d => {
         if (d) {
           setStatusPeriod(`${MONTHS[d.PresMo] ?? d.PresMo} ${d.PresYr}`)
-          if (d.SysNm) setCompanyName(d.SysNm)
+          if (d.SysNm && !selectedCompanyCode) setCompanyName(d.SysNm)
         }
       })
       .catch(() => setStatusPeriod('—'))
-  }, [payrollType])
+  }, [payrollType, selectedCompanyCode])
 
   const handleLogout = () => {
     logout()

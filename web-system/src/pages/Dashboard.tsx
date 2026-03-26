@@ -1,11 +1,15 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
+import { useCompanyStore } from '../stores/companyStore'
+import { getCompanyNameByCode } from '../config/companies'
 import './Dashboard.css'
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const selectedCompanyCode = useCompanyStore((state) => state.selectedCompanyCode)
   const canPayroll = !!user?.canAccessPayroll
+  const selectedCompanyName = getCompanyNameByCode(selectedCompanyCode)
 
   const handleLogout = () => {
     logout()
@@ -22,9 +26,14 @@ export default function Dashboard() {
             <p>Welcome, {user?.username}</p>
           </div>
         </div>
-        <button onClick={handleLogout} className="btn btn-secondary">
-          Logout
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button onClick={() => navigate('/select-company')} className="btn btn-secondary">
+            Switch Company
+          </button>
+          <button onClick={handleLogout} className="btn btn-secondary">
+            Logout
+          </button>
+        </div>
       </header>
 
       <div className="dashboard-content">
@@ -93,7 +102,7 @@ export default function Dashboard() {
 
         <div className="info-cards">
           <div className="info-card">
-            <strong>Company:</strong> CTSI
+            <strong>Company:</strong> {selectedCompanyName}
           </div>
           <div className="info-card">
             <strong>Current Period:</strong> February 2026
@@ -105,7 +114,7 @@ export default function Dashboard() {
       </div>
 
       <div className="status-bar">
-        <span>Accounting System v2.0 - Modernized from legacy FS and PAY programs</span>
+        <span>Accounting System v2.0 - {selectedCompanyName}</span>
         <span>Logged in as: {user?.username} ({user?.role})</span>
       </div>
     </div>

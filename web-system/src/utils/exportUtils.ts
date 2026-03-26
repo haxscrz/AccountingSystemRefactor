@@ -11,8 +11,8 @@
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import { readSelectedCompanyName } from './companyContext'
 
-const COMPANY_NAME = 'FS Accounting System'
 // Navy that matches --topbar-bg used in the design system
 const PDF_HEADER_COLOR: [number, number, number] = [26, 35, 63]
 const PDF_STRIPE_COLOR: [number, number, number] = [248, 249, 252]
@@ -57,10 +57,11 @@ function triggerDownload(content: string, mime: string, filename: string) {
 }
 
 function drawPdfHeader(doc: jsPDF, title: string, subtitle: string) {
+  const companyName = readSelectedCompanyName()
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(12)
   doc.setTextColor(PDF_HEADER_COLOR[0], PDF_HEADER_COLOR[1], PDF_HEADER_COLOR[2])
-  doc.text(COMPANY_NAME, 14, 15)
+  doc.text(companyName, 14, 15)
 
   doc.setFont('helvetica', 'normal')
   doc.setFontSize(10)
@@ -133,13 +134,14 @@ export function exportFinancialCSV(
   sections: FinSection[],
   filename?: string
 ) {
+  const companyName = readSelectedCompanyName()
   const escape = (v: unknown) => {
     const s = v == null ? '' : String(v)
     return s.includes(',') || s.includes('"') || s.includes('\n')
       ? `"${s.replace(/"/g, '""')}"`
       : s
   }
-  const lines: string[] = [escape(COMPANY_NAME), escape(title), escape(subtitle), '']
+  const lines: string[] = [escape(companyName), escape(title), escape(subtitle), '']
   for (const sec of sections) {
     lines.push(escape(sec.heading))
     lines.push(sec.cols.map(c => escape(c.header)).join(','))
@@ -165,8 +167,9 @@ export function exportTableXLSX(
   rows: Record<string, unknown>[],
   filename?: string
 ) {
+  const companyName = readSelectedCompanyName()
   const aoa: unknown[][] = [
-    [COMPANY_NAME],
+    [companyName],
     [title],
     [],
     cols.map(c => c.header),
@@ -193,8 +196,9 @@ export function exportFinancialXLSX(
   sections: FinSection[],
   filename?: string
 ) {
+  const companyName = readSelectedCompanyName()
   const aoa: unknown[][] = [
-    [COMPANY_NAME],
+    [companyName],
     [title],
     [subtitle],
     []

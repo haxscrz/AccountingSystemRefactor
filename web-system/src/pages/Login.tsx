@@ -20,7 +20,7 @@ export default function Login() {
     try {
       const result = await login(username, password)
       if (result.success) {
-        navigate('/dashboard')
+        navigate('/select-company')
       } else {
         setError(result.message || 'Invalid username or password')
       }
@@ -81,7 +81,7 @@ export default function Login() {
 
         <div className="login-footer">
           <p>Authorized users only</p>
-          <p>Company: CTSI | Version 2.0</p>
+          <p>Version 2.0 | Company selected after sign in</p>
         </div>
       </div>
     </div>

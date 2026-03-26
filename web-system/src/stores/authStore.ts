@@ -118,6 +118,11 @@ export const useAuthStore = create<AuthState>()(
           refreshTokenExpiresAtUtc: data.tokens.refreshTokenExpiresAtUtc,
           isAuthenticated: true
         })
+        try {
+          localStorage.removeItem('company-storage')
+        } catch {
+          // ignore storage failures
+        }
         return { success: true, message: data.message || 'Login successful' }
       },
       logout: async () => {
@@ -144,6 +149,11 @@ export const useAuthStore = create<AuthState>()(
           accessTokenExpiresAtUtc: null,
           refreshTokenExpiresAtUtc: null
         })
+        try {
+          localStorage.removeItem('company-storage')
+        } catch {
+          // ignore storage failures
+        }
       }
     }),
     {

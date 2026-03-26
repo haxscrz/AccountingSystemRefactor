@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Routes, Route } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
+import { useCompanyStore } from '../stores/companyStore'
+import { getCompanyNameByCode } from '../config/companies'
 import RibbonNav from '../components/RibbonNav'
 import FSMainMenu from '../components/fs/FSMainMenu'
 import FSVoucherEntry from '../components/fs/FSVoucherEntry'
@@ -17,8 +19,10 @@ import './FSSystem.css'
 export default function FSSystem() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const selectedCompanyCode = useCompanyStore((state) => state.selectedCompanyCode)
   const [activeTab, setActiveTab] = useState('main')
   const [isCompactHeader, setIsCompactHeader] = useState(false)
+  const selectedCompanyName = getCompanyNameByCode(selectedCompanyCode)
 
   useEffect(() => {
     const onScroll = () => {
@@ -199,7 +203,7 @@ export default function FSSystem() {
       </div>
 
       <div className="status-bar">
-        <span>FS System | Company: CTSI | Period: February 2026</span>
+        <span>FS System | Company: {selectedCompanyName} | Period: February 2026</span>
         <span>{user?.username}</span>
       </div>
     </div>

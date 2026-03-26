@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import axios from 'axios'
 import App from './App'
 import './index.css'
+import { COMPANY_HEADER_NAME } from './config/companies'
 
 type PersistedAuthState = {
   user: { username: string } | null
@@ -15,6 +16,7 @@ type PersistedAuthState = {
 }
 
 const AUTH_STORAGE_KEY = 'auth-storage'
+const COMPANY_STORAGE_KEY = 'company-storage'
 
 function readPersistedAuthState(): PersistedAuthState | null {
   try {
@@ -47,6 +49,17 @@ function clearPersistedAuthState() {
     accessTokenExpiresAtUtc: null,
     refreshTokenExpiresAtUtc: null
   })
+}
+
+function readPersistedCompanyCode(): string | null {
+  try {
+    const raw = localStorage.getItem(COMPANY_STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { state?: { selectedCompanyCode?: string | null } }
+    return parsed.state?.selectedCompanyCode ?? null
+  } catch {
+    return null
+  }
 }
 
 function installApiAuthInterceptor() {
@@ -126,10 +139,14 @@ function installApiAuthInterceptor() {
     if (apiRequest && auth?.accessToken && !headers.has('Authorization')) {
       headers.set('Authorization', `Bearer ${auth.accessToken}`)
     }
+    const selectedCompanyCode = readPersistedCompanyCode()
+    const authRoute = requestUrl.includes('/api/auth/login') || requestUrl.includes('/api/auth/refresh') || requestUrl.includes('/api/auth/logout')
+    if (apiRequest && !authRoute && selectedCompanyCode && !headers.has(COMPANY_HEADER_NAME)) {
+      headers.set(COMPANY_HEADER_NAME, selectedCompanyCode)
+    }
 
     const firstResponse = await originalFetch(input, { ...init, headers })
 
-    const authRoute = requestUrl.includes('/api/auth/login') || requestUrl.includes('/api/auth/refresh')
     if (!apiRequest || authRoute || firstResponse.status !== 401) return firstResponse
 
     const newAccessToken = await getRefreshedAccessToken()
@@ -137,6 +154,9 @@ function installApiAuthInterceptor() {
 
     const retryHeaders = new Headers(init?.headers ?? {})
     retryHeaders.set('Authorization', `Bearer ${newAccessToken}`)
+    if (selectedCompanyCode && !retryHeaders.has(COMPANY_HEADER_NAME)) {
+      retryHeaders.set(COMPANY_HEADER_NAME, selectedCompanyCode)
+    }
     return originalFetch(input, { ...init, headers: retryHeaders })
   }
 
@@ -145,9 +165,15 @@ function installApiAuthInterceptor() {
     if (!isApiRequest(requestUrl)) return config
 
     const auth = readPersistedAuthState()
+    const selectedCompanyCode = readPersistedCompanyCode()
     if (auth?.accessToken) {
       config.headers = config.headers ?? {}
       ;(config.headers as Record<string, string>).Authorization = `Bearer ${auth.accessToken}`
+    }
+    const authRoute = requestUrl.includes('/api/auth/login') || requestUrl.includes('/api/auth/refresh') || requestUrl.includes('/api/auth/logout')
+    if (!authRoute && selectedCompanyCode) {
+      config.headers = config.headers ?? {}
+      ;(config.headers as Record<string, string>)[COMPANY_HEADER_NAME] = selectedCompanyCode
     }
 
     return config

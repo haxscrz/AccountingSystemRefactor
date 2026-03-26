@@ -11,6 +11,8 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+const string CompanyCodeItemKey = "SelectedCompanyCode";
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -23,16 +25,31 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
 // Database
-var configuredConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var isAzureAppService = !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME"));
-var fallbackConnectionString = isAzureAppService
-    ? "Data Source=/home/accounting.db"
-    : "Data Source=accounting.db";
-var connectionString = string.IsNullOrWhiteSpace(configuredConnectionString)
-    ? fallbackConnectionString
-    : configuredConnectionString;
-builder.Services.AddDbContext<AccountingDbContext>(options =>
-    options.UseSqlite(connectionString));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<CompanyDatabasePathResolver>();
+builder.Services.AddDbContext<AccountingDbContext>((serviceProvider, options) =>
+{
+    var resolver = serviceProvider.GetRequiredService<CompanyDatabasePathResolver>();
+    var accessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+
+    var context = accessor.HttpContext;
+    if (context is null)
+    {
+        // Startup and background operations must use base DB (auth/bootstrap/seeding path).
+        options.UseSqlite(resolver.GetBaseConnectionString());
+        return;
+    }
+
+    var selectedCompanyCode = context?.Items[CompanyCodeItemKey] as string;
+
+    // Authentication remains in the base database so login/refresh works before company selection.
+    var isAuthRequest = context?.Request.Path.StartsWithSegments("/api/auth") == true;
+    var connectionString = isAuthRequest
+        ? resolver.GetBaseConnectionString()
+        : resolver.GetConnectionStringForCompany(selectedCompanyCode);
+
+    options.UseSqlite(connectionString);
+});
 
 // Services
 builder.Services.AddSingleton<LegacyDataService>();
@@ -145,9 +162,50 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 var app = builder.Build();
 
+string? EnsureDirectory(string path)
+{
+    var directory = Path.GetDirectoryName(path);
+    if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+    {
+        Directory.CreateDirectory(directory);
+    }
+
+    return directory;
+}
+
+void EnsureCompanyDatabaseExists(IServiceProvider serviceProvider, string companyCode)
+{
+    var resolver = serviceProvider.GetRequiredService<CompanyDatabasePathResolver>();
+    var baseConnectionString = resolver.GetBaseConnectionString();
+    var companyDbPath = resolver.GetPathForCompany(companyCode);
+
+    if (File.Exists(companyDbPath))
+    {
+        return;
+    }
+
+    var basePath = baseConnectionString.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Select(part => part.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase)
+            ? part.Substring("Data Source=".Length).Trim()
+            : null)
+        .FirstOrDefault(path => !string.IsNullOrWhiteSpace(path));
+
+    EnsureDirectory(companyDbPath);
+
+    if (!string.IsNullOrWhiteSpace(basePath) && File.Exists(basePath))
+    {
+        File.Copy(basePath, companyDbPath);
+    }
+}
+
 // Ensure all tables exist on first run (fresh DB from GitHub clone)
 using (var initScope = app.Services.CreateScope())
 {
+    foreach (var companyCode in new[] { "cyberfridge", "johntrix", "thermalex", "gmixteam", "dynamiq", "metaleon" })
+    {
+        EnsureCompanyDatabaseExists(initScope.ServiceProvider, companyCode);
+    }
+
     var db = initScope.ServiceProvider.GetRequiredService<AccountingDbContext>();
 
     // Creates ALL tables defined in DbContext if they don't exist yet.
@@ -424,6 +482,35 @@ app.UseCors("frontend");
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path;
+    var requiresCompanyContext = path.StartsWithSegments("/api/fs")
+                                 || path.StartsWithSegments("/api/payroll")
+                                 || path.StartsWithSegments("/api/legacymigration");
+
+    if (!requiresCompanyContext)
+    {
+        await next();
+        return;
+    }
+
+    var companyCode = context.Request.Headers[CompanyCatalog.HeaderName].FirstOrDefault();
+    if (!CompanyCatalog.IsValid(companyCode))
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        await context.Response.WriteAsJsonAsync(new
+        {
+            message = $"Missing or invalid {CompanyCatalog.HeaderName} header.",
+            acceptedCompanyCodes = new[] { "cyberfridge", "johntrix", "thermalex", "gmixteam", "dynamiq", "metaleon" }
+        });
+        return;
+    }
+
+    context.Items[CompanyCodeItemKey] = companyCode!.Trim().ToLowerInvariant();
+    await next();
+});
 
 // Serve React frontend static files from wwwroot/
 app.UseDefaultFiles();
