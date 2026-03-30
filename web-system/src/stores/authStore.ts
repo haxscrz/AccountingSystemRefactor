@@ -129,20 +129,8 @@ export const useAuthStore = create<AuthState>()(
       },
       logout: async () => {
         const state = useAuthStore.getState()
-        try {
-          if (state.refreshToken) {
-            await fetch('/api/auth/logout', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(state.accessToken ? { Authorization: `Bearer ${state.accessToken}` } : {})
-              },
-              body: JSON.stringify({ refreshToken: state.refreshToken })
-            })
-          }
-        } catch {
-          // best-effort logout; local cleanup still runs
-        }
+        
+        // 1. Immediately clear internal state and trigger UI redirect
         set({
           user: null,
           isAuthenticated: false,
@@ -151,14 +139,31 @@ export const useAuthStore = create<AuthState>()(
           accessTokenExpiresAtUtc: null,
           refreshTokenExpiresAtUtc: null
         })
+
         try {
           localStorage.removeItem('company-storage')
         } catch {
           // ignore storage failures
         }
-        
-        // Force full page reload to clear memory settings/persistence mappings
-        window.location.href = '/'
+
+        // 2. Do fire-and-forget backend cleanup in parallel
+        try {
+          if (state.refreshToken) {
+            fetch('/api/auth/logout', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(state.accessToken ? { Authorization: `Bearer ${state.accessToken}` } : {})
+              },
+              body: JSON.stringify({ refreshToken: state.refreshToken })
+            }).catch(() => {})
+          }
+        } catch {
+          // best-effort logout
+        }
+
+        // 3. Immediately redirect locally without blocking
+        window.location.href = '/login'
       }
     }),
     {
