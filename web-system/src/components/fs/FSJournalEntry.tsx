@@ -546,16 +546,16 @@ export default function FSJournalEntry() {
                 /* ── EDIT ROW ── */
                 <tr key={r.id} className="bg-amber-50/80">
                   <td className="px-3 py-1.5">
-                    <input className="w-full px-2 py-1 text-[13px] border border-amber-300 rounded bg-white font-mono uppercase outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                    <input className="w-full px-2 py-1 text-[13px] border border-amber-300 rounded bg-surface-container-lowest font-mono uppercase outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                       value={editRow.jJvNo} onChange={e => setEditRow(x => ({ ...x, jJvNo: e.target.value.toUpperCase() }))} maxLength={8} />
                   </td>
                   <td className="px-3 py-1.5">
-                    <input type="date" className="w-full px-2 py-1 text-[13px] border border-amber-300 rounded bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                    <input type="date" className="w-full px-2 py-1 text-[13px] border border-amber-300 rounded bg-surface-container-lowest outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                       value={editRow.jDate} onChange={e => setEditRow(x => ({ ...x, jDate: e.target.value }))} />
                   </td>
                   <td className="px-3 py-1.5">
                     <div className="flex gap-1">
-                      <input className="flex-1 px-2 py-1 text-[13px] border border-amber-300 rounded bg-white font-mono uppercase outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                      <input className="flex-1 px-2 py-1 text-[13px] border border-amber-300 rounded bg-surface-container-lowest font-mono uppercase outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                         value={editRow.acctCode} list="journal-account-list"
                         onChange={e => setEditRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))} maxLength={4} placeholder="0000" />
                       <button type="button" onClick={() => openAcctBrowse('edit')}
@@ -563,14 +563,14 @@ export default function FSJournalEntry() {
                     </div>
                   </td>
                   <td className="px-3 py-1.5">
-                    <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-primary/20 ${editRow.debit ? 'border-blue-300 bg-blue-50/50 focus:border-blue-400' : 'border-amber-300 bg-white focus:border-primary'}`}
+                    <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-primary/20 ${editRow.debit ? 'border-blue-300 bg-blue-50/50 dark:bg-blue-900/20 focus:border-blue-400' : 'border-amber-300 dark:border-amber-700/50 bg-surface-container-lowest focus:border-primary'}`}
                       value={editRow.debit} placeholder="Debit"
                       onFocus={() => setEditRow(x => ({ ...x, credit: '' }))}
                       onChange={e => setEditRow(x => ({ ...x, debit: e.target.value }))}
                       step="0.01" min="0" />
                   </td>
                   <td className="px-3 py-1.5">
-                    <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-primary/20 ${editRow.credit ? 'border-pink-300 bg-pink-50/50 focus:border-pink-400' : 'border-amber-300 bg-white focus:border-primary'}`}
+                    <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-primary/20 ${editRow.credit ? 'border-pink-300 bg-pink-50/50 dark:bg-pink-900/20 focus:border-pink-400' : 'border-amber-300 dark:border-amber-700/50 bg-surface-container-lowest focus:border-primary'}`}
                       value={editRow.credit} placeholder="Credit"
                       onFocus={() => setEditRow(x => ({ ...x, debit: '' }))}
                       onChange={e => setEditRow(x => ({ ...x, credit: e.target.value }))}
@@ -625,35 +625,35 @@ export default function FSJournalEntry() {
               {/* ── ADD ROW (always visible, green tint) ── */}
               <tr className="bg-emerald-50/60 border-t-2 border-dashed border-emerald-300/60">
                 <td className="px-3 py-1.5">
-                  <input className="w-full px-2 py-1 text-[13px] border border-emerald-300 rounded bg-white font-mono uppercase outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-200"
+                  <input className="w-full px-2 py-1 text-[13px] border border-emerald-300 rounded bg-surface-container-lowest font-mono uppercase outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-200"
                     value={addRow.jJvNo} placeholder="REF#"
                     onChange={e => setAddRow(x => ({ ...x, jJvNo: e.target.value.toUpperCase() }))} maxLength={8} />
                 </td>
                 <td className="px-3 py-1.5">
-                  <input type="date" className="w-full px-2 py-1 text-[13px] border border-emerald-300 rounded bg-white outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-200"
+                  <input type="date" className="w-full px-2 py-1 text-[13px] border border-emerald-300 rounded bg-surface-container-lowest outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-200"
                     value={addRow.jDate}
                     onChange={e => setAddRow(x => ({ ...x, jDate: e.target.value }))} />
                 </td>
                 <td className="px-3 py-1.5">
                   <div className="flex gap-1">
-                    <input className="flex-1 px-2 py-1 text-[13px] border border-emerald-300 rounded bg-white font-mono uppercase outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-200"
+                    <input className="flex-1 px-2 py-1 text-[13px] border border-emerald-300 rounded bg-surface-container-lowest font-mono uppercase outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-200"
                       value={addRow.acctCode} placeholder="Acct" id="input_addAcct"
                       list="journal-account-list"
                       onChange={e => setAddRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))} maxLength={4}
                       onKeyDown={e => { if (e.key === 'Enter') void handleSaveAdd() }} />
                     <button type="button" onClick={() => openAcctBrowse('add')}
-                      className="px-1.5 py-1 text-[11px] border border-emerald-300 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-700 flex-shrink-0 transition-colors">…</button>
+                      className="px-1.5 py-1 text-[11px] border border-emerald-300 dark:border-emerald-700/50 rounded bg-emerald-100 dark:bg-emerald-900/30 hover:bg-emerald-200 dark:hover:bg-emerald-800/40 text-emerald-700 dark:text-emerald-400 flex-shrink-0 transition-colors">…</button>
                   </div>
                 </td>
                 <td className="px-3 py-1.5">
-                  <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-emerald-200 ${addRow.debit ? 'border-blue-300 bg-blue-50/30 focus:border-blue-400' : 'border-emerald-300 bg-white focus:border-emerald-500'}`}
+                  <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-emerald-200 ${addRow.debit ? 'border-blue-300 bg-blue-50/30 dark:bg-blue-900/20 focus:border-blue-400' : 'border-emerald-300 dark:border-emerald-700/50 bg-surface-container-lowest focus:border-emerald-500'}`}
                     value={addRow.debit} placeholder="Debit"
                     onFocus={() => setAddRow(x => ({ ...x, credit: '' }))}
                     onChange={e => setAddRow(x => ({ ...x, debit: e.target.value }))}
                     onKeyDown={e => { if (e.key === 'Enter') void handleSaveAdd() }} step="0.01" min="0" />
                 </td>
                 <td className="px-3 py-1.5">
-                  <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-emerald-200 ${addRow.credit ? 'border-pink-300 bg-pink-50/30 focus:border-pink-400' : 'border-emerald-300 bg-white focus:border-emerald-500'}`}
+                  <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-emerald-200 ${addRow.credit ? 'border-pink-300 bg-pink-50/30 dark:bg-pink-900/20 focus:border-pink-400' : 'border-emerald-300 dark:border-emerald-700/50 bg-surface-container-lowest focus:border-emerald-500'}`}
                     value={addRow.credit} placeholder="Credit"
                     onFocus={() => setAddRow(x => ({ ...x, debit: '' }))}
                     onChange={e => setAddRow(x => ({ ...x, credit: e.target.value }))}

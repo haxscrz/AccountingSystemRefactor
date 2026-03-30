@@ -822,7 +822,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                       <tr key={line.id} className="bg-amber-50/80">
                         <td className="px-3 py-1.5">
                           <div className="flex gap-1">
-                            <input className="flex-1 px-2 py-1 text-[13px] border border-amber-300 rounded bg-white font-mono uppercase outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                            <input className="flex-1 px-2 py-1 text-[13px] border border-amber-300 rounded bg-surface-container-lowest font-mono uppercase outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                               value={editLineRow.acctCode} list="voucher-account-list"
                               onChange={e => setEditLineRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))}
                               maxLength={4} onKeyDown={e => { if (e.key === 'Enter') void handleUpdateLine() }} autoFocus />
@@ -831,14 +831,14 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                           </div>
                         </td>
                         <td className="px-3 py-1.5">
-                          <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-primary/20 ${editLineRow.debit ? 'border-blue-300 bg-blue-50/50' : 'border-amber-300 bg-white'}`}
+                          <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-primary/20 ${editLineRow.debit ? 'border-blue-300 bg-blue-50/50 dark:bg-blue-900/20 focus:border-blue-400' : 'border-amber-300 dark:border-amber-700/50 bg-surface-container-lowest focus:border-primary'}`}
                             placeholder="Debit" value={editLineRow.debit}
                             onFocus={() => setEditLineRow(x => ({ ...x, credit: '' }))}
                             onChange={e => setEditLineRow(x => ({ ...x, debit: e.target.value }))}
                             onKeyDown={e => { if (e.key === 'Enter') void handleUpdateLine() }} />
                         </td>
                         <td className="px-3 py-1.5">
-                          <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-primary/20 ${editLineRow.credit ? 'border-pink-300 bg-pink-50/50' : 'border-amber-300 bg-white'}`}
+                          <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-primary/20 ${editLineRow.credit ? 'border-pink-300 bg-pink-50/50 dark:bg-pink-900/20 focus:border-pink-400' : 'border-amber-300 dark:border-amber-700/50 bg-surface-container-lowest focus:border-primary'}`}
                             placeholder="Credit" value={editLineRow.credit}
                             onFocus={() => setEditLineRow(x => ({ ...x, debit: '' }))}
                             onChange={e => setEditLineRow(x => ({ ...x, credit: e.target.value }))}
@@ -885,7 +885,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                     <tr className="bg-emerald-50/60 border-t-2 border-dashed border-emerald-300/60">
                       <td className="px-3 py-1.5">
                         <div className="flex gap-1">
-                          <input className="flex-1 px-2 py-1 text-[13px] border border-emerald-300 rounded bg-white font-mono uppercase outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-200"
+                          <input className="flex-1 px-2 py-1 text-[13px] border border-emerald-300 rounded bg-surface-container-lowest font-mono uppercase outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-200"
                             placeholder="ACCT" id="input_lineAcct" value={addLineRow.acctCode} list="voucher-account-list"
                             onChange={e => setAddLineRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))}
                             maxLength={4} onKeyDown={e => { if (e.key === 'Enter') void handleSaveAddLine() }} />
@@ -894,14 +894,14 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
                         </div>
                       </td>
                       <td className="px-3 py-1.5">
-                        <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-emerald-200 ${addLineRow.debit ? 'border-blue-300 bg-blue-50/30' : 'border-emerald-300 bg-white'}`}
+                        <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-emerald-200 ${addLineRow.debit ? 'border-blue-300 bg-blue-50/30 dark:bg-blue-900/20 focus:border-blue-400' : 'border-emerald-300 dark:border-emerald-700/50 bg-surface-container-lowest focus:border-emerald-500'}`}
                           placeholder="Debit" id="input_lineDebit" value={addLineRow.debit}
                           onFocus={() => setAddLineRow(x => ({ ...x, credit: '' }))}
                           onChange={e => setAddLineRow(x => ({ ...x, debit: e.target.value }))}
                           onKeyDown={e => { if (e.key === 'Enter') void handleSaveAddLine() }} />
                       </td>
                       <td className="px-3 py-1.5">
-                        <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-emerald-200 ${addLineRow.credit ? 'border-pink-300 bg-pink-50/30' : 'border-emerald-300 bg-white'}`}
+                        <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-emerald-200 ${addLineRow.credit ? 'border-pink-300 bg-pink-50/30 dark:bg-pink-900/20 focus:border-pink-400' : 'border-emerald-300 dark:border-emerald-700/50 bg-surface-container-lowest focus:border-emerald-500'}`}
                           placeholder="Credit" id="input_lineCredit" value={addLineRow.credit}
                           onFocus={() => setAddLineRow(x => ({ ...x, debit: '' }))}
                           onChange={e => setAddLineRow(x => ({ ...x, credit: e.target.value }))}
