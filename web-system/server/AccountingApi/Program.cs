@@ -350,6 +350,8 @@ using (var initScope = app.Services.CreateScope())
             AddColumn("app_users", "profile_image_url", "TEXT NULL");
         if (!userCols.Contains("preferences_json"))
             AddColumn("app_users", "preferences_json", "TEXT NULL");
+        if (!userCols.Contains("assigned_companies_json"))
+            AddColumn("app_users", "assigned_companies_json", "TEXT NULL");
 
         var resetAllBusinessData = string.Equals(
             builder.Configuration["RESET_ALL_BUSINESS_DATA_ON_STARTUP"],

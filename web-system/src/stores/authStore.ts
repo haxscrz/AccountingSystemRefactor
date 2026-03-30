@@ -3,9 +3,10 @@ import { persist } from 'zustand/middleware'
 
 interface User {
   username: string
-  role: 'superadmin' | 'tester'
+  role: 'superadmin' | 'tester' | 'accountant'
   canAccessFs: boolean
   canAccessPayroll: boolean
+  assignedCompanies: string[] | null
 }
 
 interface AuthState {
@@ -24,9 +25,10 @@ interface LoginApiResponse {
   message: string
   user: {
     username: string
-    role: 'superadmin' | 'tester'
+    role: 'superadmin' | 'tester' | 'accountant'
     canAccessFs: boolean
     canAccessPayroll: boolean
+    assignedCompanies: string[] | null
   } | null
   tokens: {
     accessToken: string

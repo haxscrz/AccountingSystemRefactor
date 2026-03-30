@@ -117,7 +117,7 @@ export default function CompanySelection() {
 
           {/* Company Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {COMPANIES.map((company) => (
+            {COMPANIES.filter(c => user?.role === 'superadmin' || !user?.assignedCompanies || user.assignedCompanies.includes(c.code)).map((company) => (
               <SpotlightCard 
                 key={company.code} 
                 onClick={() => handleSelectCompany(company.code)}

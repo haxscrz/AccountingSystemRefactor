@@ -98,16 +98,17 @@ public sealed class AdminController : ControllerBase
     public sealed record UserListItem(
         int Id, string Username, string Role,
         bool CanAccessFs, bool CanAccessPayroll,
-        bool IsActive, string? ProfileImageUrl,
+        bool IsActive, string? ProfileImageUrl, string[]? AssignedCompanies,
         DateTime? LastLoginUtc, DateTime CreatedAtUtc);
 
     public sealed record CreateUserRequest(
         string Username, string Password, string Role,
-        bool CanAccessFs, bool CanAccessPayroll);
+        bool CanAccessFs, bool CanAccessPayroll, string[]? AssignedCompanies);
 
     public sealed record UpdateUserRequest(
         string? Role, bool? CanAccessFs, bool? CanAccessPayroll,
-        bool? IsActive, string? ProfileImageUrl, string? PreferencesJson);
+        bool? IsActive, string? ProfileImageUrl, string? PreferencesJson,
+        string[]? AssignedCompanies);
 
     public sealed record ResetPasswordRequest(string NewPassword);
 
@@ -122,7 +123,8 @@ public sealed class AdminController : ControllerBase
             .Select(u => new UserListItem(
                 u.Id, u.Username, u.Role,
                 u.CanAccessFs, u.CanAccessPayroll,
-                u.IsActive, u.ProfileImageUrl,
+                u.IsActive, u.ProfileImageUrl, 
+                string.IsNullOrWhiteSpace(u.AssignedCompaniesJson) ? null : System.Text.Json.JsonSerializer.Deserialize<string[]>(u.AssignedCompaniesJson, (System.Text.Json.JsonSerializerOptions)null),
                 u.LastLoginUtc, u.CreatedAtUtc))
             .ToListAsync();
 
@@ -177,6 +179,7 @@ public sealed class AdminController : ControllerBase
             Role = role,
             CanAccessFs = request.CanAccessFs,
             CanAccessPayroll = request.CanAccessPayroll,
+            AssignedCompaniesJson = request.AssignedCompanies != null ? System.Text.Json.JsonSerializer.Serialize(request.AssignedCompanies) : null,
             IsActive = true,
             CreatedAtUtc = DateTime.UtcNow,
             UpdatedAtUtc = DateTime.UtcNow
@@ -189,6 +192,7 @@ public sealed class AdminController : ControllerBase
             user.Id, user.Username, user.Role,
             user.CanAccessFs, user.CanAccessPayroll,
             user.IsActive, user.ProfileImageUrl,
+            string.IsNullOrWhiteSpace(user.AssignedCompaniesJson) ? null : System.Text.Json.JsonSerializer.Deserialize<string[]>(user.AssignedCompaniesJson, (System.Text.Json.JsonSerializerOptions)null),
             user.LastLoginUtc, user.CreatedAtUtc));
     }
 
@@ -212,6 +216,7 @@ public sealed class AdminController : ControllerBase
         if (request.IsActive.HasValue) user.IsActive = request.IsActive.Value;
         if (request.ProfileImageUrl is not null) user.ProfileImageUrl = request.ProfileImageUrl;
         if (request.PreferencesJson is not null) user.PreferencesJson = request.PreferencesJson;
+        if (request.AssignedCompanies is not null) user.AssignedCompaniesJson = System.Text.Json.JsonSerializer.Serialize(request.AssignedCompanies);
 
         user.UpdatedAtUtc = DateTime.UtcNow;
         await _db.SaveChangesAsync(ct);
@@ -220,6 +225,7 @@ public sealed class AdminController : ControllerBase
             user.Id, user.Username, user.Role,
             user.CanAccessFs, user.CanAccessPayroll,
             user.IsActive, user.ProfileImageUrl,
+            string.IsNullOrWhiteSpace(user.AssignedCompaniesJson) ? null : System.Text.Json.JsonSerializer.Deserialize<string[]>(user.AssignedCompaniesJson, (System.Text.Json.JsonSerializerOptions)null),
             user.LastLoginUtc, user.CreatedAtUtc));
     }
 

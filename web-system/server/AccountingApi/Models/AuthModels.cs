@@ -9,7 +9,7 @@ public sealed record LogoutRequest(string RefreshToken);
 
 public sealed record LoginResponse(bool Success, string Message, UserInfo? User, TokenPair? Tokens);
 
-public sealed record UserInfo(string Username, string Role, bool CanAccessFs, bool CanAccessPayroll);
+public sealed record UserInfo(string Username, string Role, bool CanAccessFs, bool CanAccessPayroll, string[]? AssignedCompanies);
 
 public sealed record TokenPair(
 	string AccessToken,
@@ -60,6 +60,9 @@ public sealed class AppUser
 	[Column("profile_image_url")]
 	[MaxLength(1000)]
 	public string? ProfileImageUrl { get; set; }
+
+	[Column("assigned_companies_json")]
+	public string? AssignedCompaniesJson { get; set; }
 
 	[Column("preferences_json")]
 	public string? PreferencesJson { get; set; }

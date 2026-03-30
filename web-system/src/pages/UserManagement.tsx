@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { useSettingsStore } from '../stores/settingsStore'
+import { COMPANIES } from '../config/companies'
 import axios from 'axios'
 
 const API = '/api/admin'
@@ -12,6 +13,7 @@ interface UserItem {
   role: string
   canAccessFs: boolean
   canAccessPayroll: boolean
+  assignedCompanies: string[] | null
   isActive: boolean
   profileImageUrl: string | null
   lastLoginUtc: string | null
@@ -59,6 +61,7 @@ export default function UserManagement() {
   const [formRole, setFormRole] = useState('accountant')
   const [formFs, setFormFs] = useState(true)
   const [formPayroll, setFormPayroll] = useState(false)
+  const [formAssignedCompanies, setFormAssignedCompanies] = useState<string[] | null>(null)
   const [formActive, setFormActive] = useState(true)
   const [formSaving, setFormSaving] = useState(false)
 
@@ -86,6 +89,7 @@ export default function UserManagement() {
   const openAdd = () => {
     setFormUsername(''); setFormPassword(''); setFormRole('accountant')
     setFormFs(true); setFormPayroll(false); setFormActive(true)
+    setFormAssignedCompanies(null)
     setEditUser(null); setModalMode('add')
     setError('')
   }
@@ -93,6 +97,7 @@ export default function UserManagement() {
   const openEdit = (u: UserItem) => {
     setEditUser(u)
     setFormRole(u.role); setFormFs(u.canAccessFs); setFormPayroll(u.canAccessPayroll); setFormActive(u.isActive)
+    setFormAssignedCompanies(u.assignedCompanies || null)
     setModalMode('edit')
     setError('')
   }
@@ -110,7 +115,8 @@ export default function UserManagement() {
     try {
       await axios.post(`${API}/users`, {
         username: formUsername.trim(), password: formPassword,
-        role: formRole, canAccessFs: formFs, canAccessPayroll: formPayroll
+        role: formRole, canAccessFs: formFs, canAccessPayroll: formPayroll,
+        assignedCompanies: formRole === 'superadmin' ? null : formAssignedCompanies
       })
       setModalMode(null)
       setSuccess(`User "${formUsername.trim()}" created successfully.`)
@@ -125,7 +131,8 @@ export default function UserManagement() {
     setFormSaving(true); setError('')
     try {
       await axios.put(`${API}/users/${editUser.id}`, {
-        role: formRole, canAccessFs: formFs, canAccessPayroll: formPayroll, isActive: formActive
+        role: formRole, canAccessFs: formFs, canAccessPayroll: formPayroll, isActive: formActive,
+        assignedCompanies: formRole === 'superadmin' ? null : formAssignedCompanies
       })
       setModalMode(null)
       setSuccess(`User "${editUser.username}" updated.`)
@@ -396,6 +403,37 @@ export default function UserManagement() {
                       <span className="text-sm font-semibold text-on-surface">Payroll</span>
                     </label>
                   </div>
+
+                  {formRole !== 'superadmin' && (
+                    <div>
+                      <label className={`block text-xs font-bold uppercase tracking-wider mb-2 ${darkMode ? 'text-gray-300' : 'text-on-surface-variant'}`}>Assigned Companies</label>
+                      <div className={`p-4 rounded-xl border ${darkMode ? 'border-gray-600 bg-[#0f172a]' : 'border-outline-variant/30 bg-gray-50'}`}>
+                        <div className="flex items-center gap-3 mb-3 pb-3 border-b border-outline-variant/20">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" className="w-4 h-4 rounded text-primary" 
+                              checked={formAssignedCompanies === null}
+                              onChange={e => setFormAssignedCompanies(e.target.checked ? null : [])} />
+                            <span className="text-sm font-semibold">All Companies (Default)</span>
+                          </label>
+                        </div>
+                        {formAssignedCompanies !== null && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-48 overflow-auto custom-scrollbar px-1">
+                            {COMPANIES.map(c => (
+                              <label key={c.code} className="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" className="w-4 h-4 rounded text-primary flex-shrink-0"
+                                  checked={formAssignedCompanies.includes(c.code)}
+                                  onChange={e => {
+                                    if (e.target.checked) setFormAssignedCompanies([...formAssignedCompanies, c.code])
+                                    else setFormAssignedCompanies(formAssignedCompanies.filter(x => x !== c.code))
+                                  }} />
+                                <span className="text-xs truncate" title={c.name}>{c.name}</span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {modalMode === 'edit' && (
                     <label className="flex items-center gap-3 cursor-pointer">

@@ -98,7 +98,10 @@ public sealed class AuthController : ControllerBase
 
         await _audit.WriteAsync("login", "/api/auth/login", true, user.Id, user.Username, ipAddress, userAgent, null, cancellationToken);
 
-        var userInfo = new UserInfo(user.Username, user.Role, user.CanAccessFs, user.CanAccessPayroll);
+        var assignedCompanies = !string.IsNullOrWhiteSpace(user.AssignedCompaniesJson) 
+            ? System.Text.Json.JsonSerializer.Deserialize<string[]>(user.AssignedCompaniesJson) 
+            : null;
+        var userInfo = new UserInfo(user.Username, user.Role, user.CanAccessFs, user.CanAccessPayroll, assignedCompanies);
         return Ok(new LoginResponse(true, "Login successful", userInfo, tokens));
     }
 
@@ -139,7 +142,10 @@ public sealed class AuthController : ControllerBase
         await _db.SaveChangesAsync(cancellationToken);
 
         await _audit.WriteAsync("refresh", "/api/auth/refresh", true, user.Id, user.Username, ipAddress, userAgent, null, cancellationToken);
-        var userInfo = new UserInfo(user.Username, user.Role, user.CanAccessFs, user.CanAccessPayroll);
+        var assignedCompanies = !string.IsNullOrWhiteSpace(user.AssignedCompaniesJson) 
+            ? System.Text.Json.JsonSerializer.Deserialize<string[]>(user.AssignedCompaniesJson) 
+            : null;
+        var userInfo = new UserInfo(user.Username, user.Role, user.CanAccessFs, user.CanAccessPayroll, assignedCompanies);
         return Ok(new LoginResponse(true, "Token refreshed", userInfo, newTokens));
     }
 
