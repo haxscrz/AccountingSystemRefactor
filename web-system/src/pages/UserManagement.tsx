@@ -22,7 +22,9 @@ type ModalMode = 'add' | 'edit' | 'password' | null
 
 function fmtDate(iso: string | null) {
   if (!iso) return '—'
-  const d = new Date(iso)
+  // SQLite loses DateTimeKind, so we must force "Z" suffix for UTC parsing in JS
+  const safeIso = iso.endsWith('Z') ? iso : iso + 'Z'
+  const d = new Date(safeIso)
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 }

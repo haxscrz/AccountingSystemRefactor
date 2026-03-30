@@ -51,7 +51,7 @@ export default function AppShell({
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuthStore()
-  const { darkMode, profilePhoto, showStatusBar } = useSettingsStore()
+  const { darkMode, profilePhoto, showStatusBar, displayName } = useSettingsStore()
   const { notifications, markAsRead, markAllAsRead, removeNotification, unreadCount } = useNotificationStore()
   const companyName = getCompanyNameByCode(companyCode)
   const currentGroups = groups[activeTab] || []
@@ -297,7 +297,7 @@ export default function AppShell({
             
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <div className={`text-[13px] font-bold leading-snug ${darkMode ? 'text-gray-100' : 'text-on-surface'}`}>{user?.role === 'superadmin' ? 'Super Admin' : 'Accountant'}</div>
+                <div className={`text-[13px] font-bold leading-snug ${darkMode ? 'text-gray-100' : 'text-on-surface'}`}>{displayName || (user?.role === 'superadmin' ? 'Super Admin' : (user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Accountant'))}</div>
                 <div className={`text-[9px] uppercase tracking-widest font-semibold mt-0.5 ${darkMode ? 'text-gray-500' : 'text-on-surface-variant/60'}`}>{companyCode}</div>
               </div>
               <div className={`w-9 h-9 rounded-full flex items-center justify-center overflow-hidden border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-surface-container-high border-outline-variant/30'}`}>

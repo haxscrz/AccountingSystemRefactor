@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { useNotificationStore } from '../stores/notificationStore'
 import { useSettingsStore } from '../stores/settingsStore'
@@ -109,7 +108,6 @@ export default function Login() {
   const [contactUsername, setContactUsername] = useState('')
   const [contactSent, setContactSent] = useState(false)
   
-  const navigate = useNavigate()
   const login = useAuthStore(state => state.login)
   const addNotification = useNotificationStore(state => state.addNotification)
   const darkMode = useSettingsStore(state => state.darkMode)
@@ -122,7 +120,8 @@ export default function Login() {
     try {
       const result = await login(username, password)
       if (result.success) {
-        navigate('/select-company')
+        // Hard reload application to clear settings memory for different user accounts
+        window.location.href = '/select-company'
       } else {
         setError(result.message || 'Invalid username or password')
       }

@@ -154,6 +154,9 @@ export const useAuthStore = create<AuthState>()(
         } catch {
           // ignore storage failures
         }
+        
+        // Force full page reload to clear memory settings/persistence mappings
+        window.location.href = '/'
       }
     }),
     {

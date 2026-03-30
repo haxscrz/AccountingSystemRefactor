@@ -11,13 +11,14 @@ export default function Dashboard() {
   const clearSelectedCompany = useCompanyStore((state) => state.clearSelectedCompany)
   const selectedCompanyCode = useCompanyStore((state) => state.selectedCompanyCode)
   const canPayroll = !!user?.canAccessPayroll
+  const canFs = !!user?.canAccessFs
   const hasUnsavedChanges = useFsUnsavedStore((state) => state.hasUnsavedChanges)
   const selectedCompanyName = getCompanyNameByCode(selectedCompanyCode)
   const darkMode = useSettingsStore((state) => state.darkMode)
 
   const handleLogout = () => {
     logout()
-    navigate('/login')
+    window.location.href = '/login'
   }
 
   const handleSwitchCompany = () => {
@@ -68,19 +69,36 @@ export default function Dashboard() {
           <div className={`grid grid-cols-1 md:grid-cols-2 ${user?.role === 'superadmin' ? 'lg:grid-cols-3' : ''} gap-6`}>
             {/* Financial Statements Card */}
             <div 
-              onClick={() => navigate('/fs')}
-              className={`group relative rounded-[20px] p-8 flex flex-col h-full shadow-[0_8px_30px_rgba(0,0,0,0.04)] border hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden ${darkMode ? 'bg-[#1e293b] border-gray-700 hover:shadow-[0_20px_40px_rgba(96,165,250,0.1)] hover:border-blue-500/30' : 'bg-white border-outline-variant/10 hover:shadow-[0_20px_40px_rgba(30,64,175,0.08)]'}`}
+              onClick={() => {
+                if (!canFs) {
+                  window.alert('Your user level is not allowed to use the Financial Statements feature.')
+                  return
+                }
+                navigate('/fs')
+              }}
+              className={`group relative rounded-[20px] p-8 flex flex-col h-full border transition-all duration-300 overflow-hidden ${
+                canFs
+                  ? `shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:-translate-y-1 cursor-pointer ${darkMode ? 'bg-[#1e293b] border-gray-700 hover:shadow-[0_20px_40px_rgba(96,165,250,0.1)] hover:border-blue-500/30' : 'bg-white border-outline-variant/10 hover:shadow-[0_20px_40px_rgba(30,64,175,0.08)]'}`
+                  : `${darkMode ? 'bg-[#1e293b]/30 border-gray-700' : 'bg-surface-container-high/30 border-outline-variant/10'} opacity-70 cursor-not-allowed grayscale`
+              }`}
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform duration-500"></div>
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+              {canFs && <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform duration-500"></div>}
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border transition-colors duration-300 ${
+                canFs
+                  ? 'bg-primary/10 text-primary border-primary/20 group-hover:bg-primary group-hover:text-white'
+                  : 'bg-outline-variant/20 text-outline-variant border-outline-variant/30'
+              }`}>
                 <span className="material-symbols-outlined text-2xl">account_balance</span>
               </div>
-              <h3 className="font-headline text-xl font-bold text-on-surface mb-2">Financial Statements</h3>
+              <h3 className="font-headline text-xl font-bold text-on-surface mb-2 flex items-center gap-3">
+                Financial Statements
+                {!canFs && <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-widest bg-error-container text-on-error-container uppercase">Restricted</span>}
+              </h3>
               <p className="text-on-surface-variant/80 text-sm leading-relaxed mb-6 min-h-[36px]">
                 Accounting, vouchers, journals, financial reports, and chart of accounts management.
               </p>
               
-              <ul className="space-y-3 mb-8 flex-grow">
+              <ul className={`space-y-3 mb-8 flex-grow ${canFs ? '' : 'opacity-80'}`}>
                 {[
                   'Check disbursement & receipts',
                   'Journal entries & posting',
@@ -88,14 +106,17 @@ export default function Dashboard() {
                   'Month-end processing'
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2.5 text-sm text-on-surface font-medium">
-                    <span className="material-symbols-outlined text-[14px] text-primary mt-0.5">play_arrow</span>
+                    <span className={`material-symbols-outlined text-[14px] mt-0.5 ${canFs ? 'text-primary' : 'text-outline-variant'}`}>play_arrow</span>
                     {item}
                   </li>
                 ))}
               </ul>
 
-              <div className="mt-auto flex items-center gap-2 text-primary font-bold text-sm tracking-wide group-hover:gap-3 transition-all">
-                Open FS System <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              <div className={`mt-auto flex items-center gap-2 font-bold text-sm tracking-wide transition-all ${
+                canFs ? 'text-primary group-hover:gap-3' : 'text-outline-variant'
+              }`}>
+                {canFs ? 'Open FS System' : 'Access Denied'} 
+                {canFs && <span className="material-symbols-outlined text-[18px]">arrow_forward</span>}
               </div>
             </div>
 
