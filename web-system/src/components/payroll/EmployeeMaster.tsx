@@ -1,126 +1,31 @@
 import { useState, useEffect } from 'react'
-import ModalPortal from '../ModalPortal'
+import PageHeader from '../PageHeader'
 
 interface Employee {
-  // Basic Info (Screen 1)
-  emp_no: string
-  emp_nm: string
-  dep_no: string
-  position: string
-  b_rate: number
-  cola: number
-  emp_stat: string // R=Regular, C=Casual, F=Confidential, E=Executive
-  status: string // A=Active, R=Resigned, L=On Leave
-  date_hire: string
-  date_resign: string
-  
-  // Government IDs (Screen 1)
-  sss_no: string
-  tin_no: string
-  phic_no: string
-  pgbg_no: string
-  sss_member: boolean
-  pgbg: boolean
-  
-  // Salary Loan (Screen 1)
-  sln_bal: number
-  sln_amt: number
-  sln_term: number
-  sln_date: string
-  
-  // HDMF Loan (Screen 1)
-  hdmf_bal: number
-  hdmf_amt: number
-  hdmf_term: number
-  hdmf_date: string
-  
-  // SSS Calamity Loan (Screen 1)
-  cal_bal: number
-  cal_amt: number
-  cal_term: number
-  cal_date: string
-  
-  // Company Loan (Screen 1)
-  comp_bal: number
-  comp_amt: number
-  comp_term: number
-  comp_date: string
-  
-  // Company Deduction Loan (Screen 1)
-  comd_bal: number
-  comd_amt: number
-  comd_term: number
-  comd_date: string
-  
-  // Leave Credits (Screen 1)
-  sick_leave: number
-  vacation_leave: number
-  
-  // Monthly Counters (Screen 2) - Display only
-  m_basic: number
-  m_cola: number
-  m_hol: number
-  m_ot: number
-  m_leave: number
-  m_gross: number
-  m_ssee: number
-  m_sser: number
-  m_medee: number
-  m_meder: number
-  m_pgee: number
-  m_pger: number
-  m_ecer: number
-  m_tax: number
-  m_othp1: number
-  m_othp2: number
-  m_othp3: number
-  m_othp4: number
-  m_netpay: number
-  
-  // Quarterly Counters (Screen 3) - Display only
-  q1_gross: number
-  q1_ssee: number
-  q1_medee: number
-  q1_pgee: number
-  q1_tax: number
-  q2_gross: number
-  q2_ssee: number
-  q2_medee: number
-  q2_pgee: number
-  q2_tax: number
-  q3_gross: number
-  q3_ssee: number
-  q3_medee: number
-  q3_pgee: number
-  q3_tax: number
-  
-  // Yearly Counters (Screen 4) - Display only
-  y_basic: number
-  y_cola: number
-  y_hol: number
-  y_ot: number
-  y_leave: number
-  y_gross: number
-  y_ssee: number
-  y_sser: number
-  y_medee: number
-  y_meder: number
-  y_pgee: number
-  y_pger: number
-  y_ecer: number
-  y_tax: number
-  y_othp1: number
-  y_othp2: number
-  y_othp3: number
-  y_othp4: number
-  y_bonus: number
-  y_btax: number
-  y_netpay: number
-  
-  // Personal Info (Screen 5)
-  spouse: string
-  address: string
-  birthdate: string
+  emp_no: string; emp_nm: string; dep_no: string; position: string
+  b_rate: number; cola: number; emp_stat: string; status: string
+  date_hire: string; date_resign: string
+  sss_no: string; tin_no: string; phic_no: string; pgbg_no: string
+  sss_member: boolean; pgbg: boolean
+  sln_bal: number; sln_amt: number; sln_term: number; sln_date: string
+  hdmf_bal: number; hdmf_amt: number; hdmf_term: number; hdmf_date: string
+  cal_bal: number; cal_amt: number; cal_term: number; cal_date: string
+  comp_bal: number; comp_amt: number; comp_term: number; comp_date: string
+  comd_bal: number; comd_amt: number; comd_term: number; comd_date: string
+  sick_leave: number; vacation_leave: number
+  m_basic: number; m_cola: number; m_hol: number; m_ot: number; m_leave: number; m_gross: number
+  m_ssee: number; m_sser: number; m_medee: number; m_meder: number
+  m_pgee: number; m_pger: number; m_ecer: number
+  m_tax: number; m_othp1: number; m_othp2: number; m_othp3: number; m_othp4: number; m_netpay: number
+  q1_gross: number; q1_ssee: number; q1_medee: number; q1_pgee: number; q1_tax: number
+  q2_gross: number; q2_ssee: number; q2_medee: number; q2_pgee: number; q2_tax: number
+  q3_gross: number; q3_ssee: number; q3_medee: number; q3_pgee: number; q3_tax: number
+  y_basic: number; y_cola: number; y_hol: number; y_ot: number; y_leave: number; y_gross: number
+  y_ssee: number; y_sser: number; y_medee: number; y_meder: number
+  y_pgee: number; y_pger: number; y_ecer: number
+  y_tax: number; y_othp1: number; y_othp2: number; y_othp3: number; y_othp4: number
+  y_bonus: number; y_btax: number; y_netpay: number
+  spouse: string; address: string; birthdate: string
 }
 
 const emptyEmployee: Employee = {
@@ -147,935 +52,537 @@ const emptyEmployee: Employee = {
   spouse: '', address: '', birthdate: ''
 }
 
+function fmt(n: number) { return Number(n ?? 0).toLocaleString('en-PH', { minimumFractionDigits: 2 }) }
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">{label}</label>
+      {children}
+    </div>
+  )
+}
+
+function TextInput({ value, onChange, maxLength, placeholder, disabled, type = 'text' }: {
+  value: string; onChange: (v: string) => void; maxLength?: number
+  placeholder?: string; disabled?: boolean; type?: string
+}) {
+  return (
+    <input type={type} value={value} onChange={e => onChange(e.target.value)}
+      maxLength={maxLength} placeholder={placeholder} disabled={disabled}
+      className="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant/20 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow disabled:opacity-50 disabled:bg-surface-container"
+    />
+  )
+}
+function NumInput({ value, onChange, step = '0.01' }: { value: number; onChange: (v: number) => void; step?: string }) {
+  return (
+    <input type="number" step={step} value={value} onChange={e => onChange(Number(e.target.value))}
+      className="w-full px-3 py-2 bg-surface-container-lowest border border-outline-variant/20 rounded-lg text-sm text-right font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow"
+    />
+  )
+}
+
+function LoanBlock({ title, amt, bal, term, date, onChange }: {
+  title: string
+  amt: number; bal: number; term: number; date: string
+  onChange: (f: { amt?: number; bal?: number; term?: number; date?: string }) => void
+}) {
+  return (
+    <div className="bg-surface-container-lowest border border-outline-variant/15 rounded-xl p-4">
+      <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-3">{title}</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Field label="Amount"><NumInput value={amt} onChange={v => onChange({ amt: v })} /></Field>
+        <Field label="Balance"><NumInput value={bal} onChange={v => onChange({ bal: v })} /></Field>
+        <Field label="Term (mo.)"><NumInput value={term} onChange={v => onChange({ term: v })} step="1" /></Field>
+        <Field label="Loan Date"><TextInput type="date" value={date} onChange={v => onChange({ date: v })} /></Field>
+      </div>
+    </div>
+  )
+}
+
+const statusLabel = (s: string | undefined) => {
+  const v = (s ?? '').toUpperCase()
+  if (v === 'A' || v === 'C') return 'Active'
+  if (v === 'R') return 'Resigned'
+  if (v === 'L') return 'On Leave'
+  return v || 'Unknown'
+}
+const statusClass = (s: string | undefined) => {
+  const v = (s ?? '').toUpperCase()
+  if (v === 'A' || v === 'C') return 'bg-emerald-100 text-emerald-700'
+  if (v === 'R') return 'bg-red-100 text-red-700'
+  return 'bg-amber-100 text-amber-700'
+}
+const matchStatusFilter = (status: string | undefined, filter: string) => {
+  const s = (status ?? '').toUpperCase()
+  if (filter === '') return true
+  if (filter === 'A') return s === 'A' || s === 'C'
+  return s === filter
+}
+
+const TABS = [
+  { id: 1, label: 'Basic Info', icon: 'person' },
+  { id: 2, label: "Gov't IDs", icon: 'badge' },
+  { id: 3, label: 'Loans', icon: 'account_balance_wallet' },
+  { id: 4, label: 'Counters', icon: 'bar_chart' },
+  { id: 5, label: 'Personal', icon: 'home' },
+]
+
 export default function EmployeeMaster() {
   const [employees, setEmployees] = useState<Employee[]>([])
-  const [showModal, setShowModal] = useState(false)
+  const [showPanel, setShowPanel] = useState(false)
   const [editingEmp, setEditingEmp] = useState<Employee | null>(null)
-  const [activeScreen, setActiveScreen] = useState(1) // 1-5 for 5 screens
+  const [activeTab, setActiveTab] = useState(1)
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null)
-  const [modalMsg, setModalMsg] = useState<{ text: string; ok: boolean } | null>(null)
+  const [panelMsg, setPanelMsg] = useState<{ text: string; ok: boolean } | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('A')
 
-  useEffect(() => {
-    fetchEmployees()
-  }, [])
+  useEffect(() => { fetchEmployees() }, [])
 
   const fetchEmployees = async () => {
     try {
-      const response = await fetch('/api/payroll/employees/all')
-      if (response.ok) {
-        const data = await response.json()
-        setEmployees(data)
-      }
-    } catch (error) {
-      console.error('Failed to fetch employees:', error)
-    }
+      const r = await fetch('/api/payroll/employees/all')
+      if (r.ok) setEmployees(await r.json())
+    } catch { /* ignore */ }
   }
 
-  const handleAdd = () => {
-    setEditingEmp({ ...emptyEmployee })
-    setActiveScreen(1)
-    setModalMsg(null)
-    setShowModal(true)
-  }
+  const up = (field: Partial<Employee>) => setEditingEmp(prev => prev ? { ...prev, ...field } : prev)
 
-  const handleEdit = (emp: Employee) => {
-    setEditingEmp({ ...emp })
-    setActiveScreen(1)
-    setModalMsg(null)
-    setShowModal(true)
-  }
+  const handleAdd = () => { setEditingEmp({ ...emptyEmployee }); setActiveTab(1); setPanelMsg(null); setShowPanel(true) }
+  const handleEdit = (emp: Employee) => { setEditingEmp({ ...emp }); setActiveTab(1); setPanelMsg(null); setShowPanel(true) }
 
   const handleSave = async () => {
     if (!editingEmp) return
-    
-    setLoading(true)
-    setModalMsg(null)
+    setLoading(true); setPanelMsg(null)
     try {
       const isNew = !employees.find(e => e.emp_no === editingEmp.emp_no)
-      const url = isNew 
-        ? '/api/payroll/employees'
-        : `/api/payroll/employees/${editingEmp.emp_no}`
-      
-      const response = await fetch(url, {
-        method: isNew ? 'POST' : 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editingEmp)
-      })
-
-      if (response.ok) {
-        await fetchEmployees()
-        setShowModal(false)
-        setEditingEmp(null)
+      const url = isNew ? '/api/payroll/employees' : `/api/payroll/employees/${editingEmp.emp_no}`
+      const r = await fetch(url, { method: isNew ? 'POST' : 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(editingEmp) })
+      if (r.ok) {
+        await fetchEmployees(); setShowPanel(false); setEditingEmp(null)
         setMsg({ text: isNew ? 'Employee created successfully.' : 'Employee updated successfully.', ok: true })
       } else {
-        const error = await response.json()
-        setModalMsg({ text: error.message || 'Save failed.', ok: false })
+        const err = await r.json()
+        setPanelMsg({ text: err.message || 'Save failed.', ok: false })
       }
-    } catch (error) {
-      console.error('Failed to save employee:', error)
-      setModalMsg({ text: 'Failed to save employee. Please check server connection.', ok: false })
-    } finally {
-      setLoading(false)
-    }
+    } catch { setPanelMsg({ text: 'Failed to save. Check server connection.', ok: false }) }
+    finally { setLoading(false) }
   }
 
   const handleDeleteConfirmed = async () => {
     if (!deleteTarget) return
-    const empNo = deleteTarget
-    setDeleteTarget(null)
+    const empNo = deleteTarget; setDeleteTarget(null)
     try {
-      const response = await fetch(`/api/payroll/employees/${empNo}`, {
-        method: 'DELETE'
-      })
-
-      if (response.ok) {
-        await fetchEmployees()
-        setMsg({ text: `Employee ${empNo} deleted.`, ok: true })
-      } else {
-        const error = await response.json()
-        setMsg({ text: error.message || 'Delete failed.', ok: false })
-      }
-    } catch (error) {
-      console.error('Failed to delete employee:', error)
-      setMsg({ text: 'Failed to delete employee.', ok: false })
-    }
+      const r = await fetch(`/api/payroll/employees/${empNo}`, { method: 'DELETE' })
+      if (r.ok) { await fetchEmployees(); setMsg({ text: `Employee ${empNo} deleted.`, ok: true }) }
+      else { const err = await r.json(); setMsg({ text: err.message || 'Delete failed.', ok: false }) }
+    } catch { setMsg({ text: 'Failed to delete employee.', ok: false }) }
   }
 
-  const matchStatusFilter = (status: string | undefined): boolean => {
-    const s = (status ?? '').toUpperCase()
-    if (statusFilter === '') return true
-    if (statusFilter === 'A') return s === 'A' || s === 'C' // legacy data uses C = current/active
-    if (statusFilter === 'R') return s === 'R'
-    if (statusFilter === 'L') return s === 'L'
-    return false
-  }
+  const filtered = employees.filter(e => {
+    const q = search.trim().toLowerCase()
+    return matchStatusFilter(e.status, statusFilter) &&
+      (!q || e.emp_no.toLowerCase().includes(q) || e.emp_nm.toLowerCase().includes(q) || (e.dep_no || '').toLowerCase().includes(q))
+  })
 
-  const statusLabel = (status: string | undefined): string => {
-    const s = (status ?? '').toUpperCase()
-    if (s === 'A' || s === 'C') return 'Active'
-    if (s === 'R') return 'Resigned'
-    if (s === 'L') return 'On Leave'
-    return s || 'Unknown'
-  }
+  const totalActive = employees.filter(e => matchStatusFilter(e.status, 'A')).length
+  const totalResigned = employees.filter(e => (e.status ?? '').toUpperCase() === 'R').length
+  const totalOnLeave = employees.filter(e => (e.status ?? '').toUpperCase() === 'L').length
 
   return (
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>
-          <h2>Employee Master File - MASTEDIT</h2>
-          <p className="subtitle">Comprehensive employee records with 5-screen data entry</p>
+    <div className="flex flex-col gap-0 h-full -mx-10 -my-10">
+      <div className="px-10 pt-10 pb-5">
+        <PageHeader
+          breadcrumb="EMPLOYEE RECORDS / MASTER FILE"
+          title="Employee Master"
+          subtitle="Comprehensive employee records with 5-screen data entry (MASTEDIT)"
+          actions={
+            <button onClick={handleAdd} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary/90 transition-colors">
+              <span className="material-symbols-outlined text-[16px]">person_add</span> Add Employee
+            </button>
+          }
+        />
+
+        {/* Stats row */}
+        <div className="grid grid-cols-4 gap-4 mt-2">
+          {[
+            { label: 'Total Employees', val: employees.length, icon: 'group', color: 'text-primary' },
+            { label: 'Active', val: totalActive, icon: 'check_circle', color: 'text-emerald-600' },
+            { label: 'Resigned', val: totalResigned, icon: 'logout', color: 'text-red-500' },
+            { label: 'On Leave', val: totalOnLeave, icon: 'event_busy', color: 'text-amber-600' },
+          ].map(s => (
+            <div key={s.label} className="bg-white rounded-2xl border border-outline-variant/15 px-5 py-4 flex items-center gap-3 shadow-sm">
+              <span className={`material-symbols-outlined text-[22px] ${s.color} opacity-70`}>{s.icon}</span>
+              <div>
+                <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60">{s.label}</div>
+                <div className={`font-mono font-bold text-xl ${s.color}`}>{s.val}</div>
+              </div>
+            </div>
+          ))}
         </div>
-        <button className="btn btn-primary" onClick={handleAdd}>
-          + Add Employee
-        </button>
+
+        {/* Toast message */}
+        {msg && (
+          <div className={`mt-3 px-4 py-3 rounded-lg border-l-4 text-sm font-medium flex items-center justify-between ${msg.ok ? 'bg-emerald-50 text-emerald-800 border-emerald-500' : 'bg-red-50 text-red-800 border-red-500'}`}>
+            <span>{msg.text}</span>
+            <button onClick={() => setMsg(null)} className="text-inherit opacity-60 hover:opacity-100 ml-4">✕</button>
+          </div>
+        )}
       </div>
 
-      {msg && (
-        <div style={{ padding: '8px 12px', borderRadius: 4, marginBottom: 12,
-          background: msg.ok ? 'rgba(46,160,67,0.15)' : 'rgba(220,53,53,0.15)',
-          border: `1px solid ${msg.ok ? 'var(--success)' : '#dc3545'}`,
-          color: msg.ok ? 'var(--success)' : '#dc3545', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span>{msg.text}</span>
-          <button onClick={() => setMsg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'inherit', padding: '0 4px' }}>&times;</button>
+      {/* Search + filter */}
+      <div className="px-10 pb-3 flex gap-3">
+        <div className="relative flex-1">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant/50">search</span>
+          <input
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm"
+            placeholder="Search by employee number, name, or department..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
         </div>
-      )}
-
-      {/* Search + Filter bar */}
-      <div style={{ display: 'flex', gap: 10, marginBottom: 14, flexWrap: 'wrap', alignItems: 'center' }}>
-        <input
-          type="text"
-          placeholder="Search by Emp# or Name…"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{ flex: '1 1 220px', padding: '6px 10px', fontSize: 13, border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)' }}
-        />
         <select
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value)}
-          style={{ padding: '6px 10px', fontSize: 13, border: '1px solid var(--border)', borderRadius: 'var(--radius)', background: 'var(--surface)', color: 'var(--text)', minWidth: 130 }}
+          value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+          className="px-3 py-2 bg-white border border-outline-variant/20 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 shadow-sm"
         >
-          <option value="">All Employees</option>
+          <option value="">All</option>
           <option value="A">Active Only</option>
-          <option value="R">Resigned Only</option>
-          <option value="L">On Leave Only</option>
+          <option value="R">Resigned</option>
+          <option value="L">On Leave</option>
         </select>
-        <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
-          {(() => {
-            const fil = employees.filter(e => {
-              const matchStatus = matchStatusFilter(e.status)
-              const q = search.trim().toLowerCase()
-              const matchSearch = !q || e.emp_no.toLowerCase().includes(q) || e.emp_nm.toLowerCase().includes(q)
-              return matchStatus && matchSearch
-            })
-            return `${fil.length} of ${employees.length} employees`
-          })()}
+        <span className="flex items-center text-xs text-on-surface-variant/60 font-medium whitespace-nowrap">
+          {filtered.length} of {employees.length} employees
         </span>
       </div>
 
-      <table className="data-table">
-        <thead>
-          <tr>
-            <th>Emp No.</th>
-            <th>Employee Name</th>
-            <th>Dept</th>
-            <th>Position</th>
-            <th style={{ textAlign: 'right' }}>Basic Rate</th>
-            <th style={{ textAlign: 'right' }}>COLA</th>
-            <th>Hire Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employees
-            .filter(e => {
-              const matchStatus = matchStatusFilter(e.status)
-              const q = search.trim().toLowerCase()
-              const matchSearch = !q || e.emp_no.toLowerCase().includes(q) || e.emp_nm.toLowerCase().includes(q)
-              return matchStatus && matchSearch
-            })
-            .map(emp => (
-            <tr key={emp.emp_no}>
-              <td><strong>{emp.emp_no}</strong></td>
-              <td>{emp.emp_nm}</td>
-              <td>{emp.dep_no}</td>
-              <td>{emp.position}</td>
-              <td style={{ textAlign: 'right' }}>&#8369; {parseFloat(String(emp.b_rate || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-              <td style={{ textAlign: 'right' }}>&#8369; {parseFloat(String(emp.cola || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 })}</td>
-              <td>{emp.date_hire}</td>
-              <td><span className="badge badge-success">{statusLabel(emp.status)}</span></td>
-              <td>
-                <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '12px', marginRight: '4px' }} onClick={() => handleEdit(emp)}>
-                  Edit
+      {/* Table */}
+      <div className="flex-grow overflow-auto px-10 pb-10">
+        <div className="bg-white rounded-2xl border border-outline-variant/15 shadow-sm overflow-hidden">
+          <div className="grid grid-cols-[1fr_2.5fr_1fr_1.5fr_1.5fr_1fr_1fr_110px] px-5 py-3 bg-surface-container-highest text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">
+            <span>Emp No.</span><span>Name</span><span>Dept</span><span>Position</span>
+            <span className="text-right">Basic Rate</span><span className="text-right">COLA</span>
+            <span className="text-center">Status</span><span className="text-right">Actions</span>
+          </div>
+          {filtered.length === 0 ? (
+            <div className="py-16 text-center text-on-surface-variant/50">
+              <span className="material-symbols-outlined text-4xl mb-3">people_outline</span>
+              <p className="text-sm">No employees match your search.</p>
+            </div>
+          ) : filtered.map((emp, i) => (
+            <div
+              key={emp.emp_no}
+              onClick={() => handleEdit(emp)}
+              className={`grid grid-cols-[1fr_2.5fr_1fr_1.5fr_1.5fr_1fr_1fr_110px] px-5 py-3.5 border-t border-outline-variant/10 text-sm hover:bg-primary/5 transition-colors cursor-pointer ${i % 2 === 0 ? '' : 'bg-surface-container-lowest/30'}`}
+            >
+              <span className="font-mono font-bold text-primary">{emp.emp_no}</span>
+              <span className="font-medium text-on-surface truncate">{emp.emp_nm}</span>
+              <span className="text-on-surface-variant">{emp.dep_no}</span>
+              <span className="text-on-surface-variant text-xs truncate">{emp.position}</span>
+              <span className="text-right font-mono font-semibold text-emerald-700">₱{fmt(emp.b_rate)}</span>
+              <span className="text-right font-mono text-on-surface-variant">₱{fmt(emp.cola)}</span>
+              <span className="flex justify-center">
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${statusClass(emp.status)}`}>{statusLabel(emp.status)}</span>
+              </span>
+              <div className="flex justify-end gap-1.5" onClick={e => e.stopPropagation()}>
+                <button onClick={() => handleEdit(emp)} title="Edit" className="p-1.5 rounded-lg border border-outline-variant/20 text-on-surface-variant hover:bg-primary hover:text-white hover:border-primary transition-all">
+                  <span className="material-symbols-outlined text-[15px]">edit</span>
                 </button>
-                <button className="btn" style={{ padding: '4px 12px', fontSize: '12px', background: '#dc3545', color: 'white' }} onClick={() => setDeleteTarget(emp.emp_no)}>
-                  Delete
+                <button onClick={() => setDeleteTarget(emp.emp_no)} title="Delete" className="p-1.5 rounded-lg border border-outline-variant/20 text-on-surface-variant hover:bg-error hover:text-white hover:border-error transition-all">
+                  <span className="material-symbols-outlined text-[15px]">delete</span>
                 </button>
-              </td>
-            </tr>
+              </div>
+            </div>
           ))}
-        </tbody>
-      </table>
+        </div>
+      </div>
 
-      {showModal && editingEmp && (
-        <ModalPortal onClick={() => setShowModal(false)}>
-          <div className="modal" style={{ maxWidth: '900px', width: '90%', maxHeight: '90vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">
-                {editingEmp.emp_no ? `Edit Employee - ${editingEmp.emp_no}` : 'Add Employee'}
-              </h3>
-              <button onClick={() => setShowModal(false)} className="modal-close">&times;</button>
+      {/* ── Slide-in edit panel ── */}
+      {showPanel && editingEmp && (
+        <div className="fixed inset-0 z-50 flex items-stretch justify-end bg-black/40 backdrop-blur-sm" onClick={() => setShowPanel(false)}>
+          <div className="w-full max-w-4xl bg-white flex flex-col h-full shadow-2xl border-l border-outline-variant/20 overflow-y-auto" onClick={e => e.stopPropagation()}>
+
+            {/* Panel header */}
+            <div className="px-8 py-6 border-b border-outline-variant/10 flex items-start justify-between bg-surface-container-lowest sticky top-0 z-10">
+              <div>
+                <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1">
+                  {editingEmp.emp_no && employees.find(e => e.emp_no === editingEmp.emp_no) ? 'EDIT EMPLOYEE' : 'NEW EMPLOYEE'}
+                </div>
+                <h2 className="font-headline text-xl font-bold text-on-surface">{editingEmp.emp_nm || 'New Employee'}</h2>
+                {editingEmp.emp_no && <p className="text-sm text-on-surface-variant mt-0.5">{editingEmp.emp_no} · {editingEmp.dep_no || 'No Dept'} · {editingEmp.position || 'No Position'}</p>}
+              </div>
+              <button onClick={() => setShowPanel(false)} className="text-on-surface-variant/60 hover:text-on-surface mt-1 transition-colors">
+                <span className="material-symbols-outlined">close</span>
+              </button>
             </div>
 
-            {/* 5-Screen Navigation Tabs */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', borderBottom: '2px solid var(--border)' }}>
-              {[
-                { num: 1, label: 'Basic Info & Loans' },
-                { num: 2, label: 'Monthly Counters' },
-                { num: 3, label: 'Quarterly Counters' },
-                { num: 4, label: 'Yearly Counters' },
-                { num: 5, label: 'Personal Info' }
-              ].map(screen => (
-                <button
-                  key={screen.num}
-                  onClick={() => setActiveScreen(screen.num)}
-                  style={{
-                    padding: '12px 20px',
-                    border: 'none',
-                    background: activeScreen === screen.num ? 'var(--primary)' : 'transparent',
-                    color: activeScreen === screen.num ? 'white' : 'var(--text-primary)',
-                    cursor: 'pointer',
-                    fontWeight: activeScreen === screen.num ? '600' : '400',
-                    borderRadius: '8px 8px 0 0',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  {screen.num}. {screen.label}
+            {/* Tab bar */}
+            <div className="flex border-b border-outline-variant/10 px-8 bg-surface-container-lowest sticky top-[89px] z-10">
+              {TABS.map(t => (
+                <button key={t.id} onClick={() => setActiveTab(t.id)}
+                  className={`flex items-center gap-1.5 px-4 py-3 text-[11px] font-bold uppercase tracking-widest border-b-2 transition-colors whitespace-nowrap ${activeTab === t.id ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant/50 hover:text-on-surface-variant'}`}>
+                  <span className="material-symbols-outlined text-[15px]">{t.icon}</span>
+                  {t.label}
                 </button>
               ))}
             </div>
 
-            {/* Screen 1: Basic Info & Loans */}
-            {activeScreen === 1 && (
-              <div>
-                <h4 style={{ marginBottom: '16px', color: 'var(--primary)' }}>Screen 1: Basic Information & Loan Details</h4>
-                
-                {/* Employee Number & Name */}
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">Employee Number *</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={editingEmp.emp_no}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, emp_no: e.target.value })}
-                      maxLength={20}
-                      disabled={!!employees.find(e => e.emp_no === editingEmp.emp_no)}
-                    />
-                  </div>
-                  <div className="form-group" style={{ flex: 2 }}>
-                    <label className="form-label">Employee Name *</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={editingEmp.emp_nm}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, emp_nm: e.target.value })}
-                      maxLength={160}
-                    />
-                  </div>
-                </div>
+            {/* Tab content */}
+            <div className="flex-grow p-8 space-y-6">
 
-                {/* Department, Position, Rate, COLA */}
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">Dept No.</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={editingEmp.dep_no}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, dep_no: e.target.value })}
-                      maxLength={30}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Position</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={editingEmp.position}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, position: e.target.value })}
-                      maxLength={100}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Basic Rate *</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="form-input"
-                      value={editingEmp.b_rate}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, b_rate: Number(e.target.value) })}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">COLA per Hour</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      className="form-input"
-                      value={editingEmp.cola}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, cola: Number(e.target.value) })}
-                    />
-                  </div>
-                </div>
-
-                {/* Government IDs */}
-                <div style={{ marginTop: '16px', padding: '12px', background: 'var(--background)', borderRadius: '8px' }}>
-                  <h5 style={{ marginBottom: '12px', fontSize: '14px', fontWeight: '600' }}>Government IDs</h5>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label className="form-label">SSS Number (99-9999999-9)</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={editingEmp.sss_no}
-                        onChange={(e) => setEditingEmp({ ...editingEmp, sss_no: e.target.value })}
-                        maxLength={30}
-                        placeholder="12-3456789-0"
-                      />
+              {/* TAB 1: Basic Info */}
+              {activeTab === 1 && (
+                <div className="space-y-5">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <Field label="Employee Number *">
+                      <TextInput value={editingEmp.emp_no} onChange={v => up({ emp_no: v })} maxLength={20}
+                        disabled={!!employees.find(e => e.emp_no === editingEmp.emp_no)} />
+                    </Field>
+                    <div className="col-span-2">
+                      <Field label="Full Name *">
+                        <TextInput value={editingEmp.emp_nm} onChange={v => up({ emp_nm: v })} maxLength={160} />
+                      </Field>
                     </div>
-                    <div className="form-group">
-                      <label className="form-label">TIN (999-999-999)</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={editingEmp.tin_no}
-                        onChange={(e) => setEditingEmp({ ...editingEmp, tin_no: e.target.value })}
-                        maxLength={30}
-                        placeholder="123-456-789"
-                      />
+                    <Field label="Department No.">
+                      <TextInput value={editingEmp.dep_no} onChange={v => up({ dep_no: v })} maxLength={30} />
+                    </Field>
+                    <div className="col-span-2">
+                      <Field label="Position / Job Title">
+                        <TextInput value={editingEmp.position} onChange={v => up({ position: v })} maxLength={100} />
+                      </Field>
                     </div>
-                  </div>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label className="form-label">PHIC Number</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={editingEmp.phic_no}
-                        onChange={(e) => setEditingEmp({ ...editingEmp, phic_no: e.target.value })}
-                        maxLength={30}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">PAG-IBIG Number</label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={editingEmp.pgbg_no}
-                        onChange={(e) => setEditingEmp({ ...editingEmp, pgbg_no: e.target.value })}
-                        maxLength={30}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Employee Type & Status */}
-                <div className="form-row" style={{ marginTop: '16px' }}>
-                  <div className="form-group">
-                    <label className="form-label">Employee Type</label>
-                    <select
-                      className="form-input"
-                      value={editingEmp.emp_stat}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, emp_stat: e.target.value })}
-                    >
-                      <option value="R">R - Regular</option>
-                      <option value="C">C - Casual</option>
-                      <option value="F">F - Confidential</option>
-                      <option value="E">E - Executive</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Employment Status</label>
-                    <select
-                      className="form-input"
-                      value={editingEmp.status}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, status: e.target.value })}
-                    >
-                      <option value="A">A - Active</option>
-                      <option value="R">R - Resigned</option>
-                      <option value="L">L - On Leave</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Date Hired</label>
-                    <input
-                      type="date"
-                      className="form-input"
-                      value={editingEmp.date_hire}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, date_hire: e.target.value })}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Date Resigned</label>
-                    <input
-                      type="date"
-                      className="form-input"
-                      value={editingEmp.date_resign}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, date_resign: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                {/* Membership Flags */}
-                <div className="form-row" style={{ marginTop: '12px' }}>
-                  <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <input
-                      type="checkbox"
-                      id="sss_member"
-                      checked={editingEmp.sss_member}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, sss_member: e.target.checked })}
-                    />
-                    <label htmlFor="sss_member" style={{ marginBottom: 0 }}>SSS Member</label>
-                  </div>
-                  <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <input
-                      type="checkbox"
-                      id="pgbg_member"
-                      checked={editingEmp.pgbg}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, pgbg: e.target.checked })}
-                    />
-                    <label htmlFor="pgbg_member" style={{ marginBottom: 0 }}>PAG-IBIG Member</label>
-                  </div>
-                </div>
-
-                {/* Leave Credits */}
-                <div style={{ marginTop: '16px', padding: '12px', background: 'var(--background)', borderRadius: '8px' }}>
-                  <h5 style={{ marginBottom: '12px', fontSize: '14px', fontWeight: '600' }}>Leave Credits</h5>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label className="form-label">Vacation Leave Credits</label>
-                      <input
-                        type="number"
-                        step="0.5"
-                        className="form-input"
-                        value={editingEmp.vacation_leave}
-                        onChange={(e) => setEditingEmp({ ...editingEmp, vacation_leave: Number(e.target.value) })}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Sick Leave Credits</label>
-                      <input
-                        type="number"
-                        step="0.5"
-                        className="form-input"
-                        value={editingEmp.sick_leave}
-                        onChange={(e) => setEditingEmp({ ...editingEmp, sick_leave: Number(e.target.value) })}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* 5 Loan Types */}
-                <div style={{ marginTop: '16px' }}>
-                  <h5 style={{ marginBottom: '12px', fontSize: '14px', fontWeight: '600' }}>Loan Balances</h5>
-                  
-                  {/* Salary Loan */}
-                  <div style={{ marginBottom: '12px', padding: '12px', background: 'var(--background)', borderRadius: '8px' }}>
-                    <h6 style={{ marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>1. Salary Loan</h6>
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label className="form-label">Amount</label>
-                        <input type="number" step="0.01" className="form-input" value={editingEmp.sln_amt} onChange={(e) => setEditingEmp({ ...editingEmp, sln_amt: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Balance</label>
-                        <input type="number" step="0.01" className="form-input" value={editingEmp.sln_bal} onChange={(e) => setEditingEmp({ ...editingEmp, sln_bal: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Term (months)</label>
-                        <input type="number" className="form-input" value={editingEmp.sln_term} onChange={(e) => setEditingEmp({ ...editingEmp, sln_term: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Loan Date</label>
-                        <input type="date" className="form-input" value={editingEmp.sln_date} onChange={(e) => setEditingEmp({ ...editingEmp, sln_date: e.target.value })} />
-                      </div>
-                    </div>
+                    <Field label="Basic Rate *">
+                      <NumInput value={editingEmp.b_rate} onChange={v => up({ b_rate: v })} />
+                    </Field>
+                    <Field label="COLA per Hour">
+                      <NumInput value={editingEmp.cola} onChange={v => up({ cola: v })} />
+                    </Field>
                   </div>
 
-                  {/* SSS Calamity Loan */}
-                  <div style={{ marginBottom: '12px', padding: '12px', background: 'var(--background)', borderRadius: '8px' }}>
-                    <h6 style={{ marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>2. SSS Calamity Loan</h6>
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label className="form-label">Amount</label>
-                        <input type="number" step="0.01" className="form-input" value={editingEmp.cal_amt} onChange={(e) => setEditingEmp({ ...editingEmp, cal_amt: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Balance</label>
-                        <input type="number" step="0.01" className="form-input" value={editingEmp.cal_bal} onChange={(e) => setEditingEmp({ ...editingEmp, cal_bal: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Term (months)</label>
-                        <input type="number" className="form-input" value={editingEmp.cal_term} onChange={(e) => setEditingEmp({ ...editingEmp, cal_term: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Loan Date</label>
-                        <input type="date" className="form-input" value={editingEmp.cal_date} onChange={(e) => setEditingEmp({ ...editingEmp, cal_date: e.target.value })} />
-                      </div>
-                    </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <Field label="Employee Type">
+                      <select value={editingEmp.emp_stat} onChange={e => up({ emp_stat: e.target.value })}
+                        className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30">
+                        <option value="R">R — Regular</option>
+                        <option value="C">C — Casual</option>
+                        <option value="F">F — Confidential</option>
+                        <option value="E">E — Executive</option>
+                      </select>
+                    </Field>
+                    <Field label="Employment Status">
+                      <select value={editingEmp.status} onChange={e => up({ status: e.target.value })}
+                        className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30">
+                        <option value="A">A — Active</option>
+                        <option value="R">R — Resigned</option>
+                        <option value="L">L — On Leave</option>
+                      </select>
+                    </Field>
+                    <Field label="Date Hired">
+                      <TextInput type="date" value={editingEmp.date_hire} onChange={v => up({ date_hire: v })} />
+                    </Field>
+                    <Field label="Date Resigned">
+                      <TextInput type="date" value={editingEmp.date_resign} onChange={v => up({ date_resign: v })} />
+                    </Field>
                   </div>
 
-                  {/* HDMF Loan */}
-                  <div style={{ marginBottom: '12px', padding: '12px', background: 'var(--background)', borderRadius: '8px' }}>
-                    <h6 style={{ marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>3. HDMF/Pag-IBIG Loan</h6>
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label className="form-label">Amount</label>
-                        <input type="number" step="0.01" className="form-input" value={editingEmp.hdmf_amt} onChange={(e) => setEditingEmp({ ...editingEmp, hdmf_amt: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Balance</label>
-                        <input type="number" step="0.01" className="form-input" value={editingEmp.hdmf_bal} onChange={(e) => setEditingEmp({ ...editingEmp, hdmf_bal: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Term (months)</label>
-                        <input type="number" className="form-input" value={editingEmp.hdmf_term} onChange={(e) => setEditingEmp({ ...editingEmp, hdmf_term: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Loan Date</label>
-                        <input type="date" className="form-input" value={editingEmp.hdmf_date} onChange={(e) => setEditingEmp({ ...editingEmp, hdmf_date: e.target.value })} />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-surface-container-lowest border border-outline-variant/15 rounded-xl p-4 space-y-3">
+                      <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50">Leave Credits</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Field label="Vacation Leave Days">
+                          <NumInput value={editingEmp.vacation_leave} onChange={v => up({ vacation_leave: v })} step="0.5" />
+                        </Field>
+                        <Field label="Sick Leave Days">
+                          <NumInput value={editingEmp.sick_leave} onChange={v => up({ sick_leave: v })} step="0.5" />
+                        </Field>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Company Loan */}
-                  <div style={{ marginBottom: '12px', padding: '12px', background: 'var(--background)', borderRadius: '8px' }}>
-                    <h6 style={{ marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>4. Company Loan</h6>
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label className="form-label">Amount</label>
-                        <input type="number" step="0.01" className="form-input" value={editingEmp.comp_amt} onChange={(e) => setEditingEmp({ ...editingEmp, comp_amt: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Balance</label>
-                        <input type="number" step="0.01" className="form-input" value={editingEmp.comp_bal} onChange={(e) => setEditingEmp({ ...editingEmp, comp_bal: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Term (months)</label>
-                        <input type="number" className="form-input" value={editingEmp.comp_term} onChange={(e) => setEditingEmp({ ...editingEmp, comp_term: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Loan Date</label>
-                        <input type="date" className="form-input" value={editingEmp.comp_date} onChange={(e) => setEditingEmp({ ...editingEmp, comp_date: e.target.value })} />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Company Deduction Loan */}
-                  <div style={{ marginBottom: '12px', padding: '12px', background: 'var(--background)', borderRadius: '8px' }}>
-                    <h6 style={{ marginBottom: '8px', fontSize: '13px', fontWeight: '600' }}>5. Company Deduction/Advances</h6>
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label className="form-label">Amount</label>
-                        <input type="number" step="0.01" className="form-input" value={editingEmp.comd_amt} onChange={(e) => setEditingEmp({ ...editingEmp, comd_amt: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Balance</label>
-                        <input type="number" step="0.01" className="form-input" value={editingEmp.comd_bal} onChange={(e) => setEditingEmp({ ...editingEmp, comd_bal: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Term (months)</label>
-                        <input type="number" className="form-input" value={editingEmp.comd_term} onChange={(e) => setEditingEmp({ ...editingEmp, comd_term: Number(e.target.value) })} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">Loan Date</label>
-                        <input type="date" className="form-input" value={editingEmp.comd_date} onChange={(e) => setEditingEmp({ ...editingEmp, comd_date: e.target.value })} />
+                    <div className="bg-surface-container-lowest border border-outline-variant/15 rounded-xl p-4 space-y-3">
+                      <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50">Membership Flags</div>
+                      <div className="space-y-3">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input type="checkbox" id="sss_member" checked={editingEmp.sss_member} onChange={e => up({ sss_member: e.target.checked })} className="w-4 h-4 rounded accent-primary" />
+                          <span className="text-sm font-medium">SSS Member</span>
+                        </label>
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input type="checkbox" id="pgbg_member" checked={editingEmp.pgbg} onChange={e => up({ pgbg: e.target.checked })} className="w-4 h-4 rounded accent-primary" />
+                          <span className="text-sm font-medium">PAG-IBIG Member</span>
+                        </label>
                       </div>
                     </div>
                   </div>
                 </div>
+              )}
+
+              {/* TAB 2: Government IDs */}
+              {activeTab === 2 && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="SSS Number (99-9999999-9)">
+                      <TextInput value={editingEmp.sss_no} onChange={v => up({ sss_no: v })} maxLength={30} placeholder="12-3456789-0" />
+                    </Field>
+                    <Field label="TIN (999-999-999)">
+                      <TextInput value={editingEmp.tin_no} onChange={v => up({ tin_no: v })} maxLength={30} placeholder="123-456-789" />
+                    </Field>
+                    <Field label="PhilHealth (PHIC) Number">
+                      <TextInput value={editingEmp.phic_no} onChange={v => up({ phic_no: v })} maxLength={30} />
+                    </Field>
+                    <Field label="Pag-IBIG (HDMF) Number">
+                      <TextInput value={editingEmp.pgbg_no} onChange={v => up({ pgbg_no: v })} maxLength={30} />
+                    </Field>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: Loans */}
+              {activeTab === 3 && (
+                <div className="space-y-4">
+                  <LoanBlock title="1. Salary Loan" amt={editingEmp.sln_amt} bal={editingEmp.sln_bal} term={editingEmp.sln_term} date={editingEmp.sln_date}
+                    onChange={f => up({ sln_amt: f.amt ?? editingEmp.sln_amt, sln_bal: f.bal ?? editingEmp.sln_bal, sln_term: f.term ?? editingEmp.sln_term, sln_date: f.date ?? editingEmp.sln_date })} />
+                  <LoanBlock title="2. SSS Calamity Loan" amt={editingEmp.cal_amt} bal={editingEmp.cal_bal} term={editingEmp.cal_term} date={editingEmp.cal_date}
+                    onChange={f => up({ cal_amt: f.amt ?? editingEmp.cal_amt, cal_bal: f.bal ?? editingEmp.cal_bal, cal_term: f.term ?? editingEmp.cal_term, cal_date: f.date ?? editingEmp.cal_date })} />
+                  <LoanBlock title="3. HDMF / Pag-IBIG Loan" amt={editingEmp.hdmf_amt} bal={editingEmp.hdmf_bal} term={editingEmp.hdmf_term} date={editingEmp.hdmf_date}
+                    onChange={f => up({ hdmf_amt: f.amt ?? editingEmp.hdmf_amt, hdmf_bal: f.bal ?? editingEmp.hdmf_bal, hdmf_term: f.term ?? editingEmp.hdmf_term, hdmf_date: f.date ?? editingEmp.hdmf_date })} />
+                  <LoanBlock title="4. Company Loan" amt={editingEmp.comp_amt} bal={editingEmp.comp_bal} term={editingEmp.comp_term} date={editingEmp.comp_date}
+                    onChange={f => up({ comp_amt: f.amt ?? editingEmp.comp_amt, comp_bal: f.bal ?? editingEmp.comp_bal, comp_term: f.term ?? editingEmp.comp_term, comp_date: f.date ?? editingEmp.comp_date })} />
+                  <LoanBlock title="5. Company Deduction / Advances" amt={editingEmp.comd_amt} bal={editingEmp.comd_bal} term={editingEmp.comd_term} date={editingEmp.comd_date}
+                    onChange={f => up({ comd_amt: f.amt ?? editingEmp.comd_amt, comd_bal: f.bal ?? editingEmp.comd_bal, comd_term: f.term ?? editingEmp.comd_term, comd_date: f.date ?? editingEmp.comd_date })} />
+                </div>
+              )}
+
+              {/* TAB 4: Counters (Read-only) */}
+              {activeTab === 4 && (
+                <div className="space-y-6">
+                  <div className="bg-[#05111E] rounded-2xl p-6 text-white">
+                    <div className="text-[10px] uppercase tracking-widest font-bold text-white/40 mb-5">Monthly Counters (Auto-updated on Post)</div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                      {[
+                        ['Basic Pay', editingEmp.m_basic], ['COLA', editingEmp.m_cola], ['Holiday', editingEmp.m_hol], ['Overtime', editingEmp.m_ot],
+                        ['Leave', editingEmp.m_leave], ['Gross Pay', editingEmp.m_gross], ['SSS EE', editingEmp.m_ssee], ['SSS ER', editingEmp.m_sser],
+                        ['Medicare EE', editingEmp.m_medee], ['Medicare ER', editingEmp.m_meder], ['Pag-IBIG EE', editingEmp.m_pgee], ['Pag-IBIG ER', editingEmp.m_pger],
+                        ['EC ER', editingEmp.m_ecer], ['Tax', editingEmp.m_tax], ['Net Pay', editingEmp.m_netpay],
+                      ].map(([l, v]) => (
+                        <div key={String(l)} className="flex justify-between">
+                          <span className="text-white/50">{l}</span>
+                          <span className="font-mono">₱{fmt(Number(v))}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-outline-variant/15 rounded-2xl overflow-hidden">
+                    <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 px-5 py-3 border-b border-outline-variant/10">Quarterly Counters</div>
+                    <table className="w-full text-sm">
+                      <thead className="bg-surface-container-high text-[10px] uppercase text-on-surface-variant/60 font-bold">
+                        <tr>
+                          <th className="px-5 py-2.5 text-left">Counter</th>
+                          <th className="px-5 py-2.5 text-right">Q1</th>
+                          <th className="px-5 py-2.5 text-right">Q2</th>
+                          <th className="px-5 py-2.5 text-right">Q3</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-outline-variant/10">
+                        {[
+                          ['Gross Income', editingEmp.q1_gross, editingEmp.q2_gross, editingEmp.q3_gross],
+                          ['SSS (EE)', editingEmp.q1_ssee, editingEmp.q2_ssee, editingEmp.q3_ssee],
+                          ['Medicare (EE)', editingEmp.q1_medee, editingEmp.q2_medee, editingEmp.q3_medee],
+                          ['Pag-IBIG (EE)', editingEmp.q1_pgee, editingEmp.q2_pgee, editingEmp.q3_pgee],
+                          ['Tax Withheld', editingEmp.q1_tax, editingEmp.q2_tax, editingEmp.q3_tax],
+                        ].map(([l, q1, q2, q3]) => (
+                          <tr key={String(l)}>
+                            <td className="px-5 py-2.5 font-medium text-on-surface">{l}</td>
+                            <td className="px-5 py-2.5 font-mono text-right text-on-surface-variant">{fmt(Number(q1))}</td>
+                            <td className="px-5 py-2.5 font-mono text-right text-on-surface-variant">{fmt(Number(q2))}</td>
+                            <td className="px-5 py-2.5 font-mono text-right text-on-surface-variant">{fmt(Number(q3))}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="bg-white border border-outline-variant/15 rounded-2xl overflow-hidden">
+                    <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 px-5 py-3 border-b border-outline-variant/10">Yearly Counters (YTD)</div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-y divide-outline-variant/10">
+                      {[
+                        ['Basic Pay', editingEmp.y_basic], ['COLA', editingEmp.y_cola], ['Holiday', editingEmp.y_hol], ['Overtime', editingEmp.y_ot],
+                        ['Leave', editingEmp.y_leave], ['Gross Pay', editingEmp.y_gross], ['SSS EE', editingEmp.y_ssee], ['SSS ER', editingEmp.y_sser],
+                        ['Medicare EE', editingEmp.y_medee], ['Medicare ER', editingEmp.y_meder], ['Pag-IBIG EE', editingEmp.y_pgee], ['Pag-IBIG ER', editingEmp.y_pger],
+                        ['EC ER', editingEmp.y_ecer], ['Tax', editingEmp.y_tax], ['13th Month', editingEmp.y_bonus], ['Net Pay', editingEmp.y_netpay],
+                      ].map(([l, v]) => (
+                        <div key={String(l)} className="px-4 py-3">
+                          <div className="text-[10px] text-on-surface-variant/50 uppercase tracking-widest">{l}</div>
+                          <div className="font-mono font-semibold text-sm mt-0.5">₱{fmt(Number(v))}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: Personal */}
+              {activeTab === 5 && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Spouse Name">
+                      <TextInput value={editingEmp.spouse} onChange={v => up({ spouse: v })} maxLength={160} />
+                    </Field>
+                    <Field label="Date of Birth">
+                      <TextInput type="date" value={editingEmp.birthdate} onChange={v => up({ birthdate: v })} />
+                    </Field>
+                  </div>
+                  <Field label="Address">
+                    <TextInput value={editingEmp.address} onChange={v => up({ address: v })} maxLength={300} />
+                  </Field>
+                </div>
+              )}
+
+              {/* Panel error */}
+              {panelMsg && (
+                <div className={`px-4 py-3 rounded-lg border-l-4 text-sm font-medium flex items-center gap-2 ${panelMsg.ok ? 'bg-emerald-50 text-emerald-800 border-emerald-500' : 'bg-red-50 text-red-800 border-red-500'}`}>
+                  {panelMsg.text}
+                </div>
+              )}
+            </div>
+
+            {/* Panel footer */}
+            <div className="px-8 py-5 border-t border-outline-variant/10 bg-surface-container-lowest flex justify-between items-center sticky bottom-0">
+              <div className="flex gap-2">
+                {activeTab > 1 && <button onClick={() => setActiveTab(activeTab - 1)} className="px-3 py-2 border border-outline-variant/20 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container transition-colors flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[15px]">chevron_left</span> Back
+                </button>}
+                {activeTab < 5 && <button onClick={() => setActiveTab(activeTab + 1)} className="px-3 py-2 border border-outline-variant/20 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container transition-colors flex items-center gap-1">
+                  Next <span className="material-symbols-outlined text-[15px]">chevron_right</span>
+                </button>}
               </div>
-            )}
-
-            {/* Screen 2: Monthly Counters (Display Only) */}
-            {activeScreen === 2 && (
-              <div>
-                <h4 style={{ marginBottom: '16px', color: 'var(--primary)' }}>Screen 2: Monthly Counters (Display Only)</h4>
-                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-                  These values are automatically updated when payroll is posted
-                </p>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-                  <div className="form-group">
-                    <label className="form-label">Basic Pay</label>
-                    <input type="text" className="form-input" value={editingEmp.m_basic.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">COLA</label>
-                    <input type="text" className="form-input" value={editingEmp.m_cola.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Holiday</label>
-                    <input type="text" className="form-input" value={editingEmp.m_hol.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Overtime</label>
-                    <input type="text" className="form-input" value={editingEmp.m_ot.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Leave</label>
-                    <input type="text" className="form-input" value={editingEmp.m_leave.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Gross Pay</label>
-                    <input type="text" className="form-input" value={editingEmp.m_gross.toFixed(2)} readOnly style={{ background: '#f5f5f5', fontWeight: '600' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">SSS EE</label>
-                    <input type="text" className="form-input" value={editingEmp.m_ssee.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">SSS ER</label>
-                    <input type="text" className="form-input" value={editingEmp.m_sser.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Medicare EE</label>
-                    <input type="text" className="form-input" value={editingEmp.m_medee.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Medicare ER</label>
-                    <input type="text" className="form-input" value={editingEmp.m_meder.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Pag-IBIG EE</label>
-                    <input type="text" className="form-input" value={editingEmp.m_pgee.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Pag-IBIG ER</label>
-                    <input type="text" className="form-input" value={editingEmp.m_pger.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">EC</label>
-                    <input type="text" className="form-input" value={editingEmp.m_ecer.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Tax</label>
-                    <input type="text" className="form-input" value={editingEmp.m_tax.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Other Pay 1</label>
-                    <input type="text" className="form-input" value={editingEmp.m_othp1.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Other Pay 2</label>
-                    <input type="text" className="form-input" value={editingEmp.m_othp2.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Other Pay 3</label>
-                    <input type="text" className="form-input" value={editingEmp.m_othp3.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Other Pay 4</label>
-                    <input type="text" className="form-input" value={editingEmp.m_othp4.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Net Pay</label>
-                    <input type="text" className="form-input" value={editingEmp.m_netpay.toFixed(2)} readOnly style={{ background: '#f5f5f5', fontWeight: '600' }} />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Screen 3: Quarterly Counters (Display Only) */}
-            {activeScreen === 3 && (
-              <div>
-                <h4 style={{ marginBottom: '16px', color: 'var(--primary)' }}>Screen 3: Quarterly Counters (Display Only)</h4>
-                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-                  Quarterly aggregations updated during month-end posting
-                </p>
-
-                <table className="data-table" style={{ marginTop: '16px' }}>
-                  <thead>
-                    <tr>
-                      <th>Counter</th>
-                      <th style={{ textAlign: 'right' }}>Q1</th>
-                      <th style={{ textAlign: 'right' }}>Q2</th>
-                      <th style={{ textAlign: 'right' }}>Q3</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><strong>Gross Income</strong></td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q1_gross.toFixed(2)}</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q2_gross.toFixed(2)}</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q3_gross.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td>SSS (EE)</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q1_ssee.toFixed(2)}</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q2_ssee.toFixed(2)}</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q3_ssee.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td>Medicare (EE)</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q1_medee.toFixed(2)}</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q2_medee.toFixed(2)}</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q3_medee.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td>Pag-IBIG (EE)</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q1_pgee.toFixed(2)}</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q2_pgee.toFixed(2)}</td>
-                      <td style={{ textAlign: 'right' }}>{editingEmp.q3_pgee.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td><strong>Tax Withheld</strong></td>
-                      <td style={{ textAlign: 'right' }}><strong>{editingEmp.q1_tax.toFixed(2)}</strong></td>
-                      <td style={{ textAlign: 'right' }}><strong>{editingEmp.q2_tax.toFixed(2)}</strong></td>
-                      <td style={{ textAlign: 'right' }}><strong>{editingEmp.q3_tax.toFixed(2)}</strong></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Screen 4: Yearly Counters (Display Only) */}
-            {activeScreen === 4 && (
-              <div>
-                <h4 style={{ marginBottom: '16px', color: 'var(--primary)' }}>Screen 4: Yearly Counters (Display Only)</h4>
-                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-                  Year-to-date totals for annual reporting
-                </p>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-                  <div className="form-group">
-                    <label className="form-label">Basic Pay</label>
-                    <input type="text" className="form-input" value={editingEmp.y_basic.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">COLA</label>
-                    <input type="text" className="form-input" value={editingEmp.y_cola.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Holiday</label>
-                    <input type="text" className="form-input" value={editingEmp.y_hol.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Overtime</label>
-                    <input type="text" className="form-input" value={editingEmp.y_ot.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Leave</label>
-                    <input type="text" className="form-input" value={editingEmp.y_leave.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Gross Pay</label>
-                    <input type="text" className="form-input" value={editingEmp.y_gross.toFixed(2)} readOnly style={{ background: '#f5f5f5', fontWeight: '600' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">SSS EE</label>
-                    <input type="text" className="form-input" value={editingEmp.y_ssee.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">SSS ER</label>
-                    <input type="text" className="form-input" value={editingEmp.y_sser.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Medicare EE</label>
-                    <input type="text" className="form-input" value={editingEmp.y_medee.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Medicare ER</label>
-                    <input type="text" className="form-input" value={editingEmp.y_meder.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Pag-IBIG EE</label>
-                    <input type="text" className="form-input" value={editingEmp.y_pgee.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Pag-IBIG ER</label>
-                    <input type="text" className="form-input" value={editingEmp.y_pger.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">EC</label>
-                    <input type="text" className="form-input" value={editingEmp.y_ecer.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Tax</label>
-                    <input type="text" className="form-input" value={editingEmp.y_tax.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Other Pay 1</label>
-                    <input type="text" className="form-input" value={editingEmp.y_othp1.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Other Pay 2</label>
-                    <input type="text" className="form-input" value={editingEmp.y_othp2.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Other Pay 3</label>
-                    <input type="text" className="form-input" value={editingEmp.y_othp3.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Other Pay 4</label>
-                    <input type="text" className="form-input" value={editingEmp.y_othp4.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">13th Month Bonus</label>
-                    <input type="text" className="form-input" value={editingEmp.y_bonus.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Bonus Tax</label>
-                    <input type="text" className="form-input" value={editingEmp.y_btax.toFixed(2)} readOnly style={{ background: '#f5f5f5' }} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Net Pay</label>
-                    <input type="text" className="form-input" value={editingEmp.y_netpay.toFixed(2)} readOnly style={{ background: '#f5f5f5', fontWeight: '600' }} />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Screen 5: Personal Information */}
-            {activeScreen === 5 && (
-              <div>
-                <h4 style={{ marginBottom: '16px', color: 'var(--primary)' }}>Screen 5: Personal Information</h4>
-                
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">Spouse Name</label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={editingEmp.spouse}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, spouse: e.target.value })}
-                      maxLength={160}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">Date of Birth</label>
-                    <input
-                      type="date"
-                      className="form-input"
-                      value={editingEmp.birthdate}
-                      onChange={(e) => setEditingEmp({ ...editingEmp, birthdate: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Address</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={editingEmp.address}
-                    onChange={(e) => setEditingEmp({ ...editingEmp, address: e.target.value })}
-                    maxLength={300}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            {modalMsg && (
-              <div style={{ padding: '8px 12px', borderRadius: 4, marginTop: 16,
-                background: modalMsg.ok ? 'rgba(46,160,67,0.15)' : 'rgba(220,53,53,0.15)',
-                border: `1px solid ${modalMsg.ok ? 'var(--success)' : '#dc3545'}`,
-                color: modalMsg.ok ? 'var(--success)' : '#dc3545', fontSize: 13 }}>
-                {modalMsg.text}
-              </div>
-            )}
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'space-between', marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {activeScreen > 1 && (
-                  <button className="btn btn-secondary" onClick={() => setActiveScreen(activeScreen - 1)}>
-                    &larr; Previous Screen
-                  </button>
-                )}
-                {activeScreen < 5 && (
-                  <button className="btn btn-secondary" onClick={() => setActiveScreen(activeScreen + 1)}>
-                    Next Screen &rarr;
-                  </button>
-                )}
-              </div>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                <button className="btn btn-primary" onClick={handleSave} disabled={loading}>
-                  {loading ? 'Saving...' : 'Save Employee'}
+              <div className="flex gap-3">
+                <button onClick={() => setShowPanel(false)} className="px-4 py-2 border border-outline-variant/20 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Cancel</button>
+                <button onClick={handleSave} disabled={loading} className="px-6 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary/90 disabled:opacity-60 transition-colors flex items-center gap-2">
+                  {loading ? <><span className="material-symbols-outlined text-[15px] animate-spin">sync</span>Saving…</> : 'Save Employee'}
                 </button>
               </div>
             </div>
           </div>
-        </ModalPortal>
+        </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete confirm */}
       {deleteTarget && (
-        <ModalPortal onClick={() => setDeleteTarget(null)}>
-          <div className="modal" style={{ maxWidth: '380px' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Delete Employee?</h3>
-              <button onClick={() => setDeleteTarget(null)} className="modal-close">&times;</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setDeleteTarget(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-96 p-8" onClick={e => e.stopPropagation()}>
+            <div className="w-12 h-12 rounded-full bg-error/10 text-error flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-[24px]">delete</span>
             </div>
-            <div style={{ padding: '20px' }}>
-              <p style={{ marginBottom: '20px', fontSize: '14px', color: 'var(--text-secondary)' }}>
-                Permanently delete employee <strong style={{ color: 'var(--text)' }}>{deleteTarget}</strong>? This cannot be undone.
-              </p>
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                <button className="btn btn-secondary" onClick={() => setDeleteTarget(null)}>Cancel</button>
-                <button className="btn" onClick={handleDeleteConfirmed}
-                  style={{ background: 'rgba(220,53,53,0.2)', color: '#dc3545', border: '1px solid #dc3545' }}>
-                  Delete
-                </button>
-              </div>
+            <h3 className="font-headline font-bold text-lg text-on-surface text-center mb-1">Delete Employee</h3>
+            <p className="text-sm text-on-surface-variant text-center mb-1"><strong>{deleteTarget}</strong></p>
+            <p className="text-xs text-on-surface-variant/60 text-center mb-6">This action cannot be undone.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteTarget(null)} className="flex-1 px-4 py-2 border border-outline-variant/20 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Cancel</button>
+              <button onClick={handleDeleteConfirmed} className="flex-1 px-4 py-2 bg-error text-white rounded-lg text-sm font-bold hover:bg-error/90 transition-colors">Delete</button>
             </div>
           </div>
-        </ModalPortal>
+        </div>
       )}
     </div>
   )

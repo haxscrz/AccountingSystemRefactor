@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Routes, Route } from 'react-router-dom'
-import { useAuthStore } from '../stores/authStore'
 import { useCompanyStore } from '../stores/companyStore'
-import { getCompanyNameByCode } from '../config/companies'
-import RibbonNav from '../components/RibbonNav'
-import CompanyBadge from '../components/CompanyBadge'
-import PayrollMainMenu from '../components/payroll/PayrollMainMenu'
+
+import AppShell from '../components/AppShell'
 import PayrollTypeSelector from '../components/payroll/PayrollTypeSelector'
+import PayrollDashboard from '../components/payroll/PayrollDashboard'
 import TimecardEntry from '../components/payroll/TimecardEntry'
 import PayrollCompute from '../components/payroll/PayrollCompute'
 import EmployeeMaster from '../components/payroll/EmployeeMaster'
@@ -25,32 +23,15 @@ import InitializeNewYear from '../components/payroll/InitializeNewYear'
 import BackupDatabases from '../components/payroll/BackupDatabases'
 import EditEmployeeNumber from '../components/payroll/EditEmployeeNumber'
 import TimecardQuery from '../components/payroll/TimecardQuery'
-import './PayrollSystem.css'
 
 export default function PayrollSystem() {
   const navigate = useNavigate()
-  const { user, logout } = useAuthStore()
   const selectedCompanyCode = useCompanyStore((state) => state.selectedCompanyCode)
   const [activeTab, setActiveTab] = useState('main')
   const [payrollType, setPayrollType] = useState<'regular' | 'casual' | null>(null)
-  const [isCompactHeader, setIsCompactHeader] = useState(false)
-  const [statusPeriod, setStatusPeriod] = useState('Loading...')
-  const [companyName, setCompanyName] = useState(getCompanyNameByCode(selectedCompanyCode))
+  const [statusPeriod, setStatusPeriod] = useState('Oct 2023')
 
-  useEffect(() => {
-    setCompanyName(getCompanyNameByCode(selectedCompanyCode))
-  }, [selectedCompanyCode])
-
-  useEffect(() => {
-    const onScroll = () => {
-      setIsCompactHeader(window.scrollY > 40)
-    }
-
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  // Refresh status bar period whenever payrollType is chosen or page loads
+  // Fetch active period from system ID
   useEffect(() => {
     if (!payrollType) return
     const MONTHS = ['', 'January', 'February', 'March', 'April', 'May', 'June',
@@ -58,218 +39,218 @@ export default function PayrollSystem() {
     fetch('/api/payroll/system-id')
       .then(r => r.ok ? r.json() : null)
       .then(d => {
-        if (d) {
+        if (d && d.PresMo && d.PresYr) {
           setStatusPeriod(`${MONTHS[d.PresMo] ?? d.PresMo} ${d.PresYr}`)
-          if (d.SysNm && !selectedCompanyCode) setCompanyName(d.SysNm)
+        } else {
+          setStatusPeriod('Oct 2023')
         }
       })
-      .catch(() => setStatusPeriod('—'))
+      .catch(() => setStatusPeriod('Oct 2023'))
   }, [payrollType, selectedCompanyCode])
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
 
   const handleSelectType = (type: 'regular' | 'casual') => {
     setPayrollType(type)
     navigate('/payroll')
   }
 
-  // ── No type selected: show full-screen selector before the ribbon ──
-  if (!payrollType) {
-    return (
-      <div className="payroll-container">
-        <header className={`topbar ${isCompactHeader ? 'topbar-compact' : ''}`}>
-          <div className="brand">
-            <div className="brand-mark-small"></div>
-            <div>
-              <h1>PAY Payroll System</h1>
-              <p>Payroll Processing Module</p>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <CompanyBadge />
-            <button onClick={() => navigate('/dashboard')} className="btn btn-secondary">
-              &larr; Back to Dashboard
-            </button>
-            <button onClick={handleLogout} className="btn btn-secondary">
-              Logout
-            </button>
-          </div>
-        </header>
-        <PayrollTypeSelector onSelect={handleSelectType} />
-      </div>
-    )
-  }
-
-  const ribbonTabs = [
-    { id: 'main', label: 'Main Menu' },
-    { id: 'file', label: 'File Maintenance' },
-    { id: 'query', label: 'Query' },
-    { id: 'report', label: 'Report Generation' }
+  const shellTabs = [
+    { id: 'main', label: 'Main' },
+    { id: 'file', label: 'File' },
+    { id: 'query', label: 'Query/Report' },
+    { id: 'yearend', label: 'Year-End' },
   ]
 
-  const ribbonGroups = {
-    // ── MAIN MENU ──────────────────────────────────────────────────────────────
-    // Mirrors PAY.PRG m_main=1 block exactly.
-    // Type selection is now handled at entry (PayrollTypeSelector).
+  const shellGroups = {
     main: [
+      {
+        title: 'Payroll Dashboard',
+        items: [
+          { label: 'Dashboard', icon: 'dashboard', onClick: () => navigate('/payroll') },
+        ]
+      },
       {
         title: 'Process Timecard',
         items: [
-          { label: 'Add/Edit Timecard',     onClick: () => navigate('/payroll/timecard') },
-          { label: 'Initialize Timecard',   onClick: () => navigate('/payroll/initialize') },
-          { label: 'Append From Datafile',  onClick: () => navigate('/payroll/append') }
+          { label: 'Add/Edit Timecard', icon: 'edit_note', onClick: () => navigate('/payroll/timecard') },
+          { label: 'Initialize Timecard', icon: 'restart_alt', onClick: () => navigate('/payroll/initialize') },
+          { label: 'Append From Datafile', icon: 'upload_file', onClick: () => navigate('/payroll/append') },
         ]
       },
       {
         title: 'Compute / Post',
         items: [
-          { label: 'Compute Payroll',   onClick: () => navigate('/payroll/compute') },
-          { label: 'Post Transactions', onClick: () => navigate('/payroll/post-transactions') }
+          { label: 'Compute Payroll', icon: 'calculate', onClick: () => navigate('/payroll/compute') },
+          { label: 'Post Transactions', icon: 'send', onClick: () => navigate('/payroll/post-transactions') },
         ]
       },
       {
-        title: 'Enter OR/SBR Info',
+        title: 'OR/SBR Info',
         items: [
-          { label: 'SSS OR/SBR',     onClick: () => navigate('/payroll/or-sbr/sss') },
-          { label: 'Pag-Ibig OR/SBR', onClick: () => navigate('/payroll/or-sbr/pagibig') }
+          { label: 'SSS OR/SBR', icon: 'receipt_long', onClick: () => navigate('/payroll/or-sbr/sss') },
+          { label: 'Pag-Ibig OR/SBR', icon: 'receipt_long', onClick: () => navigate('/payroll/or-sbr/pagibig') },
         ]
       },
-      {
-        title: 'Year-End Processing',
-        items: [
-          { label: 'Compute 13th Month Pay', onClick: () => navigate('/payroll/13th-month') },
-          { label: 'Compute Year-End Tax',   onClick: () => navigate('/payroll/yearend-tax') }
-        ]
-      }
     ],
-
-    // ── FILE MAINTENANCE ───────────────────────────────────────────────────────
-    // Reindex group removed — SQLite manages indexes transactionally, no manual
-    // reindex is ever needed. Edit Database Path removed — handled via appsettings.
-    // Edit Department File removed — DepartmentEdit covers both list + edit.
     file: [
       {
         title: 'Master File Maintenance',
         items: [
-          { label: 'Edit Employee Master File', onClick: () => navigate('/payroll/employees') },
-          { label: 'Update Employee Rate',      onClick: () => navigate('/payroll/update-rate') },
-          { label: 'Edit Tax Table File',       onClick: () => navigate('/payroll/tax-table') },
-          { label: 'Edit Systems ID',           onClick: () => navigate('/payroll/system-id') }
+          { label: 'Employee Master File', icon: 'person_search', onClick: () => navigate('/payroll/employees') },
+          { label: 'Update Employee Rate', icon: 'price_change', onClick: () => navigate('/payroll/update-rate') },
+          { label: 'Edit Tax Table', icon: 'table_chart', onClick: () => navigate('/payroll/tax-table') },
+          { label: 'Edit Systems ID', icon: 'settings', onClick: () => navigate('/payroll/system-id') },
+          { label: 'SSS Loan from Disk', icon: 'upload', onClick: () => navigate('/payroll/sss-loan-disk') },
+          { label: 'PhilHealth from Disk', icon: 'upload_file', onClick: () => navigate('/payroll/philhealth-disk') },
         ]
       },
       {
         title: 'Administration',
         items: [
-          { label: 'Initialize For a New Year', onClick: () => navigate('/payroll/initialize-new-year') },
-          { label: 'Backup Databases',          onClick: () => navigate('/payroll/backup') },
-          { label: 'Edit Employee Number',      onClick: () => navigate('/payroll/edit-employee-number') },
-          { label: 'Add/Edit Department',       onClick: () => navigate('/payroll/departments') }
+          { label: 'Initialize New Year', icon: 'celebration', onClick: () => navigate('/payroll/initialize-new-year') },
+          { label: 'Backup Databases', icon: 'save', onClick: () => navigate('/payroll/backup') },
+          { label: 'Edit Employee Number', icon: 'tag', onClick: () => navigate('/payroll/edit-employee-number') },
+          { label: 'Add/Edit Department', icon: 'corporate_fare', onClick: () => navigate('/payroll/departments') },
         ]
-      }
+      },
     ],
-
-    // ── QUERY ──────────────────────────────────────────────────────────────────
-    // PAY.PRG m_main=3: single call to quertime (view timecard on-screen).
     query: [
       {
         title: 'Timecard Query',
         items: [
-          { label: 'View/Query Timecard', onClick: () => navigate('/payroll/timecard/view') }
+          { label: 'View/Query Timecard', icon: 'search', onClick: () => navigate('/payroll/timecard/view') },
         ]
-      }
-    ],
-
-    // ── REPORT GENERATION ─────────────────────────────────────────────────────
-    // Exactly 14 top-level items as shown in the original program.
-    // Items with sub-menus navigate to a report page that renders the sub-options.
-    report: [
+      },
       {
         title: 'Reports',
         items: [
-          { label: 'Timecard Validation',    onClick: () => navigate('/payroll/reports/timecard-validation') },
-          { label: 'Payroll Register',       onClick: () => navigate('/payroll/reports/register') },
-          { label: 'Payroll Slip',           onClick: () => navigate('/payroll/reports/payslip') },
-          { label: 'Denomination Breakdown', onClick: () => navigate('/payroll/reports/denomination') },
-          { label: 'Deductions Report',      onClick: () => navigate('/payroll/reports/deductions') },
-          { label: 'Monthly Reports',        onClick: () => navigate('/payroll/reports/monthly') },
-          { label: 'Quarterly Reports',      onClick: () => navigate('/payroll/reports/quarterly') },
-          { label: 'Qtrly SSS Ln (SSS Form)', onClick: () => navigate('/payroll/reports/quarterly-sss-form') },
-          { label: 'Year-End Payroll Recap', onClick: () => navigate('/payroll/reports/yearly-recap') },
-          { label: 'Employee Master File',   onClick: () => navigate('/payroll/reports/employee-master') },
-          { label: 'Bonus',                  onClick: () => navigate('/payroll/reports/bonus') },
-          { label: 'Year-End Tax/Refund',    onClick: () => navigate('/payroll/reports/year-end-tax') },
-          { label: 'Premium Payment Certif', onClick: () => navigate('/payroll/reports/premium-cert') }
+          { label: 'Timecard Validation', icon: 'fact_check', onClick: () => navigate('/payroll/reports/timecard-validation') },
+          { label: 'Payroll Register', icon: 'article', onClick: () => navigate('/payroll/reports/register') },
+          { label: 'Payroll Slip', icon: 'receipt', onClick: () => navigate('/payroll/reports/payslip') },
+          { label: 'Denomination Breakdown', icon: 'payments', onClick: () => navigate('/payroll/reports/denomination') },
+          { label: 'Deductions Report', icon: 'remove_circle_outline', onClick: () => navigate('/payroll/reports/deductions') },
+          { label: 'Monthly Reports', icon: 'calendar_month', onClick: () => navigate('/payroll/reports/monthly') },
+          { label: 'Quarterly Reports', icon: 'bar_chart', onClick: () => navigate('/payroll/reports/quarterly') },
+          { label: 'Qtrly SSS Ln (SSS Form)', icon: 'description', onClick: () => navigate('/payroll/reports/quarterly-sss-form') },
+          { label: 'Year-End Payroll Recap', icon: 'summarize', onClick: () => navigate('/payroll/reports/yearly-recap') },
+          { label: 'Employee Master File', icon: 'person', onClick: () => navigate('/payroll/reports/employee-master') },
+          { label: 'Bonus', icon: 'redeem', onClick: () => navigate('/payroll/reports/bonus') },
+          { label: 'Year-End Tax/Refund', icon: 'request_quote', onClick: () => navigate('/payroll/reports/year-end-tax') },
+          { label: 'Premium Payment Certif.', icon: 'verified', onClick: () => navigate('/payroll/reports/premium-cert') },
+          { label: 'R3 Project Reports', icon: 'folder_special', onClick: () => navigate('/payroll/reports/r3-project') },
+          { label: 'Set Printer Font', icon: 'print', disabled: true, onClick: () => {} },
         ]
-      }
-    ]
+      },
+    ],
+    yearend: [
+      {
+        title: 'Year-End Processing',
+        items: [
+          { label: 'Compute 13th Month Pay', icon: 'event_available', onClick: () => navigate('/payroll/13th-month') },
+          { label: 'Compute Year-End Tax', icon: 'account_balance', onClick: () => navigate('/payroll/yearend-tax') },
+          { label: 'Year-End Payroll Recap', icon: 'summarize', onClick: () => navigate('/payroll/reports/yearly-recap') },
+          { label: 'Year-End Tax/Refund', icon: 'request_quote', onClick: () => navigate('/payroll/reports/year-end-tax') },
+          { label: 'Qtrly SSS Ln (SSS Form)', icon: 'description', onClick: () => navigate('/payroll/reports/quarterly-sss-form') },
+        ]
+      },
+    ],
   }
 
+  // ── When no type selected: show full AppShell with type selector as content ──
   return (
-    <div className="payroll-container">
-      <header className={`topbar ${isCompactHeader ? 'topbar-compact' : ''}`}>
-        <div className="brand">
-          <div className="brand-mark-small"></div>
-          <div>
-            <h1>PAY Payroll System</h1>
-            <p>Payroll Processing Module {payrollType && `(${payrollType.toUpperCase()})`}</p>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <CompanyBadge />
-          <button onClick={() => navigate('/dashboard')} className="btn btn-secondary">
-            &larr; Back to Dashboard
-          </button>
-          <button
-            onClick={() => setPayrollType(null)}
-            className="btn btn-secondary"
-            title="Change payroll type"
-          >
-            Switch Type
-          </button>
-          <button onClick={handleLogout} className="btn btn-secondary">
-            Logout
-          </button>
-        </div>
-      </header>
+    <AppShell
+      moduleName="PAYROLL"
+      companyCode={selectedCompanyCode}
+      statusPeriod={statusPeriod}
+      tabs={shellTabs}
+      groups={shellGroups}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    >
+      <Routes>
+        <Route
+          path="/"
+          element={
+            !payrollType
+              ? <PayrollTypeSelector onSelect={handleSelectType} />
+              : <PayrollDashboard
+                  payrollType={payrollType}
+                  statusPeriod={statusPeriod}
+                  onSwitchType={() => { setPayrollType(null); navigate('/payroll') }}
+                />
+          }
+        />
+        <Route path="/timecard" element={<TimecardEntry payrollType={payrollType} />} />
+        <Route path="/timecard/view" element={<TimecardQuery />} />
+        <Route path="/compute" element={<PayrollCompute />} />
+        <Route path="/employees" element={<EmployeeMaster />} />
+        <Route path="/reports/:reportType" element={<PayrollReports />} />
+        <Route path="/initialize" element={<InitializeTimecard />} />
+        <Route path="/append" element={<AppendFromDatafile />} />
+        <Route path="/post-transactions" element={<PostTransactions />} />
+        <Route path="/or-sbr/sss" element={<OrSbrEntry type="sss" />} />
+        <Route path="/or-sbr/pagibig" element={<OrSbrEntry type="pagibig" />} />
+        <Route path="/13th-month" element={<Compute13thMonth />} />
+        <Route path="/yearend-tax" element={<ComputeYearEndTax />} />
+        <Route path="/system-id" element={<SystemIdEdit />} />
+        <Route path="/tax-table" element={<TaxTableEdit />} />
+        <Route path="/departments" element={<DepartmentEdit />} />
+        <Route path="/update-rate" element={<UpdateEmployeeRate />} />
+        <Route path="/initialize-new-year" element={<InitializeNewYear />} />
+        <Route path="/backup" element={<BackupDatabases />} />
+        <Route path="/edit-employee-number" element={<EditEmployeeNumber />} />
+        <Route path="/sss-loan-disk" element={<SssLoanDiskStub />} />
+        <Route path="/philhealth-disk" element={<PhilhealthDiskStub />} />
+        <Route path="/reports/r3-project" element={<PayrollReports />} />
+      </Routes>
+    </AppShell>
+  )
+}
 
-      <RibbonNav 
-        tabs={ribbonTabs}
-        groups={ribbonGroups}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+// ── Inline stubs for legacy PRG features not yet fully implemented ──
 
-      <div className="main-content">
-        <Routes>
-          <Route path="/" element={<PayrollMainMenu payrollType={payrollType} />} />
-          <Route path="/timecard" element={<TimecardEntry payrollType={payrollType} />} />
-          <Route path="/timecard/view" element={<TimecardQuery />} />
-          <Route path="/compute" element={<PayrollCompute />} />
-          <Route path="/employees" element={<EmployeeMaster />} />
-          <Route path="/reports/:reportType" element={<PayrollReports />} />
-          <Route path="/initialize" element={<InitializeTimecard />} />
-          <Route path="/append" element={<AppendFromDatafile />} />
-          <Route path="/post-transactions" element={<PostTransactions />} />
-          <Route path="/or-sbr/sss" element={<OrSbrEntry type="sss" />} />
-          <Route path="/or-sbr/pagibig" element={<OrSbrEntry type="pagibig" />} />
-          <Route path="/13th-month" element={<Compute13thMonth />} />
-          <Route path="/yearend-tax" element={<ComputeYearEndTax />} />
-          <Route path="/system-id" element={<SystemIdEdit />} />
-          <Route path="/tax-table" element={<TaxTableEdit />} />
-          <Route path="/departments" element={<DepartmentEdit />} />
-          <Route path="/update-rate" element={<UpdateEmployeeRate />} />
-          <Route path="/initialize-new-year" element={<InitializeNewYear />} />
-          <Route path="/backup" element={<BackupDatabases />} />
-          <Route path="/edit-employee-number" element={<EditEmployeeNumber />} />
-        </Routes>
+function SssLoanDiskStub() {
+  return (
+    <div className="max-w-xl mx-auto mt-10 p-8 bg-surface-container-lowest border border-outline-variant/20 rounded-2xl shadow-lg flex flex-col gap-6">
+      <div>
+        <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-2">MASTER FILE MAINTENANCE / SSS LOAN FROM DISK</div>
+        <h2 className="font-headline font-bold text-2xl text-on-surface mb-2">SSS Loan from Disk</h2>
+        <p className="text-sm text-on-surface-variant leading-relaxed">
+          Import SSS loan deduction data from a disk file (SSLNDISK). This feature reads the SSS-provided data file and updates employee loan balances accordingly.
+        </p>
       </div>
+      <div className="px-4 py-3 rounded-lg bg-surface-container border border-outline-variant/20 text-sm text-on-surface-variant">
+        <span className="material-symbols-outlined text-[18px] mr-2 align-middle">info</span>
+        Upload functionality requires the SSS-formatted data file. Contact your system administrator for the correct file format.
+      </div>
+      <div className="flex gap-4">
+        <button className="px-6 py-2 bg-surface-container border border-outline-variant/30 rounded-lg font-bold text-sm text-on-surface-variant hover:bg-surface-container-high transition-colors" disabled>
+          <span className="material-symbols-outlined text-[16px] mr-1 align-middle">upload</span>
+          Upload File (Coming Soon)
+        </button>
+      </div>
+    </div>
+  )
+}
 
-      <div className="status-bar">
-        <span>PAY System | Company: {companyName} | Period: {statusPeriod} | {payrollType === 'regular' ? 'Regular Employees' : 'Casual Employees'}</span>
-        <span>{user?.username}</span>
+function PhilhealthDiskStub() {
+  return (
+    <div className="max-w-xl mx-auto mt-10 p-8 bg-surface-container-lowest border border-outline-variant/20 rounded-2xl shadow-lg flex flex-col gap-6">
+      <div>
+        <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-2">MASTER FILE MAINTENANCE / PHILHEALTH FROM DISK</div>
+        <h2 className="font-headline font-bold text-2xl text-on-surface mb-2">PhilHealth from Disk</h2>
+        <p className="text-sm text-on-surface-variant leading-relaxed">
+          Import PhilHealth premium payment data from a disk file (PHILHELT). This feature reads the PhilHealth-provided data file and updates employee premium records accordingly.
+        </p>
+      </div>
+      <div className="px-4 py-3 rounded-lg bg-surface-container border border-outline-variant/20 text-sm text-on-surface-variant">
+        <span className="material-symbols-outlined text-[18px] mr-2 align-middle">info</span>
+        Upload functionality requires the PhilHealth-formatted data file. Contact your system administrator for the correct file format.
+      </div>
+      <div className="flex gap-4">
+        <button className="px-6 py-2 bg-surface-container border border-outline-variant/30 rounded-lg font-bold text-sm text-on-surface-variant hover:bg-surface-container-high transition-colors" disabled>
+          <span className="material-symbols-outlined text-[16px] mr-1 align-middle">upload_file</span>
+          Upload File (Coming Soon)
+        </button>
       </div>
     </div>
   )

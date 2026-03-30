@@ -1,0 +1,12 @@
+{
+  "tableName": "fs_acheckvo",
+  "sourcePath": "FS_test/Real Data/data/Acheckvo.dbf",
+  "rowCount": 0,
+  "columns": [
+    "J_CK_NO",
+    "ACCT_CODE",
+    "J_CK_AMT",
+    "J_D_OR_C"
+  ],
+  "rows": []
+}

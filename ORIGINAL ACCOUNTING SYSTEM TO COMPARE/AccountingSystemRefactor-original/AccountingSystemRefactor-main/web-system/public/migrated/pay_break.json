@@ -1,0 +1,23 @@
+{
+  "tableName": "pay_break",
+  "sourcePath": "PAY/RANK/BREAK.DBF",
+  "rowCount": 0,
+  "columns": [
+    "DEP_NO",
+    "DEP_NM",
+    "T50000",
+    "T10000",
+    "T5000",
+    "T2000",
+    "T1000",
+    "T500",
+    "T200",
+    "T100",
+    "T50",
+    "T25",
+    "T10",
+    "T05",
+    "T01"
+  ],
+  "rows": []
+}

@@ -1,0 +1,15 @@
+[build]
+  base = "web-system"
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://acctng-api-demo-2026-hxgyfdf3eeg6hycq.indonesiacentral-01.azurewebsites.net/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

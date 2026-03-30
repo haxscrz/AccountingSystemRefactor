@@ -1,9 +1,5 @@
-/**
- * DepartmentEdit.tsx — Add / Edit Departments (FTDEPEDT.PRG)
- * dep_no + dep_nm editable; financial totals are read-only.
- */
 import { useState, useEffect } from 'react'
-import ModalPortal from '../ModalPortal'
+import PageHeader from '../PageHeader'
 
 interface Dept {
   id: number; DepNo: string; DepNm: string
@@ -12,24 +8,23 @@ interface Dept {
   MedEe: number; MedEr: number; PgbgEe: number; PgbgEr: number; EcEr: number
   NetPay: number; EmpCtr: number
 }
-
-const EMPTY: Omit<Dept, 'id' | 'RegPay' | 'OtPay' | 'HolPay' | 'GrsPay' | 'Tax' | 'SssEe' | 'SssEr' | 'MedEe' | 'MedEr' | 'PgbgEe' | 'PgbgEr' | 'EcEr' | 'NetPay' | 'EmpCtr'> = { DepNo: '', DepNm: '' }
+const EMPTY: { DepNo: string; DepNm: string } = { DepNo: '', DepNm: '' }
+const money = (v: number) => v.toLocaleString('en-PH', { minimumFractionDigits: 2 })
 
 export default function DepartmentEdit() {
-  const [rows, setRows]     = useState<Dept[]>([])
-  const [modal, setModal]   = useState<'add' | 'edit' | 'delete' | 'view' | null>(null)
+  const [rows, setRows] = useState<Dept[]>([])
+  const [modal, setModal] = useState<'add' | 'edit' | 'delete' | 'view' | null>(null)
   const [current, setCurrent] = useState<Dept | null>(null)
-  const [form, setForm]     = useState<{ DepNo: string; DepNm: string }>(EMPTY)
-  const [msg, setMsg]       = useState<{ text: string; ok: boolean } | null>(null)
-  const [busy, setBusy]     = useState(false)
+  const [form, setForm] = useState<{ DepNo: string; DepNm: string }>(EMPTY)
+  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null)
+  const [busy, setBusy] = useState(false)
 
-  const load = () => fetch('/api/payroll/departments')
-    .then(r => r.json()).then(setRows).catch(() => {})
+  const load = () => fetch('/api/payroll/departments').then(r => r.json()).then(setRows).catch(() => {})
   useEffect(() => { load() }, [])
 
-  const openAdd  = () => { setForm(EMPTY); setMsg(null); setModal('add') }
+  const openAdd = () => { setForm(EMPTY); setMsg(null); setModal('add') }
   const openEdit = (r: Dept) => { setCurrent(r); setForm({ DepNo: r.DepNo, DepNm: r.DepNm }); setMsg(null); setModal('edit') }
-  const openDel  = (r: Dept) => { setCurrent(r); setMsg(null); setModal('delete') }
+  const openDel = (r: Dept) => { setCurrent(r); setMsg(null); setModal('delete') }
   const openView = (r: Dept) => { setCurrent(r); setModal('view') }
 
   const save = async () => {
@@ -37,10 +32,10 @@ export default function DepartmentEdit() {
     const isEdit = modal === 'edit'
     const url = isEdit ? `/api/payroll/departments/${current!.id}` : '/api/payroll/departments'
     try {
-      const res  = await fetch(url, { method: isEdit ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+      const res = await fetch(url, { method: isEdit ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
       const json = await res.json()
       if (res.ok) { setModal(null); load() }
-      else        setMsg({ text: json.error || 'Save failed.', ok: false })
+      else setMsg({ text: json.error || 'Save failed.', ok: false })
     } catch { setMsg({ text: 'Network error.', ok: false }) }
     finally { setBusy(false) }
   }
@@ -48,166 +43,134 @@ export default function DepartmentEdit() {
   const destroy = async () => {
     if (!current) return; setBusy(true)
     try {
-      const res  = await fetch(`/api/payroll/departments/${current.id}`, { method: 'DELETE' })
+      const res = await fetch(`/api/payroll/departments/${current.id}`, { method: 'DELETE' })
       const json = await res.json()
       if (res.ok) { setModal(null); load() }
-      else        setMsg({ text: json.error || 'Delete failed.', ok: false })
+      else setMsg({ text: json.error || 'Delete failed.', ok: false })
     } catch { setMsg({ text: 'Network error.', ok: false }) }
     finally { setBusy(false) }
   }
 
-  const money = (v: number) => v.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-
-  const thStyle: React.CSSProperties = { padding: '6px 10px', textAlign: 'left', fontSize: 11,
-    fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-secondary)' }
-  const tdStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 13, color: 'var(--text)' }
-
-  const EditForm = () => (
-    <div style={{ width: 360 }}>
-      <h3 style={{ margin: '0 0 16px', fontSize: 16 }}>{modal === 'add' ? 'Add Department' : 'Edit Department'}</h3>
-      {msg && <div style={{ padding: '6px 10px', borderRadius: 3, marginBottom: 10, fontSize: 12,
-        background: 'rgba(220,53,53,0.15)', border: '1px solid var(--danger)', color: 'var(--danger)' }}>{msg.text}</div>}
-      {[['Department Code', 'DepNo', 10], ['Department Name', 'DepNm', 50]] .map(([lbl, key, max]) => (
-        <div key={key} style={{ marginBottom: 12 }}>
-          <label style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{lbl}</label>
-          <input type="text" maxLength={Number(max)}
-            value={(form as any)[key]}
-            onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
-            style={{ display: 'block', width: '100%', marginTop: 4,
-              padding: '5px 8px', fontSize: 13, border: '1px solid var(--border, #d0d0d0)',
-              background: 'var(--surface, #ffffff)', color: 'var(--text, #1a1a1a)', borderRadius: 3 }}
-          />
-        </div>
-      ))}
-      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-        <button className="btn btn-secondary" onClick={() => setModal(null)} style={{ flex: 1 }}>Cancel</button>
-        <button className="btn btn-primary"   onClick={save} disabled={busy} style={{ flex: 1 }}>{busy ? 'Saving…' : 'Save'}</button>
-      </div>
-    </div>
-  )
-
-  const FinancialRow = ({ lbl, val }: { lbl: string; val: number }) => (
-    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0',
-      borderBottom: '1px solid var(--border)', fontSize: 13 }}>
-      <span style={{ color: 'var(--text-secondary)' }}>{lbl}</span>
-      <span style={{ fontFamily: 'monospace' }}>{money(val)}</span>
-    </div>
-  )
-
   return (
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: 18 }}>Add / Edit Department</h2>
-          <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>
-            FTDEPEDT — Maintain Department Codes
-          </p>
-        </div>
-        <button className="btn btn-primary" onClick={openAdd}>+ Add Department</button>
-      </div>
+    <div className="flex flex-col gap-6 max-w-[900px]">
+      <PageHeader
+        breadcrumb="SETTINGS / DEPARTMENTS"
+        title="Add / Edit Department"
+        subtitle="FTDEPEDT — Maintain department codes and view accumulated payroll totals"
+        actions={
+          <button onClick={openAdd} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary/90 transition-colors">
+            <span className="material-symbols-outlined text-[16px]">add</span> Add Department
+          </button>
+        }
+      />
 
       {msg && !modal && (
-        <div style={{ padding: '8px 12px', borderRadius: 4, marginBottom: 12,
-          background: msg.ok ? 'rgba(46,160,67,0.15)' : 'rgba(220,53,53,0.15)',
-          border: `1px solid ${msg.ok ? 'var(--success)' : 'var(--danger)'}`,
-          color: msg.ok ? 'var(--success)' : 'var(--danger)', fontSize: 13 }}>
+        <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border-l-4 text-sm font-medium ${msg.ok ? 'bg-emerald-50 text-emerald-800 border-emerald-500' : 'bg-red-50 text-red-800 border-red-500'}`}>
           {msg.text}
+          <button onClick={() => setMsg(null)} className="ml-auto opacity-60 hover:opacity-100">✕</button>
         </div>
       )}
 
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead><tr style={{ borderBottom: '2px solid var(--border)' }}>
-            <th style={thStyle}>Code</th>
-            <th style={thStyle}>Name</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>Emp Ctr</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>Gross Pay</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>Net Pay</th>
-            <th style={thStyle}>Actions</th>
-          </tr></thead>
-          <tbody>
-            {rows.length === 0 && (
-              <tr><td colSpan={6} style={{ ...tdStyle, textAlign: 'center', padding: 24, color: 'var(--text-secondary)' }}>
-                No departments found.
-              </td></tr>
-            )}
-            {rows.map(r => (
-              <tr key={r.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ ...tdStyle, fontWeight: 600 }}>{r.DepNo}</td>
-                <td style={tdStyle}>{r.DepNm}</td>
-                <td style={{ ...tdStyle, textAlign: 'right', fontFamily: 'monospace' }}>{r.EmpCtr}</td>
-                <td style={{ ...tdStyle, textAlign: 'right', fontFamily: 'monospace' }}>{money(r.GrsPay)}</td>
-                <td style={{ ...tdStyle, textAlign: 'right', fontFamily: 'monospace' }}>{money(r.NetPay)}</td>
-                <td style={tdStyle}>
-                  <button className="btn btn-secondary" style={{ fontSize: 11, padding: '2px 8px', marginRight: 4 }}
-                    onClick={() => openView(r)}>View</button>
-                  <button className="btn btn-secondary" style={{ fontSize: 11, padding: '2px 8px', marginRight: 4 }}
-                    onClick={() => openEdit(r)}>Edit</button>
-                  <button className="btn" style={{ fontSize: 11, padding: '2px 8px',
-                    background: 'rgba(220,53,53,0.15)', color: 'var(--danger)', border: '1px solid var(--danger)' }}
-                    onClick={() => openDel(r)}>Del</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Table */}
+      <div className="bg-white border border-outline-variant/15 rounded-2xl shadow-sm overflow-hidden">
+        <div className="grid grid-cols-[1fr_2.5fr_1fr_2fr_2fr_120px] px-5 py-3 bg-surface-container-highest text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">
+          <span>Code</span><span>Name</span><span className="text-right">Emp Ctr</span>
+          <span className="text-right">Gross Pay</span><span className="text-right">Net Pay</span><span className="text-right">Actions</span>
+        </div>
+        {rows.length === 0 ? (
+          <div className="flex flex-col items-center py-14 text-on-surface-variant/40">
+            <span className="material-symbols-outlined text-4xl mb-2">business</span>
+            <p className="text-sm">No departments found. Click Add Department to get started.</p>
+          </div>
+        ) : rows.map((r, i) => (
+          <div key={r.id} className={`grid grid-cols-[1fr_2.5fr_1fr_2fr_2fr_120px] px-5 py-3.5 border-t border-outline-variant/10 text-sm hover:bg-primary/5 transition-colors ${i % 2 === 0 ? '' : 'bg-surface-container-lowest/30'}`}>
+            <span className="font-mono font-bold text-primary">{r.DepNo}</span>
+            <span className="font-medium text-on-surface">{r.DepNm}</span>
+            <span className="text-right font-mono text-on-surface-variant">{r.EmpCtr}</span>
+            <span className="text-right font-mono font-semibold text-emerald-700">₱{money(r.GrsPay)}</span>
+            <span className="text-right font-mono font-bold text-on-surface">₱{money(r.NetPay)}</span>
+            <div className="flex justify-end gap-1.5">
+              <button onClick={() => openView(r)} title="View Totals" className="p-1.5 rounded-lg border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container transition-all">
+                <span className="material-symbols-outlined text-[14px]">bar_chart</span>
+              </button>
+              <button onClick={() => openEdit(r)} title="Edit" className="p-1.5 rounded-lg border border-outline-variant/20 text-on-surface-variant hover:bg-primary hover:text-white hover:border-primary transition-all">
+                <span className="material-symbols-outlined text-[14px]">edit</span>
+              </button>
+              <button onClick={() => openDel(r)} title="Delete" className="p-1.5 rounded-lg border border-outline-variant/20 text-on-surface-variant hover:bg-error hover:text-white hover:border-error transition-all">
+                <span className="material-symbols-outlined text-[14px]">delete</span>
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Add / Edit */}
+      {/* Add/Edit Modal */}
       {(modal === 'add' || modal === 'edit') && (
-        <ModalPortal onClick={() => setModal(null)}><EditForm /></ModalPortal>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setModal(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-96 p-8" onClick={e => e.stopPropagation()}>
+            <h3 className="font-headline font-bold text-lg text-on-surface mb-5">{modal === 'add' ? 'Add Department' : 'Edit Department'}</h3>
+            {msg && <div className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-4"><span className="material-symbols-outlined text-[16px]">error</span>{msg.text}</div>}
+            <div className="space-y-4">
+              {[['Department Code', 'DepNo', 10], ['Department Name', 'DepNm', 50]].map(([lbl, key, max]) => (
+                <div key={String(key)}>
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">{lbl}</label>
+                  <input type="text" maxLength={Number(max)} value={(form as any)[key]}
+                    onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
+                    className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setModal(null)} className="flex-1 px-4 py-2 border border-outline-variant/20 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Cancel</button>
+              <button onClick={save} disabled={busy} className="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary/90 disabled:opacity-60 transition-colors">{busy ? 'Saving…' : 'Save'}</button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* View Totals */}
       {modal === 'view' && current && (
-        <ModalPortal onClick={() => setModal(null)}>
-          <div style={{ width: 400 }}>
-            <h3 style={{ margin: '0 0 4px', fontSize: 16 }}>{current.DepNm}</h3>
-            <p style={{ margin: '0 0 14px', fontSize: 12, color: 'var(--text-secondary)' }}>
-              Department Code: <b>{current.DepNo}</b> — Employee Count: <b>{current.EmpCtr}</b>
-            </p>
-            <FinancialRow lbl="Regular Pay"     val={current.RegPay}  />
-            <FinancialRow lbl="Overtime Pay"    val={current.OtPay}   />
-            <FinancialRow lbl="Holiday Pay"     val={current.HolPay}  />
-            <FinancialRow lbl="Gross Pay"       val={current.GrsPay}  />
-            <FinancialRow lbl="Withholding Tax" val={current.Tax}     />
-            <FinancialRow lbl="SSS EE"          val={current.SssEe}   />
-            <FinancialRow lbl="SSS ER"          val={current.SssEr}   />
-            <FinancialRow lbl="PhilHealth EE"   val={current.MedEe}   />
-            <FinancialRow lbl="PhilHealth ER"   val={current.MedEr}   />
-            <FinancialRow lbl="Pag-IBIG EE"     val={current.PgbgEe}  />
-            <FinancialRow lbl="Pag-IBIG ER"     val={current.PgbgEr}  />
-            <FinancialRow lbl="EC ER"           val={current.EcEr}    />
-            <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between',
-              padding: '6px 0', fontWeight: 700, fontSize: 14 }}>
-              <span>Net Pay</span>
-              <span style={{ fontFamily: 'monospace' }}>{money(current.NetPay)}</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setModal(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-[420px] p-8" onClick={e => e.stopPropagation()}>
+            <h3 className="font-headline font-bold text-lg text-on-surface mb-0.5">{current.DepNm}</h3>
+            <p className="text-sm text-on-surface-variant mb-5">Code: <strong>{current.DepNo}</strong> · Employee Count: <strong>{current.EmpCtr}</strong></p>
+            <div className="bg-[#05111E] rounded-2xl p-5 text-white space-y-2 text-sm">
+              {[
+                ['Regular Pay', current.RegPay], ['Overtime Pay', current.OtPay], ['Holiday Pay', current.HolPay],
+                ['Gross Pay', current.GrsPay], ['Withholding Tax', current.Tax],
+                ['SSS EE', current.SssEe], ['SSS ER', current.SssEr],
+                ['PhilHealth EE', current.MedEe], ['PhilHealth ER', current.MedEr],
+                ['Pag-IBIG EE', current.PgbgEe], ['Pag-IBIG ER', current.PgbgEr], ['EC ER', current.EcEr],
+              ].map(([lbl, val]) => (
+                <div key={String(lbl)} className="flex justify-between text-white/70">
+                  <span>{lbl}</span><span className="font-mono">₱{money(Number(val))}</span>
+                </div>
+              ))}
+              <div className="flex justify-between pt-3 mt-2 border-t border-white/10 font-bold text-base">
+                <span>Net Pay</span><span className="font-mono">₱{money(current.NetPay)}</span>
+              </div>
             </div>
-            <button className="btn btn-secondary" onClick={() => setModal(null)} style={{ marginTop: 12, width: '100%' }}>Close</button>
+            <button onClick={() => setModal(null)} className="w-full mt-4 px-4 py-2 border border-outline-variant/20 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Close</button>
           </div>
-        </ModalPortal>
+        </div>
       )}
 
       {/* Delete Confirm */}
       {modal === 'delete' && current && (
-        <ModalPortal onClick={() => setModal(null)}>
-          <div style={{ width: 340, textAlign: 'center' }}>
-            <h3 style={{ margin: '0 0 12px', fontSize: 16 }}>Delete Department?</h3>
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 20 }}>
-              Remove <b style={{ color: 'var(--text)' }}>{current.DepNm}</b> ({current.DepNo})?
-              Employees in this department will <b>not</b> be removed.
-            </p>
-            {msg && <p style={{ fontSize: 12, color: 'var(--danger)', marginBottom: 10 }}>{msg.text}</p>}
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button className="btn btn-secondary" onClick={() => setModal(null)} style={{ flex: 1 }}>Cancel</button>
-              <button className="btn" onClick={destroy} disabled={busy}
-                style={{ flex: 1, background: 'rgba(220,53,53,0.2)', color: 'var(--danger)',
-                  border: '1px solid var(--danger)' }}>
-                {busy ? 'Deleting…' : 'Delete'}
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setModal(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-80 p-8 text-center" onClick={e => e.stopPropagation()}>
+            <div className="w-12 h-12 rounded-full bg-error/10 text-error flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-[24px]">delete</span>
+            </div>
+            <h3 className="font-headline font-bold text-on-surface mb-2">Delete Department?</h3>
+            <p className="text-sm text-on-surface-variant/70 mb-6">Remove <strong>{current.DepNm}</strong> ({current.DepNo})? Employees in this department will not be removed.</p>
+            {msg && <p className="text-xs text-error mb-3">{msg.text}</p>}
+            <div className="flex gap-3">
+              <button onClick={() => setModal(null)} className="flex-1 px-3 py-2 border border-outline-variant/20 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Cancel</button>
+              <button onClick={destroy} disabled={busy} className="flex-1 px-3 py-2 bg-error text-white rounded-lg text-sm font-bold hover:bg-error/90 disabled:opacity-60 transition-colors">{busy ? 'Deleting…' : 'Delete'}</button>
             </div>
           </div>
-        </ModalPortal>
+        </div>
       )}
     </div>
   )

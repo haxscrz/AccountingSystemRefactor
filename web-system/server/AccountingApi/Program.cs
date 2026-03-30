@@ -191,6 +191,7 @@ using (var initScope = app.Services.CreateScope())
         {
             "fs_accounts", "fs_checkmas", "fs_checkvou", "fs_pournals", "fs_cashrcpt", "fs_salebook",
             "fs_purcbook", "fs_adjstmnt", "fs_journals", "fs_effects", "fs_schedule", "fs_sys_id",
+            "fs_banks", "fs_supplier", "fs_signatories",
             "pay_master", "pay_tmcard", "pay_sys_id", "pay_taxtab", "pay_prempaid", "pay_dept"
         };
 
@@ -246,7 +247,39 @@ using (var initScope = app.Services.CreateScope())
                 period    TEXT NOT NULL DEFAULT '',
                 amount    REAL NOT NULL DEFAULT 0,
                 created_at TEXT NOT NULL DEFAULT (datetime('now')),
-                updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+                updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+                company_code TEXT NOT NULL DEFAULT 'CS'
+            )");
+
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS fs_banks (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                bank_no      INTEGER NOT NULL DEFAULT 0,
+                bank_name    TEXT NOT NULL DEFAULT '',
+                bank_addr    TEXT,
+                bank_acct    TEXT,
+                company_code TEXT NOT NULL DEFAULT 'CS'
+            )");
+
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS fs_supplier (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                sup_no       INTEGER NOT NULL DEFAULT 0,
+                sup_name     TEXT NOT NULL DEFAULT '',
+                sup_addr     TEXT,
+                sup_phone    TEXT,
+                sup_fax      TEXT,
+                sup_contak   TEXT,
+                company_code TEXT NOT NULL DEFAULT 'CS'
+            )");
+
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS fs_signatories (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                sign_name    TEXT NOT NULL DEFAULT '',
+                sign_title   TEXT,
+                is_active    INTEGER NOT NULL DEFAULT 1,
+                company_code TEXT NOT NULL DEFAULT 'CS'
             )");
 
         // Security tables
@@ -311,7 +344,7 @@ using (var initScope = app.Services.CreateScope())
             var businessTables = new[]
             {
                 "fs_checkvou", "fs_checkmas", "fs_cashrcpt", "fs_salebook", "fs_purcbook", "fs_adjstmnt", "fs_journals", "fs_pournals",
-                "fs_schedule", "fs_effects", "fs_accounts", "fs_sys_id",
+                "fs_schedule", "fs_effects", "fs_accounts", "fs_sys_id", "fs_banks", "fs_supplier", "fs_signatories",
                 "pay_tmcard", "pay_master", "pay_dept", "pay_prempaid", "pay_taxtab", "pay_sys_id"
             };
 

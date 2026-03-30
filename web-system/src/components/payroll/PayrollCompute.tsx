@@ -1,40 +1,23 @@
 import { useState, useEffect } from 'react'
-import ModalPortal from '../ModalPortal'
+import PageHeader from '../PageHeader'
 
 interface SysInfo {
-  begDate: string
-  endDate: string
-  presMo: number
-  presYr: number
-  trnCtr: number
-  trnPrc: number
-  trnUpd: number
-  payType: number
-  empCount: number
-  tcCount: number
+  begDate: string; endDate: string; presMo: number; presYr: number
+  trnCtr: number; trnPrc: number; trnUpd: number; payType: number
+  empCount: number; tcCount: number
 }
 
 interface ComputeSummary {
-  begDate: string
-  endDate: string
-  presMo: number
-  presYr: number
-  trnCtr: number
-  trnPrc: number
-  trnUpd: number
-  payType: number
-  uncomputed: number
-  computedCount: number
-  postedCount: number
-  totalGross: number
-  totalTax: number
-  totalSssEe: number
-  totalMedEe: number
-  totalPgbgEe: number
-  totalDed: number
-  totalNet: number
+  begDate: string; endDate: string; presMo: number; presYr: number
+  trnCtr: number; trnPrc: number; trnUpd: number; payType: number
+  uncomputed: number; computedCount: number; postedCount: number
+  totalGross: number; totalTax: number; totalSssEe: number
+  totalMedEe: number; totalPgbgEe: number; totalDed: number; totalNet: number
   rows: { empNo: string; grsPay: number; sssEe: number; medEe: number; pgbgEe: number; taxEe: number; totDed: number; netPay: number }[]
 }
+
+const fmt = (n: number) => (n ?? 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })
+const fmtDate = (d: string) => { if (!d) return '—'; return new Date(d).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) }
 
 export default function PayrollCompute() {
   const [sysInfo, setSysInfo] = useState<SysInfo | null>(null)
@@ -45,258 +28,236 @@ export default function PayrollCompute() {
   const [progress, setProgress] = useState(0)
   const [computeResult, setComputeResult] = useState<string | null>(null)
   const [computeError, setComputeError] = useState('')
-  // Confirmation dialog for "Deduct TAX from Casual Employees?"
   const [showCasualTaxDialog, setShowCasualTaxDialog] = useState(false)
 
-  useEffect(() => {
-    loadData()
-  }, [])
+  useEffect(() => { loadData() }, [])
 
   const loadData = async () => {
-    setLoading(true)
-    setLoadError('')
+    setLoading(true); setLoadError('')
     try {
       const [sysRes, sumRes] = await Promise.all([
         fetch('/api/payroll/system-id'),
         fetch('/api/payroll/compute-summary')
       ])
       if (sysRes.ok) setSysInfo(await sysRes.json())
-      else setLoadError('Could not load system information. Is the backend running?')
+      else setLoadError('Could not load system information.')
       if (sumRes.ok) setSummary(await sumRes.json())
-    } catch {
-      setLoadError('Cannot reach backend server.')
-    } finally {
-      setLoading(false)
-    }
+    } catch { setLoadError('Cannot reach backend server.') }
+    finally { setLoading(false) }
   }
 
   const startCompute = (deductTaxForCasual: boolean) => {
     setShowCasualTaxDialog(false)
-    setComputing(true)
-    setProgress(0)
-    setComputeResult(null)
-    setComputeError('')
-
-    // Animate progress while waiting for the API
-    const interval = setInterval(() => {
-      setProgress(prev => (prev < 90 ? prev + 3 : prev))
-    }, 150)
-
+    setComputing(true); setProgress(0); setComputeResult(null); setComputeError('')
+    const interval = setInterval(() => setProgress(prev => prev < 90 ? prev + 3 : prev), 150)
     fetch(`/api/payroll/compute?deductTaxForCasual=${deductTaxForCasual}`, { method: 'POST' })
-      .then(res => res.json())
+      .then(r => r.json())
       .then(data => {
-        clearInterval(interval)
-        setProgress(100)
-        if (data.Error || data.error) {
-          setComputeError(data.Error || data.error)
-        } else {
-          setComputeResult(`Computation complete. ${data.EmployeesProcessed} employee(s) processed.`)
-          loadData()
-        }
+        clearInterval(interval); setProgress(100)
+        if (data.Error || data.error) setComputeError(data.Error || data.error)
+        else { setComputeResult(`Computation complete. ${data.EmployeesProcessed} employee(s) processed.`); loadData() }
       })
-      .catch(() => {
-        clearInterval(interval)
-        setComputeError('Network error — could not reach the computation service.')
-      })
+      .catch(() => { clearInterval(interval); setComputeError('Network error — could not reach the computation service.') })
       .finally(() => setComputing(false))
   }
 
-  const formatDate = (d: string) => {
-    if (!d) return ''
-    const dt = new Date(d)
-    return dt.toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' })
-  }
-
-  const fmt = (n: number) => (n ?? 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })
+  const canCompute = sysInfo && sysInfo.tcCount > 0 && sysInfo.trnPrc < sysInfo.trnCtr
   const halfLabel = sysInfo ? (sysInfo.payType === 1 ? '1st Half' : '2nd Half') : ''
 
-  const canCompute = sysInfo && sysInfo.tcCount > 0 && sysInfo.trnPrc < sysInfo.trnCtr
-
   return (
-    <div className="card">
-      <h2>Compute Payroll</h2>
-      <p className="subtitle">Calculates gross pay, government contributions, withholding tax, and net pay for all timecard entries</p>
+    <div className="flex flex-col gap-6 max-w-[1100px]">
+      <PageHeader
+        breadcrumb="PAYROLL PROCESSING / COMPUTE"
+        title="Compute Payroll"
+        subtitle="Calculates gross pay, government contributions, withholding tax, and net pay for all timecard entries"
+      />
 
+      {/* Loading / error */}
       {loading && (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading payroll status...</div>
+        <div className="flex items-center gap-3 py-8 text-on-surface-variant/60 text-sm animate-pulse">
+          <span className="material-symbols-outlined text-[20px] animate-spin">sync</span> Loading payroll status…
+        </div>
       )}
-
       {loadError && (
-        <div style={{ background: 'rgba(220,53,69,0.08)', border: '1px solid #dc3545', borderRadius: '8px', padding: '16px', color: '#dc3545', marginBottom: '16px' }}>
-          {loadError}
+        <div className="flex items-center gap-3 px-5 py-4 bg-error/5 border border-error/20 rounded-2xl text-error text-sm">
+          <span className="material-symbols-outlined text-[20px]">error</span> {loadError}
         </div>
       )}
 
       {!loading && sysInfo && (
         <>
-          {/* Period & Counter Panel */}
-          <div style={{ background: 'var(--background)', border: '1px solid var(--border)', borderRadius: '8px', padding: '20px', marginBottom: '20px' }}>
-            <h4 style={{ marginBottom: '14px' }}>Current Payroll Period</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: '12px', fontSize: '14px' }}>
-              <div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>PERIOD</div>
-                <div style={{ fontWeight: '600' }}>{formatDate(sysInfo.begDate)} &#8212; {formatDate(sysInfo.endDate)}</div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '12px', marginTop: '2px' }}>{halfLabel} &bull; Month {sysInfo.presMo}/{sysInfo.presYr}</div>
-              </div>
-              <div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>EMPLOYEES IN TIMECARD</div>
-                <div style={{ fontWeight: '700', fontSize: '22px', color: 'var(--primary)' }}>{sysInfo.tcCount}</div>
-              </div>
-              <div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>COMPUTED</div>
-                <div style={{ fontWeight: '700', fontSize: '22px', color: 'var(--success)' }}>
-                  {sysInfo.trnPrc} <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>/ {sysInfo.trnCtr}</span>
+          {/* Period info cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="col-span-2 bg-white border border-outline-variant/15 rounded-2xl px-6 py-5 shadow-sm">
+              <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1">Current Period</div>
+              <div className="font-headline font-bold text-on-surface text-lg">{fmtDate(sysInfo.begDate)} — {fmtDate(sysInfo.endDate)}</div>
+              <div className="text-sm text-on-surface-variant mt-1">{halfLabel} · Month {sysInfo.presMo}/{sysInfo.presYr}</div>
+            </div>
+            {[
+              { label: 'In Timecard', val: sysInfo.tcCount, color: 'text-primary', icon: 'assignment' },
+              { label: 'Computed', val: `${sysInfo.trnPrc} / ${sysInfo.trnCtr}`, color: 'text-emerald-600', icon: 'check_circle' },
+              { label: 'Posted', val: sysInfo.trnUpd, color: sysInfo.trnUpd > 0 ? 'text-primary' : 'text-on-surface-variant/50', icon: 'publish' },
+            ].map(s => (
+              <div key={s.label} className="bg-white border border-outline-variant/15 rounded-2xl px-6 py-5 shadow-sm flex items-center gap-3">
+                <span className={`material-symbols-outlined text-[22px] ${s.color} opacity-70`}>{s.icon}</span>
+                <div>
+                  <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60">{s.label}</div>
+                  <div className={`font-mono font-bold text-xl ${s.color}`}>{s.val}</div>
                 </div>
               </div>
+            ))}
+          </div>
+
+          {/* Status banners */}
+          {sysInfo.trnCtr === sysInfo.trnUpd && sysInfo.trnCtr > 0 && (
+            <div className="flex items-center gap-3 px-5 py-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-sm">
+              <span className="material-symbols-outlined text-[20px]">check_circle</span>
+              <strong>Period already fully posted.</strong> Use Initialize Timecard to start a new payroll period.
+            </div>
+          )}
+          {sysInfo.tcCount === 0 && (
+            <div className="flex items-center gap-3 px-5 py-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-sm">
+              <span className="material-symbols-outlined text-[20px]">warning</span>
+              No timecards in the system. Use <strong className="mx-1">Add/Edit Timecard</strong> to enter employee time data first.
+            </div>
+          )}
+
+          {/* Compute action */}
+          <div className="bg-white border border-outline-variant/15 rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>POSTED</div>
-                <div style={{ fontWeight: '700', fontSize: '22px', color: sysInfo.trnUpd > 0 ? 'var(--primary)' : 'var(--text-secondary)' }}>
-                  {sysInfo.trnUpd}
-                </div>
+                <h3 className="font-headline font-bold text-on-surface">Run Payroll Computation</h3>
+                <p className="text-sm text-on-surface-variant mt-0.5">
+                  {canCompute ? `Will process ${(sysInfo.trnCtr - sysInfo.trnPrc)} remaining employee(s)` : 'All records already computed or no timecards available.'}
+                </p>
               </div>
+              <button
+                onClick={() => setShowCasualTaxDialog(true)}
+                disabled={computing || !canCompute}
+                className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-bold shadow-sm hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                <span className="material-symbols-outlined text-[18px]">{computing ? 'sync' : 'calculate'}</span>
+                {computing ? 'Computing…' : 'Compute Payroll'}
+              </button>
             </div>
 
-            {sysInfo.trnCtr === sysInfo.trnUpd && sysInfo.trnCtr > 0 && (
-              <div style={{ marginTop: '12px', padding: '10px 14px', background: 'rgba(22,163,74,0.08)', border: '1px solid var(--success)', borderRadius: '6px', color: 'var(--success)', fontSize: '13px' }}>
-                &#10003; This period has already been posted. Use <strong>Initialize Timecard</strong> to start a new payroll period.
+            {/* Progress bar */}
+            {computing && (
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-on-surface-variant animate-pulse">Processing employees…</span>
+                  <span className="font-mono font-bold text-primary">{progress}%</span>
+                </div>
+                <div className="h-3 bg-surface-container rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full transition-all duration-150" style={{ width: `${progress}%` }} />
+                </div>
               </div>
             )}
-            {sysInfo.tcCount === 0 && (
-              <div style={{ marginTop: '12px', padding: '10px 14px', background: 'rgba(220,53,69,0.08)', border: '1px solid #dc3545', borderRadius: '6px', color: '#dc3545', fontSize: '13px' }}>
-                No timecards in the system. Use <strong>Add/Edit Timecard</strong> to enter employee time data first.
+
+            {/* Messages */}
+            {computeResult && (
+              <div className="flex items-center gap-2 mt-4 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm">
+                <span className="material-symbols-outlined text-[18px]">check_circle</span> {computeResult}
+              </div>
+            )}
+            {computeError && (
+              <div className="flex items-center gap-2 mt-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                <span className="material-symbols-outlined text-[18px]">error</span> {computeError}
               </div>
             )}
           </div>
 
-          {/* Progress Bar */}
-          {computing && (
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ marginBottom: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                <span>Computing payroll&hellip;</span>
-                <span>{progress}%</span>
-              </div>
-              <div style={{ width: '100%', height: '24px', background: 'var(--background)', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border)' }}>
-                <div style={{ width: `${progress}%`, height: '100%', background: 'var(--success)', transition: 'width 0.15s' }} />
-              </div>
-            </div>
-          )}
-
-          {/* Success message */}
-          {computeResult && (
-            <div style={{ background: 'rgba(22,163,74,0.08)', border: '1px solid var(--success)', borderRadius: '8px', padding: '14px 18px', marginBottom: '20px', color: 'var(--success)' }}>
-              &#10003; {computeResult}
-            </div>
-          )}
-
-          {/* Error message */}
-          {computeError && (
-            <div style={{ background: 'rgba(220,53,69,0.08)', border: '1px solid #dc3545', borderRadius: '8px', padding: '14px 18px', marginBottom: '20px', color: '#dc3545' }}>
-              &#9888; {computeError}
-            </div>
-          )}
-
-          {/* Compute Button */}
-          <div style={{ marginBottom: '24px' }}>
-            <button
-              className="btn btn-primary"
-              style={{ fontSize: '15px', padding: '10px 28px' }}
-              onClick={() => setShowCasualTaxDialog(true)}
-              disabled={computing || !canCompute}
-            >
-              {computing ? 'Computing...' : 'Compute Payroll'}
-            </button>
-            {canCompute && (
-              <span style={{ marginLeft: '14px', color: 'var(--text-secondary)', fontSize: '13px' }}>
-                Will process {sysInfo.tcCount - sysInfo.trnPrc} remaining employee(s)
-              </span>
-            )}
-          </div>
-
-          {/* Computation Totals */}
+          {/* Computed summary */}
           {summary && summary.computedCount > 0 && (
             <>
-              <h4 style={{ marginBottom: '14px' }}>Computed Payroll Summary</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '12px', marginBottom: '20px' }}>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  { label: 'Total Employees', value: summary.computedCount.toString(), color: 'var(--primary)' },
-                  { label: 'Gross Pay', value: '&#8369; ' + fmt(summary.totalGross), color: 'var(--text)' },
-                  { label: 'SSS (EE)', value: '&#8369; ' + fmt(summary.totalSssEe), color: 'var(--text)' },
-                  { label: 'PhilHealth (EE)', value: '&#8369; ' + fmt(summary.totalMedEe), color: 'var(--text)' },
-                  { label: 'Pag-IBIG (EE)', value: '&#8369; ' + fmt(summary.totalPgbgEe), color: 'var(--text)' },
-                  { label: 'Withholding Tax', value: '&#8369; ' + fmt(summary.totalTax), color: 'var(--text)' },
-                  { label: 'Total Deductions', value: '&#8369; ' + fmt(summary.totalDed), color: '#dc3545' },
-                  { label: 'NET PAY', value: '&#8369; ' + fmt(summary.totalNet), color: 'var(--success)' },
-                ].map(c => (
-                  <div key={c.label} style={{ background: 'var(--background)', border: '1px solid var(--border)', borderRadius: '6px', padding: '12px 14px' }}>
-                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{c.label}</div>
-                    <div style={{ fontWeight: '700', fontSize: '16px', color: c.color, marginTop: '4px' }} dangerouslySetInnerHTML={{ __html: c.value }} />
+                  { label: 'Employees Computed', val: summary.computedCount.toString(), color: 'text-primary', icon: 'group' },
+                  { label: 'Total Gross Pay', val: `₱${fmt(summary.totalGross)}`, color: 'text-emerald-700', icon: 'payments' },
+                  { label: 'Total Deductions', val: `₱${fmt(summary.totalDed)}`, color: 'text-red-600', icon: 'remove_circle' },
+                  { label: 'Net Payroll', val: `₱${fmt(summary.totalNet)}`, color: 'text-primary', icon: 'account_balance' },
+                ].map(s => (
+                  <div key={s.label} className="bg-white border border-outline-variant/15 rounded-2xl px-5 py-4 shadow-sm flex items-center gap-3">
+                    <span className={`material-symbols-outlined text-[22px] ${s.color} opacity-70`}>{s.icon}</span>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60">{s.label}</div>
+                      <div className={`font-mono font-bold text-base ${s.color}`}>{s.val}</div>
+                    </div>
                   </div>
                 ))}
               </div>
 
-              {/* Per-Employee Results Table */}
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Emp No.</th>
-                    <th style={{ textAlign: 'right' }}>Gross Pay</th>
-                    <th style={{ textAlign: 'right' }}>SSS</th>
-                    <th style={{ textAlign: 'right' }}>PhilHealth</th>
-                    <th style={{ textAlign: 'right' }}>Pag-IBIG</th>
-                    <th style={{ textAlign: 'right' }}>Tax</th>
-                    <th style={{ textAlign: 'right' }}>Total Ded</th>
-                    <th style={{ textAlign: 'right' }}>Net Pay</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {summary.rows.map(r => (
-                    <tr key={r.empNo}>
-                      <td><strong>{r.empNo}</strong></td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.grsPay)}</td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.sssEe)}</td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.medEe)}</td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.pgbgEe)}</td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.taxEe)}</td>
-                      <td style={{ textAlign: 'right' }}>{fmt(r.totDed)}</td>
-                      <td style={{ textAlign: 'right' }}><strong>{fmt(r.netPay)}</strong></td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr style={{ fontWeight: '700', background: 'var(--background)' }}>
-                    <td>TOTALS</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalGross)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalSssEe)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalMedEe)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalPgbgEe)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalTax)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalDed)}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(summary.totalNet)}</td>
-                  </tr>
-                </tfoot>
-              </table>
+              {/* Per-employee table */}
+              <div className="bg-white border border-outline-variant/15 rounded-2xl shadow-sm overflow-hidden">
+                <div className="px-5 py-4 border-b border-outline-variant/10 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px] text-on-surface-variant">table_chart</span>
+                  <h4 className="font-headline font-bold text-sm text-on-surface uppercase tracking-wide">Per-Employee Results</h4>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-surface-container-highest text-[10px] uppercase font-bold text-on-surface-variant/60 tracking-widest">
+                      <tr>
+                        <th className="px-5 py-3 text-left">Emp No.</th>
+                        <th className="px-5 py-3 text-right">Gross Pay</th>
+                        <th className="px-5 py-3 text-right">SSS</th>
+                        <th className="px-5 py-3 text-right">PhilHealth</th>
+                        <th className="px-5 py-3 text-right">Pag-IBIG</th>
+                        <th className="px-5 py-3 text-right">Tax</th>
+                        <th className="px-5 py-3 text-right">Total Ded</th>
+                        <th className="px-5 py-3 text-right">Net Pay</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-outline-variant/10">
+                      {summary.rows.map(r => (
+                        <tr key={r.empNo} className="hover:bg-surface-container-lowest/50 transition-colors">
+                          <td className="px-5 py-3 font-mono font-bold text-primary">{r.empNo}</td>
+                          <td className="px-5 py-3 text-right font-mono text-emerald-700">{fmt(r.grsPay)}</td>
+                          <td className="px-5 py-3 text-right font-mono text-on-surface-variant">{fmt(r.sssEe)}</td>
+                          <td className="px-5 py-3 text-right font-mono text-on-surface-variant">{fmt(r.medEe)}</td>
+                          <td className="px-5 py-3 text-right font-mono text-on-surface-variant">{fmt(r.pgbgEe)}</td>
+                          <td className="px-5 py-3 text-right font-mono text-on-surface-variant">{fmt(r.taxEe)}</td>
+                          <td className="px-5 py-3 text-right font-mono text-red-600">{fmt(r.totDed)}</td>
+                          <td className="px-5 py-3 text-right font-mono font-bold text-on-surface">{fmt(r.netPay)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot className="bg-surface-container-highest font-bold text-sm">
+                      <tr>
+                        <td className="px-5 py-3 text-on-surface-variant">TOTALS</td>
+                        <td className="px-5 py-3 text-right font-mono text-emerald-700">{fmt(summary.totalGross)}</td>
+                        <td className="px-5 py-3 text-right font-mono text-on-surface-variant">{fmt(summary.totalSssEe)}</td>
+                        <td className="px-5 py-3 text-right font-mono text-on-surface-variant">{fmt(summary.totalMedEe)}</td>
+                        <td className="px-5 py-3 text-right font-mono text-on-surface-variant">{fmt(summary.totalPgbgEe)}</td>
+                        <td className="px-5 py-3 text-right font-mono text-on-surface-variant">{fmt(summary.totalTax)}</td>
+                        <td className="px-5 py-3 text-right font-mono text-red-600">{fmt(summary.totalDed)}</td>
+                        <td className="px-5 py-3 text-right font-mono text-on-surface">{fmt(summary.totalNet)}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
             </>
           )}
         </>
       )}
 
-      {/* ── Casual Tax Dialog ─────────────────────────────────── */}
+      {/* Casual Tax Dialog */}
       {showCasualTaxDialog && (
-        <ModalPortal onClick={() => setShowCasualTaxDialog(false)}>
-          <div className="modal" style={{ maxWidth: '400px', width: '95%' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Compute Payroll</h3>
-              <button className="modal-close" onClick={() => setShowCasualTaxDialog(false)}>&times;</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setShowCasualTaxDialog(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-96 p-8" onClick={e => e.stopPropagation()}>
+            <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-[24px]">calculate</span>
             </div>
-            <div style={{ padding: '24px' }}>
-              <p style={{ marginBottom: '24px', fontWeight: '500' }}>Deduct withholding tax from Casual Employees?</p>
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                <button className="btn btn-primary" onClick={() => startCompute(true)} style={{ minWidth: '80px' }}>Yes</button>
-                <button className="btn btn-secondary" onClick={() => startCompute(false)} style={{ minWidth: '80px' }}>No</button>
-              </div>
+            <h3 className="font-headline font-bold text-lg text-on-surface text-center mb-2">Begin Computation</h3>
+            <p className="text-sm text-on-surface-variant text-center mb-6">
+              Deduct withholding tax from <strong>Casual Employees</strong>?
+            </p>
+            <div className="flex gap-3">
+              <button onClick={() => startCompute(false)} className="flex-1 px-4 py-2 border border-outline-variant/20 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">No</button>
+              <button onClick={() => startCompute(true)} className="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors">Yes</button>
             </div>
           </div>
-        </ModalPortal>
+        </div>
       )}
     </div>
   )

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
+import PageHeader from '../PageHeader'
 
 interface AuditLog {
   id: number
@@ -83,72 +84,140 @@ export default function FSAuditLogs() {
   }
 
   return (
-    <div className="card">
-      <h2>Audit Logs</h2>
-      <p className="subtitle">Filter security and data operation events with quick export.</p>
+    <div className="flex flex-col gap-6 max-w-[1200px]">
+      <PageHeader
+        breadcrumb="ADMINISTRATION / AUDIT LOGS"
+        title="Audit Logs"
+        subtitle="Filter security and data operation events with quick export."
+        actions={
+          <button onClick={exportCsv} disabled={rows.length === 0}
+            className="flex items-center gap-1.5 px-4 py-2 bg-surface-container text-on-surface rounded-lg text-sm font-bold shadow-sm hover:bg-surface-container-high transition-colors disabled:opacity-50">
+            <span className="material-symbols-outlined text-[16px]">download</span> Export CSV
+          </button>
+        }
+      />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(120px, 1fr))', gap: 10, marginBottom: 12 }}>
-        <input className="form-input" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-        <input className="form-input" placeholder="Event type" value={eventType} onChange={(e) => setEventType(e.target.value)} />
-        <select className="form-input" value={resultFilter} onChange={(e) => setResultFilter(e.target.value as 'all' | 'success' | 'failed')}>
-          <option value="all">All Results</option>
-          <option value="success">Success</option>
-          <option value="failed">Failed</option>
-        </select>
-        <input className="form-input" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-        <input className="form-input" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
-        <button className="btn btn-primary" onClick={() => { setPage(1); void loadData() }}>Apply Filters</button>
+      {/* Filter Bar */}
+      <div className="bg-white border border-outline-variant/15 rounded-2xl shadow-sm p-5">
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="flex-1 min-w-[120px]">
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">Username</label>
+            <input type="text" value={username} onChange={e => setUsername(e.target.value)} placeholder="All users..."
+              className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" />
+          </div>
+          <div className="flex-1 min-w-[120px]">
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">Event Type</label>
+            <input type="text" value={eventType} onChange={e => setEventType(e.target.value)} placeholder="e.g. LOGIN"
+              className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" />
+          </div>
+          <div className="w-[140px]">
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">Result</label>
+            <select value={resultFilter} onChange={e => setResultFilter(e.target.value as any)}
+              className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30">
+              <option value="all">All Results</option>
+              <option value="success">Success</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
+          <div className="w-[140px]">
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">From Date</label>
+            <input type="date" value={from} onChange={e => setFrom(e.target.value)}
+              className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" />
+          </div>
+          <div className="w-[140px]">
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">To Date</label>
+            <input type="date" value={to} onChange={e => setTo(e.target.value)}
+              className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" />
+          </div>
+          <button onClick={() => { setPage(1); void loadData() }}
+            className="px-5 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary/90 transition-colors h-[38px]">
+            Filter
+          </button>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>
-        <button className="btn btn-secondary" onClick={exportCsv}>Export Current Page CSV</button>
-        <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{total} total log(s)</span>
-      </div>
+      {error && (
+        <div className="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+          <span className="material-symbols-outlined text-[18px]">error</span> {error}
+        </div>
+      )}
 
-      {error && <div style={{ color: '#991b1b', marginBottom: 8 }}>{error}</div>}
-      {loading ? <p>Loading...</p> : (
-        <div style={{ overflowX: 'auto' }}>
-          <table className="data-table" style={{ fontSize: 12 }}>
-            <thead>
+      {/* Table */}
+      <div className="bg-white border border-outline-variant/15 rounded-2xl shadow-sm flex flex-col overflow-hidden">
+        <div className="px-5 py-3 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-lowest">
+          <span className="text-sm font-bold text-on-surface">{total} <span className="text-on-surface-variant font-normal">total log(s)</span></span>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-surface-container-highest text-[10px] uppercase font-bold text-on-surface-variant/60 tracking-widest">
               <tr>
-                <th>When (UTC)</th>
-                <th>User</th>
-                <th>Event</th>
-                <th>Resource</th>
-                <th>Result</th>
-                <th>IP</th>
-                <th>Details</th>
+                <th className="px-5 py-3 rounded-tl-lg">When (UTC)</th>
+                <th className="px-5 py-3">User</th>
+                <th className="px-5 py-3">Event</th>
+                <th className="px-5 py-3">Resource</th>
+                <th className="px-5 py-3">Result</th>
+                <th className="px-5 py-3">IP</th>
+                <th className="px-5 py-3 rounded-tr-lg">Details</th>
               </tr>
             </thead>
-            <tbody>
-              {rows.length === 0 ? (
-                <tr><td colSpan={7} style={{ textAlign: 'center' }}>No logs found.</td></tr>
-              ) : rows.map((r) => (
-                <tr key={r.id}>
-                  <td>{new Date(r.createdAtUtc).toLocaleString()}</td>
-                  <td>{r.username ?? 'system'}</td>
-                  <td>{r.eventType}</td>
-                  <td>{r.resource}</td>
-                  <td style={{ color: r.success ? '#166534' : '#991b1b' }}>{r.success ? 'Success' : 'Failed'}</td>
-                  <td>{r.ipAddress ?? ''}</td>
-                  <td>{r.details ?? ''}</td>
+            <tbody className="divide-y divide-outline-variant/10">
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="px-5 py-10 text-center text-on-surface-variant/50">
+                    <div className="flex items-center justify-center animate-pulse">
+                      <span className="material-symbols-outlined animate-spin mr-2">sync</span>Loading…
+                    </div>
+                  </td>
+                </tr>
+              ) : rows.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-5 py-14 text-center text-on-surface-variant/40">
+                    <span className="material-symbols-outlined text-4xl mb-2">history_toggle_off</span>
+                    <p>No logs found matching your filters.</p>
+                  </td>
+                </tr>
+              ) : rows.map((r, i) => (
+                <tr key={r.id} className={`hover:bg-primary/5 transition-colors ${i % 2 === 0 ? '' : 'bg-surface-container-lowest/30'}`}>
+                  <td className="px-5 py-3 text-on-surface-variant whitespace-nowrap">{new Date(r.createdAtUtc).toLocaleString()}</td>
+                  <td className="px-5 py-3 font-medium text-on-surface">{r.username ?? 'system'}</td>
+                  <td className="px-5 py-3 text-on-surface-variant">{r.eventType}</td>
+                  <td className="px-5 py-3 font-mono text-xs text-primary">{r.resource}</td>
+                  <td className="px-5 py-3">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider ${r.success ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
+                      {r.success ? 'Success' : 'Failed'}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3 font-mono text-xs text-on-surface-variant">{r.ipAddress ?? '—'}</td>
+                  <td className="px-5 py-3 text-on-surface-variant truncate max-w-[200px]" title={r.details ?? ''}>{r.details ?? '—'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
-        <button className="btn btn-secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>Previous</button>
-        <span style={{ fontSize: 12 }}>Page {page} of {totalPages}</span>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <select className="form-input" value={pageSize} onChange={(e) => { setPageSize(parseInt(e.target.value, 10)); setPage(1) }}>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-          <button className="btn btn-secondary" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Next</button>
+        {/* Pagination Details */}
+        <div className="px-5 py-3 border-t border-outline-variant/10 flex items-center justify-between bg-surface-container-lowest">
+          <div className="flex items-center gap-2">
+            <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}
+              className="p-1.5 rounded-lg border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container disabled:opacity-30 transition-colors">
+              <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+            </button>
+            <span className="text-sm text-on-surface-variant font-medium mx-2">Page {page} of {totalPages}</span>
+            <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}
+              className="p-1.5 rounded-lg border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container disabled:opacity-30 transition-colors">
+              <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-on-surface-variant uppercase tracking-wider font-bold">Rows</span>
+            <select value={pageSize} onChange={(e) => { setPageSize(parseInt(e.target.value, 10)); setPage(1) }}
+              className="px-2 py-1 border border-outline-variant/20 rounded-md text-sm bg-white focus:outline-none">
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>

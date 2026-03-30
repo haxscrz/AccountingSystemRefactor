@@ -1,40 +1,30 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import axios from 'axios'
+import PageHeader from '../PageHeader'
 
 // A_EDTCOD.PRG — f_a_edtcod(m_which=3) — Effects table
-// Fields: gl_report (4), gl_effect (3), gl_head (25)
-// Menu: ADD, FIND, EDIT, NEXT, PREVIOUS, DELETE, QUIT
-
 interface GroupCode {
-  id: number
-  glReport: string
-  glEffect: string
-  glHead: string | null
+  id: number; glReport: string; glEffect: string; glHead: string | null
 }
 
 const API_BASE = '/api/fs'
-
 function mapItem(raw: any): GroupCode {
-  return {
-    id:       raw.id ?? 0,
-    glReport: raw.glReport ?? raw.gl_report ?? '',
-    glEffect: raw.glEffect ?? raw.gl_effect ?? '',
-    glHead:   raw.glHead   ?? raw.gl_head   ?? ''
-  }
+  return { id: raw.id ?? 0, glReport: raw.glReport ?? raw.gl_report ?? '', glEffect: raw.glEffect ?? raw.gl_effect ?? '', glHead: raw.glHead ?? raw.gl_head ?? '' }
 }
-
 const EMPTY_FORM = { glReport: '', glEffect: '', glHead: '' }
 
+const isErr = (m: string) => m.toLowerCase().includes('error') || m.toLowerCase().includes('fail') || m.toLowerCase().includes('invalid') || m.toLowerCase().includes('no record')
+
 export default function FSGroupCodes() {
-  const [records, setRecords]   = useState<GroupCode[]>([])
-  const [idx, setIdx]           = useState(0)
-  const [loading, setLoading]   = useState(true)
-  const [message, setMessage]   = useState('')
-  const [mode, setMode]         = useState<'view' | 'add' | 'edit'>('view')
-  const [form, setForm]         = useState(EMPTY_FORM)
-  const [saving, setSaving]     = useState(false)
+  const [records, setRecords] = useState<GroupCode[]>([])
+  const [idx, setIdx] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [message, setMessage] = useState('')
+  const [mode, setMode] = useState<'view' | 'add' | 'edit'>('view')
+  const [form, setForm] = useState(EMPTY_FORM)
+  const [saving, setSaving] = useState(false)
   const [showFind, setShowFind] = useState(false)
-  const [findVal, setFindVal]   = useState('')
+  const [findVal, setFindVal] = useState('')
 
   const current = records[idx] ?? null
 
@@ -43,156 +33,126 @@ export default function FSGroupCodes() {
     try {
       const r = await axios.get(`${API_BASE}/group-codes`)
       const data: GroupCode[] = (r.data?.data ?? []).map(mapItem)
-      setRecords(data)
-      setIdx(0)
-      setMessage('')
-    } catch (e: any) {
-      setMessage(`Error loading: ${e.message}`)
-    } finally {
-      setLoading(false)
-    }
+      setRecords(data); setIdx(0); setMessage('')
+    } catch (e: any) { setMessage(`Error loading: ${e.message}`) }
+    finally { setLoading(false) }
   }, [])
 
   useEffect(() => { void loadAll() }, [loadAll])
 
-  // --- NEXT / PREVIOUS ---
-  const handleNext = () => {
-    if (idx >= records.length - 1) { setMessage('This is the last record!'); return }
-    setIdx(i => i + 1); setMessage('')
-  }
-  const handlePrev = () => {
-    if (idx <= 0) { setMessage('This is the first record!'); return }
-    setIdx(i => i - 1); setMessage('')
-  }
+  const handleNext = () => { if (idx >= records.length - 1) { setMessage('This is the last record!'); return }; setIdx(i => i + 1); setMessage('') }
+  const handlePrev = () => { if (idx <= 0) { setMessage('This is the first record!'); return }; setIdx(i => i - 1); setMessage('') }
 
-  // --- FIND (soft-seek by gl_report) ---
   const handleFind = () => {
     const val = findVal.toUpperCase().trim()
     const found = records.findIndex(r => r.glReport.toUpperCase() >= val)
-    if (found < 0) {
-      setMessage('There is no record beyond that code!')
-    } else {
-      setIdx(found)
-      setMessage('')
-    }
-    setShowFind(false)
-    setFindVal('')
+    if (found < 0) setMessage('There is no record beyond that code!')
+    else { setIdx(found); setMessage('') }
+    setShowFind(false); setFindVal('')
   }
 
-  // --- ADD ---
   const handleAdd = () => { setForm(EMPTY_FORM); setMode('add'); setMessage('') }
   const handleSaveAdd = async () => {
     if (!form.glReport.trim()) { setMessage('Report Code is required'); return }
     if (!form.glEffect.trim()) { setMessage('Effect is required'); return }
     setSaving(true)
     try {
-      const r = await axios.post(`${API_BASE}/group-codes`, {
-        glReport: form.glReport.toUpperCase(),
-        glEffect: form.glEffect.toUpperCase(),
-        glHead:   form.glHead
-      })
+      const r = await axios.post(`${API_BASE}/group-codes`, { glReport: form.glReport.toUpperCase(), glEffect: form.glEffect.toUpperCase(), glHead: form.glHead })
       const created = mapItem(r.data?.data ?? r.data)
-      const newRecs  = [...records, created].sort((a, b) => a.glReport.localeCompare(b.glReport) || a.glEffect.localeCompare(b.glEffect))
-      setRecords(newRecs)
-      setIdx(newRecs.findIndex(r2 => r2.id === created.id))
-      setMode('view')
-      setMessage('Record added.')
-    } catch (e: any) {
-      setMessage(`Save failed: ${e.response?.data?.error ?? e.message}`)
-    } finally { setSaving(false) }
+      const newRecs = [...records, created].sort((a, b) => a.glReport.localeCompare(b.glReport) || a.glEffect.localeCompare(b.glEffect))
+      setRecords(newRecs); setIdx(newRecs.findIndex(r2 => r2.id === created.id)); setMode('view'); setMessage('Record added.')
+    } catch (e: any) { setMessage(`Save failed: ${e.response?.data?.error ?? e.message}`) }
+    finally { setSaving(false) }
   }
 
-  // --- EDIT ---
-  const handleEdit = () => {
-    if (!current) { setMessage('No record selected'); return }
-    setForm({ glReport: current.glReport, glEffect: current.glEffect, glHead: current.glHead ?? '' })
-    setMode('edit')
-    setMessage('')
-  }
+  const handleEdit = () => { if (!current) { setMessage('No record selected'); return }; setForm({ glReport: current.glReport, glEffect: current.glEffect, glHead: current.glHead ?? '' }); setMode('edit'); setMessage('') }
   const handleSaveEdit = async () => {
-    if (!current) return
-    setSaving(true)
+    if (!current) return; setSaving(true)
     try {
-      const r = await axios.put(`${API_BASE}/group-codes/${current.id}`, {
-        glReport: form.glReport.toUpperCase(),
-        glEffect: form.glEffect.toUpperCase(),
-        glHead:   form.glHead
-      })
+      const r = await axios.put(`${API_BASE}/group-codes/${current.id}`, { glReport: form.glReport.toUpperCase(), glEffect: form.glEffect.toUpperCase(), glHead: form.glHead })
       const updated = mapItem(r.data?.data ?? r.data)
-      setRecords(recs => recs.map((rc, i) => i === idx ? updated : rc))
-      setMode('view')
-      setMessage('Record updated.')
-    } catch (e: any) {
-      setMessage(`Update failed: ${e.response?.data?.error ?? e.message}`)
-    } finally { setSaving(false) }
+      setRecords(recs => recs.map((rc, i) => i === idx ? updated : rc)); setMode('view'); setMessage('Record updated.')
+    } catch (e: any) { setMessage(`Update failed: ${e.response?.data?.error ?? e.message}`) }
+    finally { setSaving(false) }
   }
 
-  // --- DELETE ---
   const handleDelete = async () => {
     if (!current) { setMessage('No record selected'); return }
     if (!window.confirm(`Delete group code ${current.glReport} / ${current.glEffect}?`)) return
     try {
       await axios.delete(`${API_BASE}/group-codes/${current.id}`)
       const newRecs = records.filter((_, i) => i !== idx)
-      setRecords(newRecs)
-      setIdx(Math.max(0, Math.min(idx, newRecs.length - 1)))
-      setMessage('Record deleted.')
+      setRecords(newRecs); setIdx(Math.max(0, Math.min(idx, newRecs.length - 1))); setMessage('Record deleted.')
     } catch (e: any) { setMessage(`Delete failed: ${e.message}`) }
   }
 
-  if (loading) return <div className="card"><h2>Group Codes (Effects)</h2><p style={{ color: '#00bb00' }}>Loading...</p></div>
-
   return (
-    <div className="card">
-      <h2>Group Codes Maintenance</h2>
-      <p className="subtitle">A_EDTCOD.PRG m_which=3 — Effects table (fs_effects) | Record {records.length === 0 ? 0 : idx + 1} of {records.length}</p>
+    <div className="flex flex-col gap-6 max-w-[900px]">
+      <PageHeader
+        breadcrumb="MASTER FILES / GROUP CODES"
+        title="Group Codes"
+        subtitle={`Effects table (fs_effects) · Record ${records.length === 0 ? 0 : idx + 1} of ${records.length}`}
+        actions={
+          mode === 'view' ? (
+            <button onClick={handleAdd} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary/90 transition-colors">
+              <span className="material-symbols-outlined text-[16px]">add</span> Add New
+            </button>
+          ) : undefined
+        }
+      />
+
+      {loading && <div className="flex items-center gap-2 py-6 text-on-surface-variant/60 text-sm animate-pulse"><span className="material-symbols-outlined text-[18px] animate-spin">sync</span>Loading…</div>}
 
       {message && (
-        <div style={{
-          padding: '8px 14px', marginBottom: '12px', borderRadius: '4px', fontSize: '13px',
-          border: `1px solid ${message.includes('Error') || message.includes('failed') || message.includes('no record') ? '#cc0000' : '#00cc00'}`,
-          background: message.includes('Error') || message.includes('failed') || message.includes('no record') ? '#ffebee' : '#e8f5e9',
-          color:   message.includes('Error') || message.includes('failed') || message.includes('no record') ? '#8b0000' : '#1b5e20'
-        }}>{message}</div>
+        <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border-l-4 text-sm font-medium ${isErr(message) ? 'bg-red-50 text-red-800 border-red-500' : 'bg-emerald-50 text-emerald-800 border-emerald-500'}`}>
+          <span className="material-symbols-outlined text-[16px]">{isErr(message) ? 'error' : 'check_circle'}</span>
+          {message}
+          <button onClick={() => setMessage('')} className="ml-auto opacity-60 hover:opacity-100">✕</button>
+        </div>
       )}
 
-      {/* ---- VIEW MODE ---- */}
+      {/* Current record display */}
       {mode === 'view' && (
-        <>
+        <div className="bg-white border border-outline-variant/15 rounded-2xl shadow-sm overflow-hidden">
+          {/* Selected record header */}
           {current ? (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ fontWeight: 'bold', fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Report Code</label>
-                <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd', fontFamily: 'monospace', fontWeight: 'bold' }}>{current.glReport}</div>
-              </div>
-              <div>
-                <label style={{ fontWeight: 'bold', fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Effect</label>
-                <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd', fontFamily: 'monospace' }}>{current.glEffect}</div>
-              </div>
-              <div>
-                <label style={{ fontWeight: 'bold', fontSize: '12px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Description</label>
-                <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd' }}>{current.glHead}</div>
-              </div>
+            <div className="grid grid-cols-3 gap-0 divide-x divide-outline-variant/10 border-b border-outline-variant/10">
+              {[
+                { label: 'Report Code', val: current.glReport, mono: true },
+                { label: 'Effect', val: current.glEffect, mono: true },
+                { label: 'Description', val: current.glHead || '—', mono: false },
+              ].map(f => (
+                <div key={f.label} className="px-6 py-5">
+                  <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1">{f.label}</div>
+                  <div className={`text-base font-bold text-on-surface ${f.mono ? 'font-mono' : ''}`}>{f.val}</div>
+                </div>
+              ))}
             </div>
           ) : (
-            <div style={{ padding: '32px', textAlign: 'center', background: '#f5f5f5', marginBottom: '16px' }}>
-              <p>No records. Click ADD to create the first entry.</p>
+            <div className="flex flex-col items-center justify-center py-14 text-on-surface-variant/40">
+              <span className="material-symbols-outlined text-4xl mb-2">category</span>
+              <p className="text-sm">No records. Click Add New to create the first entry.</p>
             </div>
           )}
 
+          {/* Table list */}
           {records.length > 0 && (
-            <div style={{ marginBottom: '16px', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border)' }}>
-              <table className="data-table" style={{ fontSize: '12px' }}>
-                <thead>
-                  <tr><th>Report Code</th><th>Effect</th><th>Description</th></tr>
+            <div className="max-h-56 overflow-y-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-surface-container-highest text-[10px] uppercase font-bold text-on-surface-variant/60 tracking-widest sticky top-0">
+                  <tr>
+                    <th className="px-5 py-2.5 text-left">Report Code</th>
+                    <th className="px-5 py-2.5 text-left">Effect</th>
+                    <th className="px-5 py-2.5 text-left">Description</th>
+                  </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-outline-variant/10">
                   {records.map((r, i) => (
                     <tr key={r.id} onClick={() => { setIdx(i); setMessage('') }}
-                      style={{ cursor: 'pointer', background: i === idx ? 'rgba(15,91,102,0.1)' : undefined, fontWeight: i === idx ? 'bold' : undefined }}>
-                      <td style={{ fontFamily: 'monospace' }}>{r.glReport}</td>
-                      <td style={{ fontFamily: 'monospace' }}>{r.glEffect}</td>
-                      <td>{r.glHead}</td>
+                      className={`cursor-pointer transition-colors hover:bg-primary/5 ${i === idx ? 'bg-primary/10' : ''}`}>
+                      <td className="px-5 py-2.5 font-mono font-bold text-primary">{r.glReport}</td>
+                      <td className="px-5 py-2.5 font-mono text-on-surface-variant">{r.glEffect}</td>
+                      <td className="px-5 py-2.5 text-on-surface">{r.glHead}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -200,70 +160,82 @@ export default function FSGroupCodes() {
             </div>
           )}
 
-          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            <button className="btn btn-primary" onClick={handleAdd}>ADD</button>
-            <button className="btn btn-secondary" onClick={() => { setFindVal(''); setShowFind(true) }}>FIND</button>
-            <button className="btn btn-secondary" onClick={handleEdit} disabled={!current}>EDIT</button>
-            <button className="btn btn-secondary" onClick={handlePrev} disabled={records.length === 0}>PREVIOUS</button>
-            <button className="btn btn-secondary" onClick={handleNext} disabled={records.length === 0}>NEXT</button>
-            <button className="btn btn-danger"    onClick={handleDelete} disabled={!current}>DELETE</button>
-            <button className="btn btn-secondary" onClick={() => window.history.back()} style={{ marginLeft: 'auto' }}>QUIT</button>
+          {/* Action bar */}
+          <div className="px-5 py-3 border-t border-outline-variant/10 flex flex-wrap items-center gap-2 bg-surface-container-lowest">
+            <button onClick={handleAdd} className="flex items-center gap-1 px-3 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors">
+              <span className="material-symbols-outlined text-[14px]">add</span> ADD
+            </button>
+            <button onClick={() => { setFindVal(''); setShowFind(true) }} className="flex items-center gap-1 px-3 py-1.5 border border-outline-variant/20 text-on-surface-variant rounded-lg text-xs font-bold hover:bg-surface-container transition-colors">
+              <span className="material-symbols-outlined text-[14px]">search</span> FIND
+            </button>
+            <button onClick={handleEdit} disabled={!current} className="flex items-center gap-1 px-3 py-1.5 border border-outline-variant/20 text-on-surface-variant rounded-lg text-xs font-bold hover:bg-surface-container transition-colors disabled:opacity-40">
+              <span className="material-symbols-outlined text-[14px]">edit</span> EDIT
+            </button>
+            <button onClick={handlePrev} disabled={records.length === 0} className="flex items-center gap-1 px-3 py-1.5 border border-outline-variant/20 text-on-surface-variant rounded-lg text-xs font-bold hover:bg-surface-container transition-colors disabled:opacity-40">
+              <span className="material-symbols-outlined text-[14px]">chevron_left</span> PREV
+            </button>
+            <button onClick={handleNext} disabled={records.length === 0} className="flex items-center gap-1 px-3 py-1.5 border border-outline-variant/20 text-on-surface-variant rounded-lg text-xs font-bold hover:bg-surface-container transition-colors disabled:opacity-40">
+              NEXT <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+            </button>
+            <button onClick={handleDelete} disabled={!current} className="flex items-center gap-1 px-3 py-1.5 border border-error/30 text-error rounded-lg text-xs font-bold hover:bg-error hover:text-white transition-colors disabled:opacity-40">
+              <span className="material-symbols-outlined text-[14px]">delete</span> DELETE
+            </button>
           </div>
-        </>
+        </div>
       )}
 
-      {/* ---- ADD / EDIT FORM ---- */}
+      {/* Add / Edit form */}
       {(mode === 'add' || mode === 'edit') && (
-        <div>
-          <h4>{mode === 'add' ? 'Add New Group Code' : 'Edit Group Code'}</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: '16px' }}>
-            <div className="form-group">
-              <label className="form-label">Report Code <span style={{ color: 'red' }}>*</span></label>
-              <input type="text" className="form-input" maxLength={4} autoFocus
-                value={form.glReport}
+        <div className="bg-white border border-outline-variant/15 rounded-2xl shadow-sm p-6">
+          <h4 className="font-headline font-bold text-on-surface mb-5">{mode === 'add' ? 'Add New Group Code' : 'Edit Group Code'}</h4>
+          <div className="grid grid-cols-3 gap-4 mb-5">
+            <div>
+              <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">Report Code *</label>
+              <input type="text" maxLength={4} autoFocus value={form.glReport}
                 onChange={e => setForm(f => ({ ...f, glReport: e.target.value.toUpperCase() }))}
-                disabled={mode === 'edit'} />
+                disabled={mode === 'edit'}
+                className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm font-mono bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50" />
             </div>
-            <div className="form-group">
-              <label className="form-label">Effect <span style={{ color: 'red' }}>*</span></label>
-              <input type="text" className="form-input" maxLength={3}
-                value={form.glEffect}
-                onChange={e => setForm(f => ({ ...f, glEffect: e.target.value.toUpperCase() }))} />
+            <div>
+              <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">Effect *</label>
+              <input type="text" maxLength={3} value={form.glEffect}
+                onChange={e => setForm(f => ({ ...f, glEffect: e.target.value.toUpperCase() }))}
+                className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm font-mono bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" />
             </div>
-            <div className="form-group">
-              <label className="form-label">Description</label>
-              <input type="text" className="form-input" maxLength={25}
-                value={form.glHead}
-                onChange={e => setForm(f => ({ ...f, glHead: e.target.value }))} />
+            <div>
+              <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">Description</label>
+              <input type="text" maxLength={25} value={form.glHead ?? ''}
+                onChange={e => setForm(f => ({ ...f, glHead: e.target.value }))}
+                className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" />
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
-            <button className="btn btn-primary" onClick={mode === 'add' ? handleSaveAdd : handleSaveEdit} disabled={saving}>
-              {saving ? 'Saving...' : 'Save'}
+          <div className="flex gap-3">
+            <button onClick={mode === 'add' ? handleSaveAdd : handleSaveEdit} disabled={saving}
+              className="px-5 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary/90 disabled:opacity-60 transition-colors">
+              {saving ? 'Saving…' : 'Save'}
             </button>
-            <button className="btn btn-secondary" onClick={() => { setMode('view'); setMessage('') }} disabled={saving}>Cancel</button>
+            <button onClick={() => { setMode('view'); setMessage('') }} disabled={saving}
+              className="px-4 py-2 border border-outline-variant/20 text-on-surface-variant rounded-lg text-sm font-medium hover:bg-surface-container transition-colors">
+              Cancel
+            </button>
           </div>
         </div>
       )}
 
       {/* FIND Dialog */}
       {showFind && (
-        <div className="modal-overlay" onClick={() => setShowFind(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Find Group Code</h3>
-              <button className="modal-close" onClick={() => setShowFind(false)}>—</button>
-            </div>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>Soft-seek: finds first record with Report Code ≥ entered value</p>
-            <div className="form-group">
-              <label className="form-label">Report Code:</label>
-              <input type="text" className="form-input" maxLength={4} autoFocus value={findVal}
-                onChange={e => setFindVal(e.target.value.toUpperCase())}
-                onKeyDown={e => { if (e.key === 'Enter') handleFind() }} />
-            </div>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '16px' }}>
-              <button className="btn btn-secondary" onClick={() => setShowFind(false)}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleFind}>Find</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setShowFind(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-80 p-6" onClick={e => e.stopPropagation()}>
+            <h3 className="font-headline font-bold text-on-surface mb-1">Find Group Code</h3>
+            <p className="text-xs text-on-surface-variant/60 mb-4">Soft-seek: finds first record with Report Code ≥ entered value</p>
+            <input type="text" maxLength={4} autoFocus value={findVal}
+              onChange={e => setFindVal(e.target.value.toUpperCase())}
+              onKeyDown={e => { if (e.key === 'Enter') handleFind() }}
+              placeholder="Report Code…"
+              className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm font-mono bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30 mb-4" />
+            <div className="flex gap-3">
+              <button onClick={() => setShowFind(false)} className="flex-1 px-3 py-2 border border-outline-variant/20 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Cancel</button>
+              <button onClick={handleFind} className="flex-1 px-3 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors">Find</button>
             </div>
           </div>
         </div>

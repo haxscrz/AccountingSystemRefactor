@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: accounting-system-api
+    env: docker
+    rootDir: web-system/server/AccountingApi
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:$PORT
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false

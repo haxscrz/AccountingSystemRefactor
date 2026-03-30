@@ -1,0 +1,70 @@
+{
+  "tableName": "pay_taxdue",
+  "sourcePath": "PAY/OTHR/TAXDUE.DBF",
+  "rowCount": 8,
+  "columns": [
+    "GREATERDAN",
+    "LESOREQUAL",
+    "BASE_TAX",
+    "IN_XCES_OF",
+    "PERCNT_TAX"
+  ],
+  "rows": [
+    {
+      "GREATERDAN": -1,
+      "LESOREQUAL": 0,
+      "BASE_TAX": 0,
+      "IN_XCES_OF": 0,
+      "PERCNT_TAX": 0
+    },
+    {
+      "GREATERDAN": 0,
+      "LESOREQUAL": 10000,
+      "BASE_TAX": 0,
+      "IN_XCES_OF": 0,
+      "PERCNT_TAX": 0.05
+    },
+    {
+      "GREATERDAN": 10000,
+      "LESOREQUAL": 30000,
+      "BASE_TAX": 500,
+      "IN_XCES_OF": 10000,
+      "PERCNT_TAX": 0.1
+    },
+    {
+      "GREATERDAN": 30000,
+      "LESOREQUAL": 70000,
+      "BASE_TAX": 2500,
+      "IN_XCES_OF": 30000,
+      "PERCNT_TAX": 0.15
+    },
+    {
+      "GREATERDAN": 70000,
+      "LESOREQUAL": 140000,
+      "BASE_TAX": 8500,
+      "IN_XCES_OF": 70000,
+      "PERCNT_TAX": 0.2
+    },
+    {
+      "GREATERDAN": 140000,
+      "LESOREQUAL": 250000,
+      "BASE_TAX": 22500,
+      "IN_XCES_OF": 140000,
+      "PERCNT_TAX": 0.25
+    },
+    {
+      "GREATERDAN": 250000,
+      "LESOREQUAL": 500000,
+      "BASE_TAX": 50000,
+      "IN_XCES_OF": 250000,
+      "PERCNT_TAX": 0.3
+    },
+    {
+      "GREATERDAN": 500000,
+      "LESOREQUAL": 999999999,
+      "BASE_TAX": 125000,
+      "IN_XCES_OF": 500000,
+      "PERCNT_TAX": 0.32
+    }
+  ]
+}

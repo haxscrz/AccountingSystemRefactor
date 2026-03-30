@@ -1,0 +1,135 @@
+{
+  "tableName": "pay_prempaid",
+  "sourcePath": "PAY/RANK/PREMPAID.DBF",
+  "rowCount": 15,
+  "columns": [
+    "PERIOD",
+    "OR_SBR",
+    "OR_PAG",
+    "OR_DATE",
+    "PG_DATE",
+    "PREFLAG"
+  ],
+  "rows": [
+    {
+      "PERIOD": "199501",
+      "OR_SBR": "033527",
+      "OR_PAG": "",
+      "OR_DATE": "1995-02-10",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199502",
+      "OR_SBR": "033721",
+      "OR_PAG": "",
+      "OR_DATE": "1995-03-10",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199503",
+      "OR_SBR": "790737",
+      "OR_PAG": "",
+      "OR_DATE": "1995-04-10",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199504",
+      "OR_SBR": "370930",
+      "OR_PAG": "",
+      "OR_DATE": "1995-05-04",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199505",
+      "OR_SBR": "389858",
+      "OR_PAG": "",
+      "OR_DATE": "1995-06-08",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199506",
+      "OR_SBR": "552053",
+      "OR_PAG": "",
+      "OR_DATE": "1995-07-04",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199507",
+      "OR_SBR": "390039",
+      "OR_PAG": "",
+      "OR_DATE": "1995-08-10",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199508",
+      "OR_SBR": "390116",
+      "OR_PAG": "",
+      "OR_DATE": "1995-09-08",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199509",
+      "OR_SBR": "470205",
+      "OR_PAG": "",
+      "OR_DATE": "1995-10-10",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199510",
+      "OR_SBR": "390380",
+      "OR_PAG": "",
+      "OR_DATE": "1995-11-10",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199511",
+      "OR_SBR": "000000",
+      "OR_PAG": "",
+      "OR_DATE": "1995-12-10",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199412",
+      "OR_SBR": "0000000",
+      "OR_PAG": "",
+      "OR_DATE": "1995-01-10",
+      "PG_DATE": null,
+      "PREFLAG": "S"
+    },
+    {
+      "PERIOD": "199512",
+      "OR_SBR": "",
+      "OR_PAG": "pag111",
+      "OR_DATE": null,
+      "PG_DATE": "1995-11-30",
+      "PREFLAG": "T"
+    },
+    {
+      "PERIOD": "199511",
+      "OR_SBR": "",
+      "OR_PAG": "npag",
+      "OR_DATE": null,
+      "PG_DATE": "1995-11-01",
+      "PREFLAG": "T"
+    },
+    {
+      "PERIOD": "199512",
+      "OR_SBR": "",
+      "OR_PAG": "pag123",
+      "OR_DATE": null,
+      "PG_DATE": "1995-12-01",
+      "PREFLAG": "T"
+    }
+  ]
+}

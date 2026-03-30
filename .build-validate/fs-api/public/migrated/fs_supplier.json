@@ -1,0 +1,23 @@
+{
+  "tableName": "fs_supplier",
+  "sourcePath": "FS_test/Real Data/data/SUPPLIER.DBF",
+  "rowCount": 1,
+  "columns": [
+    "SUP_NO",
+    "SUP_NAME",
+    "SUP_ADDR",
+    "SUP_PHONE",
+    "SUP_FAX",
+    "SUP_CONTAK"
+  ],
+  "rows": [
+    {
+      "SUP_NO": 0,
+      "SUP_NAME": "",
+      "SUP_ADDR": "",
+      "SUP_PHONE": "",
+      "SUP_FAX": "",
+      "SUP_CONTAK": ""
+    }
+  ]
+}

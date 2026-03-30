@@ -1,6 +1,6 @@
-﻿import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import axios from 'axios'
-import './FSVoucherEntry.css'
+
 import { useFsUnsavedStore } from '../../stores/fsUnsavedStore'
 
 // --- Types ---
@@ -28,6 +28,9 @@ interface AccountLookup {
   acctCode: string
   acctDesc: string
 }
+
+interface BankLookup { id: number; bankNo: number; bankName: string }
+interface SupplierLookup { id: number; supNo: number; supName: string }
 
 interface FSVoucherEntryProps {
   type: 'current' | 'advance'
@@ -80,14 +83,6 @@ const EMPTY_MASTER = {
 type LineRowState = { acctCode: string; debit: string; credit: string }
 const EMPTY_LINE_ROW: LineRowState = { acctCode: '', debit: '', credit: '' }
 
-const lineInput = (accentColor: string, filled = false): React.CSSProperties => ({
-  width: '100%', padding: '4px 6px', fontSize: '13px',
-  border: `1px solid ${accentColor}`, borderRadius: '3px', outline: 'none',
-  boxSizing: 'border-box' as const,
-  background: filled ? (accentColor === '#93c5fd' ? '#eff6ff' : accentColor === '#f9a8d4' ? '#fdf2f8' : '#fff') : undefined,
-  textAlign: 'right' as const,
-})
-
 // =============================================================================
 export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
   const title = type === 'advance' ? 'Enter Advance CDB' : 'Cash Disbursement Voucher Entry'
@@ -97,7 +92,24 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
   const [currentMasterIdx, setCurrentMasterIdx] = useState(0)
   const [lines, setLines] = useState<CheckLine[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState({ text: '', type: 'info', field: '' })
+  
+  const showMsg = (text: string, type = 'info', field = '') => {
+    if (!text) { setMessage({ text: '', type: 'info', field: '' }); return; }
+    const inferredType = type === 'info' && /error|failed|unable|required|invalid|missing|not balanced/i.test(text) ? 'error' : (type === 'info' ? 'success' : type);
+    setMessage({ text, type: inferredType, field });
+  }
+
+  useEffect(() => {
+    if (message.text) {
+      if (message.field) {
+        const el = document.getElementById('input_' + message.field);
+        if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.focus(); }
+      }
+      const timer = setTimeout(() => setMessage({ text: '', type: 'info', field: '' }), 4500);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   // Mode: 'view' | 'addMaster' | 'editMaster'
   const [mode, setMode] = useState<'view' | 'addMaster' | 'editMaster'>('view')
@@ -114,13 +126,19 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
   // Account browse target ('line-add' or 'line-edit')
   const [acctBrowseTarget, setAcctBrowseTarget] = useState<'line-add' | 'line-edit'>('line-add')
 
-  // Find
+  // Find — multi-mode search
   const [showFind, setShowFind] = useState(false)
   const [findJv, setFindJv]     = useState('')
+  const [findMode, setFindMode] = useState<'cdv' | 'check' | 'date' | 'payee'>('cdv')
+  const [findCk, setFindCk]     = useState('')
+  const [findDate, setFindDate] = useState('')
+  const [findPayee, setFindPayee] = useState('')
 
-  // Account browse
+  // Account browse & master lookups
   const [showAcctBrowse, setShowAcctBrowse] = useState(false)
   const [accounts, setAccounts] = useState<AccountLookup[]>([])
+  const [banks, setBanks] = useState<BankLookup[]>([])
+  const [suppliers, setSuppliers] = useState<SupplierLookup[]>([])
 
   // Unbalanced checks (for QUIT validation)
   const [unbalancedChecks, setUnbalancedChecks] = useState<{ ckNo: string; balance: number }[]>([])
@@ -144,17 +162,35 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
   const accountLookup = useMemo(() => new Map(accounts.map((a) => [a.acctCode.toUpperCase(), a.acctDesc])), [accounts])
 
   // ---- Data Loading ----
+  // Track the current check number so we can restore position after reloading masters
+  const currentCkNoRef = useRef<string>('')
+  useEffect(() => {
+    currentCkNoRef.current = currentMaster?.jCkNo ?? ''
+  }, [currentMasterIdx, masters])
+
   const loadMasters = useCallback(async () => {
+    const preserveCkNo = currentCkNoRef.current
     setIsLoading(true)
     try {
       const resp = await axios.get(`${API_BASE}/vouchers/masters`)
       const data: CheckMaster[] = (resp.data?.data ?? []).map(mapMaster)
       setMasters(data)
-      setCurrentMasterIdx(0)
-      setMessage('')
+      // Restore position: find the same check in the refreshed list
+      if (preserveCkNo) {
+        const restoredIdx = data.findIndex(m => m.jCkNo === preserveCkNo)
+        if (restoredIdx >= 0) {
+          setCurrentMasterIdx(restoredIdx)
+        } else {
+          // Check was deleted or not found — clamp to valid range
+          setCurrentMasterIdx(prev => Math.min(prev, Math.max(0, data.length - 1)))
+        }
+      } else {
+        setCurrentMasterIdx(0)
+      }
+      showMsg('')
       return data
     } catch (err: any) {
-      setMessage(`Error loading checks: ${err.message}`)
+      showMsg(`Error loading checks: ${err.message}`)
       return []
     } finally {
       setIsLoading(false)
@@ -184,6 +220,24 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
     }
   }, [])
 
+  // Preload accounts, banks, and suppliers lists on mount
+  useEffect(() => {
+    if (accounts.length === 0) {
+      axios.get(`${API_BASE}/accounts`).then(resp => {
+        setAccounts((resp.data?.data ?? []).map((a: any) => ({
+          acctCode: a.acctCode ?? a.acct_code,
+          acctDesc: a.acctDesc ?? a.acct_desc
+        })))
+      }).catch(() => {})
+    }
+    if (banks.length === 0) {
+      axios.get(`${API_BASE}/banks`).then(resp => setBanks(resp.data?.data ?? [])).catch(()=>{})
+    }
+    if (suppliers.length === 0) {
+      axios.get(`${API_BASE}/suppliers`).then(resp => setSuppliers(resp.data?.data ?? [])).catch(()=>{})
+    }
+  }, [])
+
   useEffect(() => {
     void (async () => {
       const data = await loadMasters()
@@ -191,6 +245,13 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       await loadUnbalanced()
     })()
   }, [loadMasters, loadLines, loadUnbalanced])
+
+  // Show toast when unbalanced checks detected after loading
+  useEffect(() => {
+    if (unbalancedChecks.length > 0) {
+      showMsg(`⚠ ${unbalancedChecks.length} unbalanced check(s) detected. Click Quit to review.`, 'error')
+    }
+  }, [unbalancedChecks])
 
   // When current master changes, reload its lines
   useEffect(() => {
@@ -254,59 +315,90 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
 
   // ---- Navigation ----
   const handleNextCDV = async () => {
-    if (masters.length === 0) { setMessage('No records in file.'); return }
+    if (masters.length === 0) { showMsg('No records in file.'); return }
     if (currentMasterIdx >= masters.length - 1) {
-      setMessage('Last record in file!')
+      showMsg('Last record in file!')
     } else {
       setCurrentMasterIdx(i => i + 1)
-      setMessage('')
+      showMsg('')
     }
   }
 
   const handlePrevCDV = async () => {
-    if (masters.length === 0) { setMessage('No records in file.'); return }
+    if (masters.length === 0) { showMsg('No records in file.'); return }
     if (currentMasterIdx <= 0) {
-      setMessage('First record in file!')
+      showMsg('First record in file!')
     } else {
       setCurrentMasterIdx(i => i - 1)
-      setMessage('')
+      showMsg('')
     }
   }
 
   // ---- FIND ----
   const handleFind = async () => {
-    if (!findJv.trim()) { setMessage('Enter a CDV number'); return }
-    try {
-      const resp = await axios.get(`${API_BASE}/vouchers/checkmaster/jv/${encodeURIComponent(findJv.trim())}`)
-      const found = mapMaster(resp.data?.data ?? resp.data)
-      const idx = masters.findIndex(m => m.jJvNo === found.jJvNo)
-      if (idx >= 0) {
-        setCurrentMasterIdx(idx)
-      } else {
-        // Found via backend but not in local list — reload
-        await loadMasters()
+    if (findMode === 'cdv') {
+      if (!findJv.trim()) { showMsg('Enter a CDV number'); return }
+      try {
+        const resp = await axios.get(`${API_BASE}/vouchers/checkmaster/jv/${encodeURIComponent(findJv.trim())}`)
+        const found = mapMaster(resp.data?.data ?? resp.data)
+        const idx = masters.findIndex(m => m.jJvNo === found.jJvNo)
+        if (idx >= 0) setCurrentMasterIdx(idx)
+        else await loadMasters()
+        showMsg(`Found CDV: ${found.jJvNo}`)
+      } catch {
+        showMsg(`CDV "${findJv}" not found.`, 'error')
       }
-      setMessage('')
-    } catch {
-      setMessage(`CDV "${findJv}" not found.`)
+    } else if (findMode === 'check') {
+      if (!findCk.trim()) { showMsg('Enter a Check number'); return }
+      const target = findCk.trim().toUpperCase()
+      const idx = masters.findIndex(m => m.jCkNo.toUpperCase() === target)
+      if (idx >= 0) { setCurrentMasterIdx(idx); showMsg(`Found check: ${masters[idx].jCkNo}`) }
+      else {
+        // Soft-seek: find first check >= target
+        const softIdx = masters.findIndex(m => m.jCkNo.toUpperCase() >= target)
+        if (softIdx >= 0) { setCurrentMasterIdx(softIdx); showMsg(`Nearest check: ${masters[softIdx].jCkNo}`) }
+        else showMsg(`Check "${findCk}" not found.`, 'error')
+      }
+    } else if (findMode === 'date') {
+      if (!findDate) { showMsg('Select a date'); return }
+      const target = new Date(findDate).getTime()
+      const idx = masters.findIndex(m => new Date(m.jDate).getTime() >= target)
+      if (idx >= 0) { setCurrentMasterIdx(idx); showMsg(`Found: ${masters[idx].jCkNo} — ${displayDate(masters[idx].jDate)}`) }
+      else showMsg(`No check found with date ≥ ${findDate}`, 'error')
+    } else if (findMode === 'payee') {
+      if (!findPayee.trim()) { showMsg('Enter a payee name'); return }
+      const target = findPayee.trim().toLowerCase()
+      const idx = masters.findIndex(m => (m.jPayTo || '').toLowerCase().includes(target))
+      if (idx >= 0) { setCurrentMasterIdx(idx); showMsg(`Found: ${masters[idx].jCkNo} — ${masters[idx].jPayTo}`) }
+      else showMsg(`No check found with payee containing "${findPayee}"`, 'error')
     }
     setShowFind(false)
-    setFindJv('')
+    setFindJv(''); setFindCk(''); setFindDate(''); setFindPayee('')
   }
 
   // ---- ADD master ----
   const handleAddMaster = () => {
-    const newJv  = `CDV${String(masters.length + 1).padStart(5, '0')}`
-    const newCk  = `CK${String(masters.length + 1).padStart(5, '0')}`
+    // Find the highest numeric suffix from existing CDV numbers to properly increment
+    const maxJvNum = masters.reduce((max, m) => {
+      const match = m.jJvNo.match(/(\d+)$/)
+      return match ? Math.max(max, parseInt(match[1], 10)) : max
+    }, 0)
+    const maxCkNum = masters.reduce((max, m) => {
+      const match = m.jCkNo.match(/(\d+)$/)
+      return match ? Math.max(max, parseInt(match[1], 10)) : max
+    }, 0)
+    const nextNum = Math.max(maxJvNum, maxCkNum) + 1
+    const newJv  = `CDV${String(nextNum).padStart(5, '0')}`
+    const newCk  = newJv  // Per PRG convention: Check# defaults to same as CDV#
     setMasterForm({ ...EMPTY_MASTER, jJvNo: newJv, jCkNo: newCk })
     setMode('addMaster')
-    setMessage('')
+    showMsg('')
   }
 
   const handleSaveMaster = async () => {
-    if (!masterForm.jJvNo.trim()) { setMessage('CDV No. is required'); return }
-    if (!masterForm.jCkNo.trim()) { setMessage('Check No. is required'); return }
-    if (!masterForm.jPayTo?.trim()) { setMessage('Payee is required'); return }
+    if (!masterForm.jJvNo.trim()) { showMsg('CDV No. is required'); return }
+    if (!masterForm.jCkNo.trim()) { showMsg('Check No. is required'); return }
+    if (!masterForm.jPayTo?.trim()) { showMsg('Payee is required', 'error', 'masterPayee'); return }
     setSaving(true)
     try {
       const payload = {
@@ -327,9 +419,9 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       setLines([])
       setAddLineRow(EMPTY_LINE_ROW)
       setMode('view')
-      setMessage(`Check ${created.jCkNo} created. Add line items below.`)
+      showMsg(`Check ${created.jCkNo} created. Add line items below.`)
     } catch (err: any) {
-      setMessage(`Save failed: ${err.response?.data?.error ?? err.message}`)
+      showMsg(`Save failed: ${err.response?.data?.error ?? err.message}`)
     } finally {
       setSaving(false)
     }
@@ -337,18 +429,24 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
 
   // ---- ADD line (inline add row) ----
   const handleSaveAddLine = async () => {
-    if (!currentMaster) { setMessage('No check selected'); return }
-    if (!addLineRow.acctCode.trim()) { setMessage('Account Code is required'); return }
-    if (!accountLookup.has(addLineRow.acctCode.trim().toUpperCase())) { setMessage('Please choose a valid account code from the list.'); return }
+    if (!currentMaster) { showMsg('No check selected'); return }
+    if (!addLineRow.acctCode.trim()) { showMsg('Account Code is required', 'error', 'lineAcct'); return }
+    // Accept manually typed codes — validate case-insensitively
+    const typedCode = addLineRow.acctCode.trim().toUpperCase()
+    if (accounts.length > 0 && !accountLookup.has(typedCode)) {
+      // Try partial/fuzzy match before rejecting
+      const partial = accounts.find(a => a.acctCode.toUpperCase().startsWith(typedCode))
+      if (!partial) { showMsg(`Account code "${typedCode}" not found. Use the browse button (…) to see available codes.`, 'error', 'lineAcct'); return }
+    }
     const dv = parseFloat(addLineRow.debit  || '0')
     const cv = parseFloat(addLineRow.credit || '0')
-    if (dv === 0 && cv === 0) { setMessage('Enter either a Debit or Credit amount'); return }
-    if (dv > 0 && cv > 0)    { setMessage('Only one of Debit or Credit can be filled'); return }
+    if (dv === 0 && cv === 0) { showMsg('Enter either a Debit or Credit amount'); return }
+    if (dv > 0 && cv > 0)    { showMsg('Only one of Debit or Credit can be filled'); return }
     setSaving(true)
     try {
       const payload = {
         jCkNo:    currentMaster.jCkNo,
-        acctCode: addLineRow.acctCode.toUpperCase(),
+        acctCode: typedCode,
         jCkAmt:   dv > 0 ? dv : cv,
         jDOrC:    dv > 0 ? 'D' : 'C'
       }
@@ -358,9 +456,14 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       setAddLineRow(EMPTY_LINE_ROW)
       await loadMasters()
       await loadUnbalanced()
-      setMessage(`Line added: ${created.acctCode}`)
+      showMsg(`Line added: ${created.acctCode}`)
+      // Refocus the account input to keep scroll position
+      requestAnimationFrame(() => {
+        const el = document.getElementById('input_lineAcct')
+        if (el) el.focus()
+      })
     } catch (err: any) {
-      setMessage(`Unable to save line item: ${err.response?.data?.error ?? err.message}`)
+      showMsg(`Unable to save line item: ${err.response?.data?.error ?? err.message}`)
     } finally {
       setSaving(false)
     }
@@ -382,12 +485,16 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
     if (editingLineId === null) return
     const targetLine = lines.find(l => l.id === editingLineId)
     if (!targetLine) return
-    if (!editLineRow.acctCode.trim()) { setMessage('Account Code is required'); return }
-    if (!accountLookup.has(editLineRow.acctCode.trim().toUpperCase())) { setMessage('Please choose a valid account code from the list.'); return }
+    if (!editLineRow.acctCode.trim()) { showMsg('Account Code is required', 'error', 'lineAcct'); return }
+    const editCode = editLineRow.acctCode.trim().toUpperCase()
+    if (accounts.length > 0 && !accountLookup.has(editCode)) {
+      const partial = accounts.find(a => a.acctCode.toUpperCase().startsWith(editCode))
+      if (!partial) { showMsg(`Account code "${editCode}" not found.`, 'error', 'lineAcct'); return }
+    }
     const dv = parseFloat(editLineRow.debit  || '0')
     const cv = parseFloat(editLineRow.credit || '0')
-    if (dv === 0 && cv === 0) { setMessage('Enter either a Debit or Credit amount'); return }
-    if (dv > 0 && cv > 0)    { setMessage('Only one of Debit or Credit can be filled'); return }
+    if (dv === 0 && cv === 0) { showMsg('Enter either a Debit or Credit amount'); return }
+    if (dv > 0 && cv > 0)    { showMsg('Only one of Debit or Credit can be filled'); return }
     setSaving(true)
     try {
       const payload = {
@@ -402,9 +509,9 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       setEditingLineId(null)
       await loadMasters()
       await loadUnbalanced()
-      setMessage('Line updated.')
+      showMsg('Line updated.')
     } catch (err: any) {
-      setMessage(`Unable to update line item: ${err.response?.data?.error ?? err.message}`)
+      showMsg(`Unable to update line item: ${err.response?.data?.error ?? err.message}`)
     } finally {
       setSaving(false)
     }
@@ -412,7 +519,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
 
   // ---- EDIT master ----
   const handleEditMaster = () => {
-    if (!currentMaster) { setMessage('No check selected'); return }
+    if (!currentMaster) { showMsg('No check selected'); return }
     setMasterForm({
       jJvNo:  currentMaster.jJvNo,
       jCkNo:  currentMaster.jCkNo,
@@ -423,7 +530,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       supNo:  currentMaster.supNo
     })
     setMode('editMaster')
-    setMessage('')
+    showMsg('')
   }
 
   const handleUpdateMaster = async () => {
@@ -445,9 +552,9 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       const newMasters = masters.map((m, i) => i === currentMasterIdx ? updated : m)
       setMasters(newMasters)
       setMode('view')
-      setMessage('Check updated.')
+      showMsg('Check updated.')
     } catch (err: any) {
-      setMessage(`Update failed: ${err.response?.data?.error ?? err.message}`)
+      showMsg(`Update failed: ${err.response?.data?.error ?? err.message}`)
     } finally {
       setSaving(false)
     }
@@ -455,7 +562,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
 
   // ---- DELETE ----
   const handleDeleteCheck = async () => {
-    if (!currentMaster) { setMessage('No check selected'); return }
+    if (!currentMaster) { showMsg('No check selected'); return }
     if (!window.confirm(`Delete check ${currentMaster.jCkNo}?\nThis will delete the master and ALL line items.`)) return
     try {
       await axios.delete(`${API_BASE}/vouchers/masters/${encodeURIComponent(currentMaster.jCkNo)}`)
@@ -467,9 +574,9 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
         await loadLines(newMasters[Math.max(0, currentMasterIdx - 1)]?.jCkNo ?? '')
       }
       await loadUnbalanced()
-      setMessage('Check moved to recycle bin.')
+      showMsg('Check moved to recycle bin.')
     } catch (err: any) {
-      setMessage(`Delete failed: ${err.message}`)
+      showMsg(`Delete failed: ${err.message}`)
     }
   }
 
@@ -482,9 +589,9 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       if (editingLineId === line.id) setEditingLineId(null)
       await loadMasters()
       await loadUnbalanced()
-      setMessage('Line moved to recycle bin.')
+      showMsg('Line moved to recycle bin.')
     } catch (err: any) {
-      setMessage(`Delete failed: ${err.message}`)
+      showMsg(`Delete failed: ${err.message}`)
     }
   }
 
@@ -525,17 +632,17 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
   const restoreCheck = async (checkNo: string) => {
     try {
       await axios.post(`${API_BASE}/vouchers/restore/master/${encodeURIComponent(checkNo)}`)
-      setMessage(`Check ${checkNo} restored.`)
+      showMsg(`Check ${checkNo} restored.`)
       await loadDeletedChecks()
       await loadMasters()
     } catch (err: any) {
-      setMessage(err.response?.data?.message ?? 'Unable to restore selected check.')
+      showMsg(err.response?.data?.message ?? 'Unable to restore selected check.')
     }
   }
 
   const cloneCurrentCheck = async () => {
-    if (!currentMaster) { setMessage('No check selected to clone.'); return }
-    if (!cloneJvNo.trim() || !cloneCkNo.trim()) { setMessage('Please provide new CDV and check numbers.'); return }
+    if (!currentMaster) { showMsg('No check selected to clone.'); return }
+    if (!cloneJvNo.trim() || !cloneCkNo.trim()) { showMsg('Please provide new CDV and check numbers.'); return }
     try {
       await axios.post(`${API_BASE}/vouchers/clone/${encodeURIComponent(currentMaster.jCkNo)}`, null, {
         params: {
@@ -545,406 +652,516 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
         }
       })
       setShowClone(false)
-      setMessage(`Cloned ${currentMaster.jCkNo} to ${cloneCkNo.trim().toUpperCase()}.`)
+      showMsg(`Cloned ${currentMaster.jCkNo} to ${cloneCkNo.trim().toUpperCase()}.`)
       await loadMasters()
     } catch (err: any) {
-      setMessage(err.response?.data?.error ?? err.response?.data?.message ?? 'Unable to clone selected check.')
+      showMsg(err.response?.data?.error ?? err.response?.data?.message ?? 'Unable to clone selected check.')
     }
   }
 
   // ============================
   if (isLoading) {
     return (
-      <div className="voucher-entry">
-        <div className="card">
-          <h2>{title}</h2>
-          <p style={{ color: '#00bb00' }}>Loading...</p>
-        </div>
+      <div className="flex flex-col gap-6 max-w-[1200px] mx-auto w-full animate-pulse">
+        <div className="h-8 w-48 bg-surface-container rounded" />
+        <div className="h-6 w-80 bg-surface-container rounded" />
+        <div className="h-[400px] bg-surface-container-low rounded-xl" />
       </div>
     )
   }
 
   return (
-    <div className="voucher-entry">
-      <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-          <div>
-            <h2>{title}</h2>
-            <p className="subtitle">
-              A_EDTCHK.PRG — Check {masters.length === 0 ? '0' : currentMasterIdx + 1} of {masters.length}
-              {lines.length > 0 && ` | ${lines.length} line${lines.length === 1 ? '' : 's'}`}
-            </p>
+    <div className="flex flex-col gap-0 max-w-[1200px] mx-auto w-full pb-20">
+      {/* ── Page Header ── */}
+      <div className="flex items-start justify-between mb-5">
+        <div>
+          <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50 mb-1.5">
+            DATA ENTRY / {title.toUpperCase()}
           </div>
+          <h1 className="text-2xl font-headline font-bold text-on-surface tracking-tight">{title}</h1>
+          <p className="text-sm text-on-surface-variant mt-0.5">
+            Check {masters.length === 0 ? '0' : currentMasterIdx + 1} of {masters.length}
+            {lines.length > 0 && ` · ${lines.length} line${lines.length === 1 ? '' : 's'}`}
+          </p>
         </div>
+        <div className="flex items-center gap-2">
+          {lines.length > 0 && (
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border ${
+              isLineBalanced
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                : 'bg-red-50 text-red-700 border-red-200'
+            }`}>
+              <span className="material-symbols-outlined text-[14px]">{isLineBalanced ? 'check_circle' : 'warning'}</span>
+              {isLineBalanced ? 'Balanced' : `Off by ${Math.abs(totalDebit - totalCredit).toFixed(2)}`}
+            </span>
+          )}
+        </div>
+      </div>
 
-        {/* Status message */}
-        {message && (
-          <div style={{
-            padding: '10px 15px', marginBottom: '12px',
-            border: `1px solid ${message.includes('Error') || message.includes('failed') || message.includes('not found') ? '#cc0000' : '#00cc00'}`,
-            backgroundColor: message.includes('Error') || message.includes('failed') || message.includes('not found') ? '#ffebee' : '#e8f5e9',
-            color: message.includes('Error') || message.includes('failed') || message.includes('not found') ? '#8b0000' : '#1b5e20',
-            borderRadius: '4px', fontSize: '13px'
-          }}>
-            {message}
-          </div>
-        )}
+      {/* ── Sticky Toolbar ── */}
+      <div className="sticky top-0 z-30 mb-3 bg-surface/95 backdrop-blur-sm border border-outline-variant/40 rounded-xl shadow-md px-4 py-2 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <button onClick={handleAddMaster} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors shadow-sm">
+            <span className="material-symbols-outlined text-[16px]">add</span> Add
+          </button>
+          <button onClick={handleEditMaster} disabled={!currentMaster} className="flex items-center gap-1.5 px-3 py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-primary rounded-lg text-xs font-bold transition-colors disabled:opacity-40">
+            <span className="material-symbols-outlined text-[16px]">edit</span> Edit
+          </button>
+          <button onClick={() => { setFindJv(''); setShowFind(true) }} className="flex items-center gap-1.5 px-3 py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-primary rounded-lg text-xs font-bold transition-colors">
+            <span className="material-symbols-outlined text-[16px]">search</span> Find
+          </button>
+          <button onClick={() => { setCloneJvNo(''); setCloneCkNo(''); setCloneDate(new Date().toISOString().split('T')[0]); setShowClone(true) }} disabled={!currentMaster} className="flex items-center gap-1.5 px-3 py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-primary rounded-lg text-xs font-bold transition-colors disabled:opacity-40">
+            <span className="material-symbols-outlined text-[16px]">file_copy</span> Clone
+          </button>
+          <div className="w-px h-5 bg-outline-variant/30 mx-0.5" />
+          <button onClick={() => { void loadDeletedChecks(); setShowRecycleBin(true) }} className="flex items-center gap-1.5 px-3 py-1.5 text-on-surface-variant hover:bg-surface-container-low hover:text-red-600 rounded-lg text-xs font-bold transition-colors">
+            <span className="material-symbols-outlined text-[16px]">delete_sweep</span> Bin
+          </button>
+          <div className="w-px h-5 bg-outline-variant/30 mx-0.5" />
+          <button onClick={handlePrevCDV} disabled={masters.length === 0} className="flex items-center gap-1 px-2 py-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-xs font-bold transition-colors disabled:opacity-40" title="Alt+Left">
+            <span className="material-symbols-outlined text-[16px]">chevron_left</span> Prev
+          </button>
+          <button onClick={handleNextCDV} disabled={masters.length === 0} className="flex items-center gap-1 px-2 py-1.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg text-xs font-bold transition-colors disabled:opacity-40" title="Alt+Right">
+            Next <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          </button>
+          <div className="w-px h-5 bg-outline-variant/30 mx-0.5" />
+          <button onClick={handleDeleteCheck} disabled={!currentMaster} className="flex items-center gap-1.5 px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg text-xs font-bold transition-colors disabled:opacity-40">
+            <span className="material-symbols-outlined text-[16px]">delete</span> Delete
+          </button>
+        </div>
+        <button onClick={handleQuit} className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+          unbalancedChecks.length > 0
+            ? 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100'
+            : 'bg-surface-container text-on-surface-variant border-outline-variant/30 hover:bg-surface-container-high'
+        }`}>
+          <span className="material-symbols-outlined text-[16px]">logout</span>
+          Quit {unbalancedChecks.length > 0 && `(${unbalancedChecks.length} unbal.⚠)`}
+        </button>
+      </div>
 
-        {/* ---- VIEW MODE ---- */}
-        {mode === 'view' && (
-          <>
-            {/* Master record display */}
-            {currentMaster ? (
-              <div className="voucher-header" style={{ marginBottom: '16px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                  <div>
-                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>CDV No.</label>
-                    <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd', fontFamily: 'monospace' }}>{currentMaster.jJvNo}</div>
-                  </div>
-                  <div>
-                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Check No.</label>
-                    <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd', fontFamily: 'monospace' }}>{currentMaster.jCkNo}</div>
-                  </div>
-                  <div>
-                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Date</label>
-                    <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd' }}>{displayDate(currentMaster.jDate)}</div>
-                  </div>
-                  <div>
-                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Supplier No.</label>
-                    <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd', fontFamily: 'monospace' }}>{currentMaster.supNo || '—'}</div>
-                  </div>
-                  <div>
-                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Bank Code</label>
-                    <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd', fontFamily: 'monospace' }}>{currentMaster.bankNo || '—'}</div>
-                  </div>
-                  <div style={{ gridColumn: '1 / -1' }}>
-                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Pay To</label>
-                    <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd' }}>{currentMaster.jPayTo}</div>
-                  </div>
-                  <div style={{ gridColumn: '1 / -1' }}>
-                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Particulars</label>
-                    <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd' }}>{currentMaster.jDesc}</div>
-                  </div>
-                  <div>
-                    <label style={{ fontWeight: 'bold', display: 'block', fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Check Amount</label>
-                    <div style={{ padding: '8px', background: '#f5f5f5', border: '1px solid #ddd', fontFamily: 'monospace', textAlign: 'right', fontWeight: 'bold' }}>
-                      {currentMaster.jCkAmt.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                    </div>
-                  </div>
+      {/* ── VIEW MODE ── */}
+      {mode === 'view' && (
+        <>
+          {/* Compact voucher header strip */}
+          {currentMaster ? (
+            <div className="bg-surface border border-outline-variant/30 rounded-xl shadow-sm overflow-hidden mb-3">
+              <div className="px-4 py-2.5 flex flex-wrap items-center gap-x-6 gap-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">CDV</span>
+                  <span className="font-mono text-sm font-bold text-on-surface">{currentMaster.jJvNo}</span>
                 </div>
-              </div>
-            ) : (
-              <div style={{ padding: '32px', textAlign: 'center', background: '#f5f5f5', borderRadius: '4px', marginBottom: '16px' }}>
-                <p>No vouchers in file{type === 'advance' ? ' (Advance CDB)' : ''}.</p>
-                <p style={{ color: '#666', fontSize: '13px' }}>Click ADD to enter the first check.</p>
-              </div>
-            )}
-
-            {/* Distribution lines — inline editing table */}
-            {currentMaster && (
-              <div className="voucher-items" style={{ marginBottom: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <h4 style={{ margin: 0 }}>Account Distribution — CDV# {currentMaster.jCkNo}</h4>
-                  {!isLineBalanced && lines.length > 0 && (
-                    <span style={{ color: '#dc2626', fontSize: '12px', fontWeight: 'bold' }}>⚠ UNBALANCED</span>
-                  )}
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">CK#</span>
+                  <span className="font-mono text-sm font-bold text-primary">{currentMaster.jCkNo}</span>
                 </div>
-                <table className="data-table" style={{ fontSize: '13px' }}>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">DATE</span>
+                  <span className="text-sm text-on-surface">{displayDate(currentMaster.jDate)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">AMT</span>
+                  <span className="font-mono text-sm font-bold text-on-surface">{currentMaster.jCkAmt.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">SUP</span>
+                  <span className="font-mono text-sm text-on-surface" title={suppliers.find(s => s.supNo === currentMaster.supNo)?.supName}>
+                    {currentMaster.supNo ? `${currentMaster.supNo} - ${suppliers.find(s => s.supNo === currentMaster.supNo)?.supName || 'Unknown'}` : '—'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">BANK</span>
+                  <span className="font-mono text-sm text-on-surface" title={banks.find(b => b.bankNo === currentMaster.bankNo)?.bankName}>
+                    {currentMaster.bankNo ? `${currentMaster.bankNo} - ${banks.find(b => b.bankNo === currentMaster.bankNo)?.bankName || 'Unknown'}` : '—'}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-[200px] flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">PAYEE</span>
+                  <span className="text-sm text-on-surface truncate">{currentMaster.jPayTo || '—'}</span>
+                </div>
+                {currentMaster.jDesc && (
+                  <div className="w-full flex items-center gap-2 pt-1 border-t border-outline-variant/10">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">PARTICULARS</span>
+                    <span className="text-sm text-on-surface-variant">{currentMaster.jDesc}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-surface border border-outline-variant/30 rounded-xl shadow-sm p-8 text-center mb-3">
+              <span className="material-symbols-outlined text-3xl text-on-surface-variant/30 mb-2">description</span>
+              <p className="text-on-surface-variant font-medium text-sm">No vouchers in file{type === 'advance' ? ' (Advance CDB)' : ''}.</p>
+              <p className="text-on-surface-variant/60 text-xs mt-1">Click <strong>Add</strong> to enter the first check.</p>
+            </div>
+          )}
+
+          {/* Distribution lines table */}
+          {currentMaster && (
+            <div className="bg-surface border border-outline-variant/30 rounded-xl shadow-sm overflow-hidden mb-3">
+              <div className="bg-surface-container-low/50 px-4 py-2 border-b border-outline-variant/20 flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[16px]">table_chart</span> Account Distribution — CDV# {currentMaster.jCkNo}
+                </h3>
+                {!isLineBalanced && lines.length > 0 && (
+                  <span className="text-xs font-bold text-red-600 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">warning</span> UNBALANCED
+                  </span>
+                )}
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-[13px]" style={{ minWidth: '500px', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr>
-                      <th style={{ width: '110px' }}>Acct Code</th>
-                      <th style={{ textAlign: 'right', color: '#1e40af' }}>Debit</th>
-                      <th style={{ textAlign: 'right', color: '#9d174d' }}>Credit</th>
-                      <th style={{ width: '70px' }}></th>
+                    <tr className="bg-surface-container-low">
+                      <th className="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-on-surface-variant border-b-2 border-outline-variant/40 border-r border-outline-variant/30" style={{ width: '160px' }}>Acct Code</th>
+                      <th className="px-3 py-2 text-right text-[11px] font-bold uppercase tracking-wider text-blue-700 border-b-2 border-outline-variant/40 border-r border-outline-variant/30">Debit</th>
+                      <th className="px-3 py-2 text-right text-[11px] font-bold uppercase tracking-wider text-pink-700 border-b-2 border-outline-variant/40 border-r border-outline-variant/30">Credit</th>
+                      <th className="px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wider text-on-surface-variant border-b-2 border-outline-variant/40" style={{ width: '80px' }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {lines.map(line => editingLineId === line.id
-                      ? (
-                        <tr key={line.id} style={{ background: '#fef3c7' }}>
-                          <td>
-                            <div style={{ display: 'flex', gap: '4px' }}>
-                              <input
-                                style={{ ...lineInput('#fbbf24'), textAlign: 'left', width: '70px', fontFamily: 'monospace' }}
-                                value={editLineRow.acctCode}
-                                list="voucher-account-list"
-                                onChange={e => setEditLineRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))}
-                                maxLength={4}
-                                onKeyDown={e => { if (e.key === 'Enter') void handleUpdateLine() }}
-                                autoFocus
-                              />
-                              <button type="button" style={{ padding: '2px 6px', fontSize: '11px', cursor: 'pointer' }}
-                                onClick={() => openAcctBrowse('line-edit')}>...</button>
-                            </div>
-                          </td>
-                          <td>
-                            <input
-                              style={lineInput('#93c5fd', !!editLineRow.debit)}
-                              placeholder="Debit"
-                              value={editLineRow.debit}
-                              onFocus={() => setEditLineRow(x => ({ ...x, credit: '' }))}
-                              onChange={e => setEditLineRow(x => ({ ...x, debit: e.target.value }))}
-                              onKeyDown={e => { if (e.key === 'Enter') void handleUpdateLine() }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              style={lineInput('#f9a8d4', !!editLineRow.credit)}
-                              placeholder="Credit"
-                              value={editLineRow.credit}
-                              onFocus={() => setEditLineRow(x => ({ ...x, debit: '' }))}
-                              onChange={e => setEditLineRow(x => ({ ...x, credit: e.target.value }))}
-                              onKeyDown={e => { if (e.key === 'Enter') void handleUpdateLine() }}
-                            />
-                          </td>
-                          <td style={{ whiteSpace: 'nowrap' }}>
-                            <button type="button"
-                              style={{ marginRight: '4px', padding: '2px 7px', cursor: 'pointer', background: '#16a34a', color: '#fff', border: 'none', borderRadius: '3px' }}
-                              onClick={() => void handleUpdateLine()} disabled={saving}>✓</button>
-                            <button type="button"
-                              style={{ padding: '2px 7px', cursor: 'pointer', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '3px' }}
-                              onClick={cancelEditLine}>✕</button>
-                          </td>
-                        </tr>
-                      ) : (
-                        <tr key={line.id} style={{ cursor: 'pointer' }} onDoubleClick={() => startEditLine(line)}>
-                          <td style={{ fontFamily: 'monospace' }}>{line.acctCode}</td>
-                          <td style={{ textAlign: 'right', fontFamily: 'monospace', color: '#1e40af' }}>
-                            {line.jDOrC === 'D' ? line.jCkAmt.toLocaleString('en-US', { minimumFractionDigits: 2 }) : ''}
-                          </td>
-                          <td style={{ textAlign: 'right', fontFamily: 'monospace', color: '#9d174d' }}>
-                            {line.jDOrC === 'C' ? line.jCkAmt.toLocaleString('en-US', { minimumFractionDigits: 2 }) : ''}
-                          </td>
-                          <td style={{ whiteSpace: 'nowrap' }}>
-                            <button type="button"
-                              style={{ marginRight: '4px', padding: '1px 6px', fontSize: '11px', cursor: 'pointer' }}
-                              onClick={() => startEditLine(line)}>✎</button>
-                            <button type="button"
-                              style={{ padding: '1px 6px', fontSize: '11px', cursor: 'pointer', color: '#dc2626' }}
-                              onClick={() => void handleDeleteLine(line)} disabled={saving}>✕</button>
-                          </td>
-                        </tr>
-                      )
-                    )}
-                    {/* Add row — always present at bottom */}
-                    <tr style={{ background: '#f0fdf4', borderTop: '2px dashed #86efac' }}>
-                      <td>
-                        <div style={{ display: 'flex', gap: '4px' }}>
-                          <input
-                            style={{ ...lineInput('#86efac'), textAlign: 'left', width: '70px', fontFamily: 'monospace' }}
-                            placeholder="ACCT"
-                            value={addLineRow.acctCode}
-                            list="voucher-account-list"
+                    {lines.map((line, idx) => editingLineId === line.id ? (
+                      <tr key={line.id} className="bg-amber-50/80">
+                        <td className="px-3 py-1.5">
+                          <div className="flex gap-1">
+                            <input className="flex-1 px-2 py-1 text-[13px] border border-amber-300 rounded bg-white font-mono uppercase outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+                              value={editLineRow.acctCode} list="voucher-account-list"
+                              onChange={e => setEditLineRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))}
+                              maxLength={4} onKeyDown={e => { if (e.key === 'Enter') void handleUpdateLine() }} autoFocus />
+                            <button type="button" onClick={() => openAcctBrowse('line-edit')}
+                              className="px-1.5 py-1 text-[11px] border border-outline-variant/30 rounded bg-surface-container-low hover:bg-surface-container flex-shrink-0 transition-colors">…</button>
+                          </div>
+                        </td>
+                        <td className="px-3 py-1.5">
+                          <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-primary/20 ${editLineRow.debit ? 'border-blue-300 bg-blue-50/50' : 'border-amber-300 bg-white'}`}
+                            placeholder="Debit" value={editLineRow.debit}
+                            onFocus={() => setEditLineRow(x => ({ ...x, credit: '' }))}
+                            onChange={e => setEditLineRow(x => ({ ...x, debit: e.target.value }))}
+                            onKeyDown={e => { if (e.key === 'Enter') void handleUpdateLine() }} />
+                        </td>
+                        <td className="px-3 py-1.5">
+                          <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-primary/20 ${editLineRow.credit ? 'border-pink-300 bg-pink-50/50' : 'border-amber-300 bg-white'}`}
+                            placeholder="Credit" value={editLineRow.credit}
+                            onFocus={() => setEditLineRow(x => ({ ...x, debit: '' }))}
+                            onChange={e => setEditLineRow(x => ({ ...x, credit: e.target.value }))}
+                            onKeyDown={e => { if (e.key === 'Enter') void handleUpdateLine() }} />
+                        </td>
+                        <td className="px-3 py-1.5">
+                          <div className="flex items-center justify-center gap-1">
+                            <button onClick={() => void handleUpdateLine()} disabled={saving} title="Save"
+                              className="w-7 h-7 rounded-md bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center transition-colors disabled:opacity-50">
+                              <span className="material-symbols-outlined text-[16px]">check</span></button>
+                            <button onClick={cancelEditLine} title="Cancel"
+                              className="w-7 h-7 rounded-md bg-surface-container-high hover:bg-surface-dim text-on-surface-variant flex items-center justify-center transition-colors">
+                              <span className="material-symbols-outlined text-[16px]">close</span></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      <tr key={line.id} className={`cursor-pointer hover:bg-surface-container-lowest/80 transition-colors ${idx % 2 === 1 ? 'bg-surface-container-low/30' : ''}`} onDoubleClick={() => startEditLine(line)}>
+                        <td className="px-3 py-2 border-b border-outline-variant/40 border-r border-outline-variant/40">
+                          <span className="font-mono text-[13px] font-semibold text-on-surface">{line.acctCode}</span>
+                          {accountLookup.has(line.acctCode.toUpperCase()) && (
+                            <span className="ml-2 text-[11px] text-on-surface-variant/60">{accountLookup.get(line.acctCode.toUpperCase())}</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2 text-right font-mono text-[13px] text-blue-700 font-medium border-b border-outline-variant/40 border-r border-outline-variant/40">
+                          {line.jDOrC === 'D' ? line.jCkAmt.toLocaleString('en-US', { minimumFractionDigits: 2 }) : ''}
+                        </td>
+                        <td className="px-3 py-2 text-right font-mono text-[13px] text-pink-700 font-medium border-b border-outline-variant/40 border-r border-outline-variant/40">
+                          {line.jDOrC === 'C' ? line.jCkAmt.toLocaleString('en-US', { minimumFractionDigits: 2 }) : ''}
+                        </td>
+                        <td className="px-3 py-2 border-b border-outline-variant/40">
+                          <div className="flex items-center justify-center gap-1">
+                            <button onClick={() => startEditLine(line)} title="Edit"
+                              className="w-7 h-7 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface-variant flex items-center justify-center transition-colors border border-outline-variant/20">
+                              <span className="material-symbols-outlined text-[15px]">edit</span></button>
+                            <button onClick={() => void handleDeleteLine(line)} disabled={saving} title="Delete"
+                              className="w-7 h-7 rounded-md bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors border border-red-200/50">
+                              <span className="material-symbols-outlined text-[15px]">delete</span></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {/* Add row */}
+                    <tr className="bg-emerald-50/60 border-t-2 border-dashed border-emerald-300/60">
+                      <td className="px-3 py-1.5">
+                        <div className="flex gap-1">
+                          <input className="flex-1 px-2 py-1 text-[13px] border border-emerald-300 rounded bg-white font-mono uppercase outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-200"
+                            placeholder="ACCT" id="input_lineAcct" value={addLineRow.acctCode} list="voucher-account-list"
                             onChange={e => setAddLineRow(x => ({ ...x, acctCode: e.target.value.toUpperCase() }))}
-                            maxLength={4}
-                            onKeyDown={e => { if (e.key === 'Enter') void handleSaveAddLine() }}
-                          />
-                          <button type="button" style={{ padding: '2px 6px', fontSize: '11px', cursor: 'pointer' }}
-                            onClick={() => openAcctBrowse('line-add')}>...</button>
+                            maxLength={4} onKeyDown={e => { if (e.key === 'Enter') void handleSaveAddLine() }} />
+                          <button type="button" onClick={() => openAcctBrowse('line-add')}
+                            className="px-1.5 py-1 text-[11px] border border-emerald-300 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-700 flex-shrink-0 transition-colors">…</button>
                         </div>
                       </td>
-                      <td>
-                        <input
-                          style={lineInput('#86efac', !!addLineRow.debit)}
-                          placeholder="Debit amount"
-                          value={addLineRow.debit}
+                      <td className="px-3 py-1.5">
+                        <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-emerald-200 ${addLineRow.debit ? 'border-blue-300 bg-blue-50/30' : 'border-emerald-300 bg-white'}`}
+                          placeholder="Debit" id="input_lineDebit" value={addLineRow.debit}
                           onFocus={() => setAddLineRow(x => ({ ...x, credit: '' }))}
                           onChange={e => setAddLineRow(x => ({ ...x, debit: e.target.value }))}
-                          onKeyDown={e => { if (e.key === 'Enter') void handleSaveAddLine() }}
-                        />
+                          onKeyDown={e => { if (e.key === 'Enter') void handleSaveAddLine() }} />
                       </td>
-                      <td>
-                        <input
-                          style={lineInput('#86efac', !!addLineRow.credit)}
-                          placeholder="Credit amount"
-                          value={addLineRow.credit}
+                      <td className="px-3 py-1.5">
+                        <input type="number" className={`w-full px-2 py-1 text-[13px] text-right border rounded font-mono outline-none focus:ring-1 focus:ring-emerald-200 ${addLineRow.credit ? 'border-pink-300 bg-pink-50/30' : 'border-emerald-300 bg-white'}`}
+                          placeholder="Credit" id="input_lineCredit" value={addLineRow.credit}
                           onFocus={() => setAddLineRow(x => ({ ...x, debit: '' }))}
                           onChange={e => setAddLineRow(x => ({ ...x, credit: e.target.value }))}
-                          onKeyDown={e => { if (e.key === 'Enter') void handleSaveAddLine() }}
-                        />
+                          onKeyDown={e => { if (e.key === 'Enter') void handleSaveAddLine() }} />
                       </td>
-                      <td>
-                        <button type="button"
-                          style={{ padding: '2px 8px', fontSize: '12px', cursor: 'pointer', background: '#16a34a', color: '#fff', border: 'none', borderRadius: '3px' }}
-                          onClick={() => void handleSaveAddLine()} disabled={saving}>+Add</button>
+                      <td className="px-3 py-1.5">
+                        <button onClick={() => void handleSaveAddLine()} disabled={saving}
+                          className="w-full py-1.5 rounded-md bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-1">
+                          <span className="material-symbols-outlined text-[14px]">add</span> Add
+                        </button>
                       </td>
                     </tr>
                   </tbody>
                   <tfoot>
-                    <tr>
-                      <td style={{ fontWeight: 'bold' }}>TOTALS</td>
-                      <td style={{ textAlign: 'right', fontFamily: 'monospace', fontWeight: 'bold', color: '#1e40af' }}>{totalDebit.toFixed(2)}</td>
-                      <td style={{ textAlign: 'right', fontFamily: 'monospace', fontWeight: 'bold', color: '#9d174d' }}>{totalCredit.toFixed(2)}</td>
-                      <td>
+                    <tr className="border-t-2 border-outline-variant/40 bg-surface-container-low/50 font-bold">
+                      <td className="px-3 py-2.5 text-[12px] uppercase tracking-wider text-on-surface-variant">Totals</td>
+                      <td className="px-3 py-2.5 text-right font-mono text-[13px] text-blue-700 font-bold">{totalDebit.toFixed(2)}</td>
+                      <td className="px-3 py-2.5 text-right font-mono text-[13px] text-pink-700 font-bold">{totalCredit.toFixed(2)}</td>
+                      <td className="px-3 py-2.5 text-center">
                         {lines.length > 0 && (isLineBalanced
-                          ? <span className="badge badge-success">✓</span>
-                          : <span className="badge badge-error">⚠ {(totalDebit - totalCredit).toFixed(2)}</span>
+                          ? <span className="text-emerald-600 text-xs font-bold">✓</span>
+                          : <span className="text-red-600 text-xs font-bold">⚠ {(totalDebit - totalCredit).toFixed(2)}</span>
                         )}
                       </td>
                     </tr>
                   </tfoot>
                 </table>
-                <p style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>
-                  Double-click a row to edit inline. In the green row: enter an amount in <strong style={{color:'#1e40af'}}>Debit</strong> OR <strong style={{color:'#9d174d'}}>Credit</strong> — typing in one clears the other automatically.
-                  Shortcuts: Ctrl+S save, Ctrl+F find, Alt+Left/Alt+Right previous/next CDV.
-                </p>
-                <datalist id="voucher-account-list">
-                  {accounts.map((a) => (
-                    <option key={a.acctCode} value={a.acctCode}>{a.acctDesc}</option>
-                  ))}
-                </datalist>
               </div>
-            )}
-
-            {/* Action buttons */}
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '12px', marginTop: '8px' }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '6px' }}>
-                <button className="btn btn-primary" onClick={handleAddMaster}>ADD</button>
-                <button className="btn btn-secondary" onClick={() => { setFindJv(''); setShowFind(true) }}>FIND</button>
-                <button className="btn btn-secondary" onClick={handleEditMaster} disabled={!currentMaster}>EDIT</button>
-                <button className="btn btn-secondary" onClick={() => { setCloneJvNo(''); setCloneCkNo(''); setCloneDate(new Date().toISOString().split('T')[0]); setShowClone(true) }} disabled={!currentMaster}>CLONE</button>
-                <button className="btn btn-secondary" onClick={() => { void loadDeletedChecks(); setShowRecycleBin(true) }}>RECYCLE BIN</button>
+              <div className="bg-surface-container-low/50 px-4 py-2 border-t border-outline-variant/20 flex justify-between items-center">
+                <div className="text-[11px] text-on-surface-variant/70 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[14px]">info</span>
+                  Double-click row to edit · Debit auto-clears Credit
+                </div>
+                <div className="text-[10px] font-mono text-on-surface-variant/50 tracking-wider uppercase hidden md:block">
+                  Ctrl+S: Save | Alt+←/→: Navigate CDVs
+                </div>
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                <button className="btn btn-secondary" onClick={handlePrevCDV} disabled={masters.length === 0}>Prev-CDV</button>
-                <button className="btn btn-secondary" onClick={handleNextCDV} disabled={masters.length === 0}>Next-CDV</button>
-                <button className="btn btn-danger" onClick={handleDeleteCheck} disabled={!currentMaster}>DELETE</button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={handleQuit}
-                  style={{ marginLeft: 'auto', background: unbalancedChecks.length > 0 ? '#fee2e2' : undefined, borderColor: unbalancedChecks.length > 0 ? '#dc2626' : undefined }}
-                >
-                  QUIT {unbalancedChecks.length > 0 && `(${unbalancedChecks.length} unbal.⚠)`}
-                </button>
-              </div>
+              <datalist id="voucher-account-list">
+                {accounts.map((a) => (
+                  <option key={a.acctCode} value={a.acctCode}>{a.acctDesc}</option>
+                ))}
+              </datalist>
             </div>
-          </>
-        )}
+          )}
+        </>
+      )}
 
-        {/* ---- ADD MASTER FORM ---- */}
-        {mode === 'addMaster' && (
-          <div>
-            <h4>Add New Check — Enter Header Details</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <div className="form-group">
-                <label className="form-label">CDV No. <span style={{ color: 'red' }}>*</span></label>
-                <input type="text" className="form-input" value={masterForm.jJvNo}
-                  onChange={e => setMasterForm(f => ({ ...f, jJvNo: e.target.value.toUpperCase() }))} maxLength={8} autoFocus />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Check No. <span style={{ color: 'red' }}>*</span></label>
-                <input type="text" className="form-input" value={masterForm.jCkNo}
-                  onChange={e => setMasterForm(f => ({ ...f, jCkNo: e.target.value.toUpperCase() }))} maxLength={8} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Date <span style={{ color: 'red' }}>*</span></label>
-                <input type="date" className="form-input" value={masterForm.jDate}
-                  onChange={e => setMasterForm(f => ({ ...f, jDate: e.target.value }))} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Supplier No.</label>
-                <input type="number" className="form-input" value={masterForm.supNo || ''}
-                  onChange={e => setMasterForm(f => ({ ...f, supNo: parseInt(e.target.value) || 0 }))}
-                  placeholder="0" min={0} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Bank Code</label>
-                <input type="number" className="form-input" value={masterForm.bankNo || ''}
-                  onChange={e => setMasterForm(f => ({ ...f, bankNo: parseInt(e.target.value) || 0 }))}
-                  placeholder="0" min={0} />
-              </div>
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="form-label">Pay To (Payee) <span style={{ color: 'red' }}>*</span></label>
-                <input type="text" className="form-input" value={masterForm.jPayTo ?? ''}
-                  onChange={e => setMasterForm(f => ({ ...f, jPayTo: e.target.value }))} maxLength={100} />
-              </div>
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="form-label">Particulars</label>
-                <textarea className="form-input" rows={2} value={masterForm.jDesc ?? ''}
-                  onChange={e => setMasterForm(f => ({ ...f, jDesc: e.target.value }))} />
-              </div>
+      {/* ── ADD MASTER FORM ── */}
+      {mode === 'addMaster' && (
+        <div className="bg-surface border border-outline-variant/30 rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-surface-container-low/50 px-5 py-3 border-b border-outline-variant/20">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px]">add_circle</span> Add New Check — Enter Header Details
+            </h3>
+          </div>
+          <div className="p-6 grid grid-cols-2 gap-5">
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">CDV No. <span className="text-red-500">*</span></label>
+              <input type="text" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest text-on-surface font-mono uppercase outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                value={masterForm.jJvNo} onChange={e => setMasterForm(f => ({ ...f, jJvNo: e.target.value.toUpperCase() }))} maxLength={8} autoFocus />
             </div>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
-              <button className="btn btn-primary" onClick={handleSaveMaster} disabled={saving}>
-                {saving ? 'Saving...' : 'Next: Add Lines'}
-              </button>
-              <button className="btn btn-secondary" onClick={() => { setMode('view'); setMessage('') }} disabled={saving}>Cancel</button>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Check No. <span className="text-red-500">*</span></label>
+              <input type="text" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest text-on-surface font-mono uppercase outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                value={masterForm.jCkNo} onChange={e => setMasterForm(f => ({ ...f, jCkNo: e.target.value.toUpperCase() }))} maxLength={8} />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Date <span className="text-red-500">*</span></label>
+              <input type="date" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                value={masterForm.jDate} onChange={e => setMasterForm(f => ({ ...f, jDate: e.target.value }))} />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Supplier <span className="text-red-500">*</span></label>
+              <select className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                value={masterForm.supNo || ''} onChange={e => {
+                  const sNo = parseInt(e.target.value) || 0
+                  setMasterForm(f => {
+                    const newForm = { ...f, supNo: sNo }
+                    if (sNo && (!f.jPayTo || f.jPayTo.trim() === '')) {
+                       const sup = suppliers.find(s=>s.supNo===sNo)
+                       if (sup) newForm.jPayTo = sup.supName
+                    }
+                    return newForm
+                  })
+                }}>
+                <option value="">— Select Supplier —</option>
+                {suppliers.map(s => <option key={s.id} value={s.supNo}>{s.supNo} - {s.supName}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Bank <span className="text-red-500">*</span></label>
+              <select className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                value={masterForm.bankNo || ''} onChange={e => setMasterForm(f => ({ ...f, bankNo: parseInt(e.target.value) || 0 }))}>
+                <option value="">— Select Bank —</option>
+                {banks.map(b => <option key={b.id} value={b.bankNo}>{b.bankNo} - {b.bankName}</option>)}
+              </select>
+            </div>
+            <div className="col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Pay To (Payee) <span className="text-red-500">*</span></label>
+              <input type="text" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                value={masterForm.jPayTo ?? ''} onChange={e => setMasterForm(f => ({ ...f, jPayTo: e.target.value }))} maxLength={100} />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Particulars</label>
+              <textarea className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
+                rows={2} value={masterForm.jDesc ?? ''} onChange={e => setMasterForm(f => ({ ...f, jDesc: e.target.value }))} />
             </div>
           </div>
-        )}
+          <div className="px-6 pb-6 flex gap-3">
+            <button className="px-6 py-2.5 bg-primary text-white rounded-lg font-bold text-sm shadow-sm hover:bg-primary/90 transition-all" onClick={handleSaveMaster} disabled={saving}>
+              {saving ? 'Saving...' : 'Next: Add Lines'}
+            </button>
+            <button className="px-6 py-2.5 text-on-surface-variant border border-outline-variant/30 rounded-lg font-bold text-sm hover:bg-surface-container transition-colors" onClick={() => { setMode('view'); showMsg('') }} disabled={saving}>Cancel</button>
+          </div>
+        </div>
+      )}
 
-        {/* ---- EDIT MASTER FORM ---- */}
-        {mode === 'editMaster' && (
-          <div>
-            <h4>Edit Check Header</h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <div className="form-group">
-                <label className="form-label">CDV No.</label>
-                <input type="text" className="form-input" value={masterForm.jJvNo} disabled />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Check No.</label>
-                <input type="text" className="form-input" value={masterForm.jCkNo} disabled />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Date</label>
-                <input type="date" className="form-input" value={masterForm.jDate}
-                  onChange={e => setMasterForm(f => ({ ...f, jDate: e.target.value }))} autoFocus />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Supplier No.</label>
-                <input type="number" className="form-input" value={masterForm.supNo || ''}
-                  onChange={e => setMasterForm(f => ({ ...f, supNo: parseInt(e.target.value) || 0 }))}
-                  placeholder="0" min={0} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Bank Code</label>
-                <input type="number" className="form-input" value={masterForm.bankNo || ''}
-                  onChange={e => setMasterForm(f => ({ ...f, bankNo: parseInt(e.target.value) || 0 }))}
-                  placeholder="0" min={0} />
-              </div>
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="form-label">Pay To (Payee)</label>
-                <input type="text" className="form-input" value={masterForm.jPayTo ?? ''}
-                  onChange={e => setMasterForm(f => ({ ...f, jPayTo: e.target.value }))} maxLength={100} />
-              </div>
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label className="form-label">Particulars</label>
-                <textarea className="form-input" rows={2} value={masterForm.jDesc ?? ''}
-                  onChange={e => setMasterForm(f => ({ ...f, jDesc: e.target.value }))} />
-              </div>
+      {/* ── EDIT MASTER FORM ── */}
+      {mode === 'editMaster' && (
+        <div className="bg-surface border border-outline-variant/30 rounded-xl shadow-sm overflow-hidden">
+          <div className="bg-surface-container-low/50 px-5 py-3 border-b border-outline-variant/20">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+              <span className="material-symbols-outlined text-[16px]">edit_note</span> Edit Check Header
+            </h3>
+          </div>
+          <div className="p-6 grid grid-cols-2 gap-5">
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">CDV No.</label>
+              <input type="text" className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg bg-surface-container-low text-on-surface-variant font-mono" value={masterForm.jJvNo} disabled />
             </div>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
-              <button className="btn btn-primary" onClick={handleUpdateMaster} disabled={saving}>
-                {saving ? 'Saving...' : 'Save'}
-              </button>
-              <button className="btn btn-secondary" onClick={() => { setMode('view'); setMessage('') }} disabled={saving}>Cancel</button>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Check No.</label>
+              <input type="text" className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg bg-surface-container-low text-on-surface-variant font-mono" value={masterForm.jCkNo} disabled />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Date</label>
+              <input type="date" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                value={masterForm.jDate} onChange={e => setMasterForm(f => ({ ...f, jDate: e.target.value }))} autoFocus />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Supplier <span className="text-red-500">*</span></label>
+              <select className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                value={masterForm.supNo || ''} onChange={e => {
+                  const sNo = parseInt(e.target.value) || 0
+                  setMasterForm(f => {
+                    const newForm = { ...f, supNo: sNo }
+                    if (sNo && (!f.jPayTo || f.jPayTo.trim() === '')) {
+                       const sup = suppliers.find(s=>s.supNo===sNo)
+                       if (sup) newForm.jPayTo = sup.supName
+                    }
+                    return newForm
+                  })
+                }}>
+                <option value="">— Select Supplier —</option>
+                {suppliers.map(s => <option key={s.id} value={s.supNo}>{s.supNo} - {s.supName}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Bank <span className="text-red-500">*</span></label>
+              <select className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                value={masterForm.bankNo || ''} onChange={e => setMasterForm(f => ({ ...f, bankNo: parseInt(e.target.value) || 0 }))}>
+                <option value="">— Select Bank —</option>
+                {banks.map(b => <option key={b.id} value={b.bankNo}>{b.bankNo} - {b.bankName}</option>)}
+              </select>
+            </div>
+            <div className="col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Pay To (Payee)</label>
+              <input type="text" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                value={masterForm.jPayTo ?? ''} onChange={e => setMasterForm(f => ({ ...f, jPayTo: e.target.value }))} maxLength={100} />
+            </div>
+            <div className="col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60 mb-1.5">Particulars</label>
+              <textarea className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
+                rows={2} value={masterForm.jDesc ?? ''} onChange={e => setMasterForm(f => ({ ...f, jDesc: e.target.value }))} />
             </div>
           </div>
-        )}
+          <div className="px-6 pb-6 flex gap-3">
+            <button className="px-6 py-2.5 bg-primary text-white rounded-lg font-bold text-sm shadow-sm hover:bg-primary/90 transition-all" onClick={handleUpdateMaster} disabled={saving}>
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+            <button className="px-6 py-2.5 text-on-surface-variant border border-outline-variant/30 rounded-lg font-bold text-sm hover:bg-surface-container transition-colors" onClick={() => { setMode('view'); showMsg('') }} disabled={saving}>Cancel</button>
+          </div>
+        </div>
+      )}
 
-      </div>
+      {/* ══════ MODALS ══════ */}
 
-      {/* FIND Dialog */}
+      {/* Find Dialog */}
       {showFind && (
-        <div className="modal-overlay" onClick={() => setShowFind(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Find Check by JV Number</h3>
-              <button className="modal-close" onClick={() => setShowFind(false)}>—</button>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowFind(false)}>
+          <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-[440px] overflow-hidden animate-in fade-in zoom-in-95" onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-outline-variant/20 flex items-center justify-between">
+              <h3 className="font-headline font-bold text-lg text-on-surface">Find Check</h3>
+              <button onClick={() => setShowFind(false)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-colors"><span className="material-symbols-outlined text-[20px]">close</span></button>
             </div>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-              Soft-seek: finds first check with JV number ≥ entered value
-            </p>
-            <div className="form-group">
-              <label className="form-label">JV Number:</label>
-              <input type="text" className="form-input" value={findJv}
-                onChange={e => setFindJv(e.target.value.toUpperCase())} maxLength={8} autoFocus
-                onKeyDown={e => { if (e.key === 'Enter') handleFind() }} />
-            </div>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '16px' }}>
-              <button className="btn btn-secondary" onClick={() => setShowFind(false)}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleFind}>Find</button>
+            <div className="p-6 flex flex-col gap-4">
+              {/* Search mode tabs */}
+              <div className="flex gap-1 bg-surface-container-low rounded-lg p-1">
+                {[
+                  { mode: 'cdv' as const, label: 'CDV No.', icon: 'tag' },
+                  { mode: 'check' as const, label: 'Check No.', icon: 'numbers' },
+                  { mode: 'date' as const, label: 'Date', icon: 'calendar_today' },
+                  { mode: 'payee' as const, label: 'Payee', icon: 'person' },
+                ].map(t => (
+                  <button key={t.mode} onClick={() => setFindMode(t.mode)}
+                    className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-xs font-bold transition-all ${
+                      findMode === t.mode
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'text-on-surface-variant hover:bg-surface-container'
+                    }`}>
+                    <span className="material-symbols-outlined text-[14px]">{t.icon}</span> {t.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Search input based on mode */}
+              {findMode === 'cdv' && (
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">CDV Number</label>
+                  <input type="text" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest font-mono uppercase outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    value={findJv} onChange={e => setFindJv(e.target.value.toUpperCase())} maxLength={8} autoFocus
+                    placeholder="e.g. CDV00001"
+                    onKeyDown={e => { if (e.key === 'Enter') handleFind() }} />
+                  <p className="text-[11px] text-on-surface-variant/50 mt-1">Searches by CDV/JV reference number</p>
+                </div>
+              )}
+              {findMode === 'check' && (
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Check Number</label>
+                  <input type="text" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest font-mono uppercase outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    value={findCk} onChange={e => setFindCk(e.target.value.toUpperCase())} maxLength={10} autoFocus
+                    placeholder="e.g. CK00001"
+                    onKeyDown={e => { if (e.key === 'Enter') handleFind() }} />
+                  <p className="text-[11px] text-on-surface-variant/50 mt-1">Exact match or soft-seek to nearest</p>
+                </div>
+              )}
+              {findMode === 'date' && (
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Date</label>
+                  <input type="date" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    value={findDate} onChange={e => setFindDate(e.target.value)} autoFocus
+                    onKeyDown={e => { if (e.key === 'Enter') handleFind() }} />
+                  <p className="text-[11px] text-on-surface-variant/50 mt-1">Finds first check with date ≥ selected</p>
+                </div>
+              )}
+              {findMode === 'payee' && (
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Payee Name</label>
+                  <input type="text" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                    value={findPayee} onChange={e => setFindPayee(e.target.value)} autoFocus
+                    placeholder="Search payee name..."
+                    onKeyDown={e => { if (e.key === 'Enter') handleFind() }} />
+                  <p className="text-[11px] text-on-surface-variant/50 mt-1">Partial match on Pay To field</p>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button onClick={() => setShowFind(false)} className="px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">Cancel</button>
+                <button onClick={handleFind} className="px-5 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 shadow-sm transition-all">Find</button>
+              </div>
             </div>
           </div>
         </div>
@@ -952,140 +1169,170 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
 
       {/* Account Browse Dialog */}
       {showAcctBrowse && (
-        <div className="modal-overlay" onClick={() => setShowAcctBrowse(false)}>
-          <div className="modal" style={{ maxWidth: '460px', maxHeight: '70vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Select Account</h3>
-              <button className="modal-close" onClick={() => setShowAcctBrowse(false)}>—</button>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowAcctBrowse(false)}>
+          <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-[480px] max-h-[70vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95" onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-outline-variant/20 flex items-center justify-between flex-shrink-0">
+              <h3 className="font-headline font-bold text-lg text-on-surface">Select Account</h3>
+              <button onClick={() => setShowAcctBrowse(false)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-colors"><span className="material-symbols-outlined text-[20px]">close</span></button>
             </div>
-            {accounts.length === 0
-              ? <p style={{ color: 'var(--text-secondary)' }}>Loading accounts...</p>
-              : (
-                <table className="data-table" style={{ fontSize: '13px' }}>
-                  <thead><tr><th>Code</th><th>Description</th></tr></thead>
-                  <tbody>
-                    {accounts.map(a => (
-                      <tr key={a.acctCode} style={{ cursor: 'pointer' }} onClick={() => {
-                        if (acctBrowseTarget === 'line-add') setAddLineRow(x => ({ ...x, acctCode: a.acctCode }))
-                        else setEditLineRow(x => ({ ...x, acctCode: a.acctCode }))
-                        setShowAcctBrowse(false)
-                      }}>
-                        <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{a.acctCode}</td>
-                        <td>{a.acctDesc}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )
-            }
+            <div className="flex-1 overflow-y-auto">
+              {accounts.length === 0
+                ? <div className="p-8 text-center text-on-surface-variant/50 italic">Loading accounts…</div>
+                : (
+                  <table className="w-full text-[13px]">
+                    <thead className="bg-surface-container-low sticky top-0"><tr><th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Code</th><th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Description</th></tr></thead>
+                    <tbody className="divide-y divide-outline-variant/10">
+                      {accounts.map(a => (
+                        <tr key={a.acctCode} className="cursor-pointer hover:bg-primary/5 transition-colors" onClick={() => {
+                          if (acctBrowseTarget === 'line-add') setAddLineRow(x => ({ ...x, acctCode: a.acctCode }))
+                          else setEditLineRow(x => ({ ...x, acctCode: a.acctCode }))
+                          setShowAcctBrowse(false)
+                        }}>
+                          <td className="px-4 py-2 font-mono font-bold text-primary">{a.acctCode}</td>
+                          <td className="px-4 py-2 text-on-surface-variant">{a.acctDesc}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+            </div>
           </div>
         </div>
       )}
 
+      {/* Posting Preview Dialog */}
       {showPostingPreview && (
-        <div className="modal-overlay" onClick={() => setShowPostingPreview(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Posting Preview</h3>
-              <button className="modal-close" onClick={() => setShowPostingPreview(false)}>—</button>
-            </div>
-            <p style={{ fontSize: 13, marginBottom: 10 }}>Review this voucher before leaving the entry screen.</p>
-            <table className="data-table" style={{ fontSize: 13, marginBottom: 12 }}>
-              <tbody>
-                <tr><td>Total Debit</td><td style={{ textAlign: 'right' }}>{totalDebit.toFixed(2)}</td></tr>
-                <tr><td>Total Credit</td><td style={{ textAlign: 'right' }}>{totalCredit.toFixed(2)}</td></tr>
-                <tr><td>Variance</td><td style={{ textAlign: 'right', color: isLineBalanced ? '#166534' : '#991b1b' }}>{(totalDebit - totalCredit).toFixed(2)}</td></tr>
-              </tbody>
-            </table>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-              <button className="btn btn-secondary" onClick={() => setShowPostingPreview(false)}>Back</button>
-              <button className="btn btn-primary" onClick={() => window.history.back()} disabled={!isLineBalanced}>Confirm Exit</button>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowPostingPreview(false)}>
+          <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-[400px] overflow-hidden animate-in fade-in zoom-in-95" onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-outline-variant/20"><h3 className="font-headline font-bold text-lg text-on-surface">Posting Preview</h3></div>
+            <div className="p-6 flex flex-col gap-4">
+              <p className="text-sm text-on-surface-variant">Review this voucher before exiting.</p>
+              <table className="w-full text-sm">
+                <tbody className="divide-y divide-outline-variant/10">
+                  <tr><td className="py-2 text-on-surface-variant">Total Debit</td><td className="py-2 text-right font-mono font-bold">{totalDebit.toFixed(2)}</td></tr>
+                  <tr><td className="py-2 text-on-surface-variant">Total Credit</td><td className="py-2 text-right font-mono font-bold">{totalCredit.toFixed(2)}</td></tr>
+                  <tr><td className="py-2 text-on-surface-variant">Variance</td><td className={`py-2 text-right font-mono font-bold ${isLineBalanced ? 'text-emerald-600' : 'text-red-600'}`}>{(totalDebit - totalCredit).toFixed(2)}</td></tr>
+                </tbody>
+              </table>
+              <div className="flex justify-end gap-2 pt-2">
+                <button onClick={() => setShowPostingPreview(false)} className="px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">Back</button>
+                <button onClick={() => window.history.back()} disabled={!isLineBalanced} className="px-5 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 shadow-sm transition-all disabled:opacity-50">Confirm Exit</button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* Clone Dialog */}
       {showClone && (
-        <div className="modal-overlay" onClick={() => setShowClone(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Clone Voucher</h3>
-              <button className="modal-close" onClick={() => setShowClone(false)}>—</button>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowClone(false)}>
+          <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-[420px] overflow-hidden animate-in fade-in zoom-in-95" onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-outline-variant/20 flex items-center justify-between">
+              <h3 className="font-headline font-bold text-lg text-on-surface">Clone Voucher</h3>
+              <button onClick={() => setShowClone(false)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-colors"><span className="material-symbols-outlined text-[20px]">close</span></button>
             </div>
-            <div className="form-group">
-              <label className="form-label">New CDV No.</label>
-              <input className="form-input" value={cloneJvNo} onChange={e => setCloneJvNo(e.target.value.toUpperCase())} />
-            </div>
-            <div className="form-group">
-              <label className="form-label">New Check No.</label>
-              <input className="form-input" value={cloneCkNo} onChange={e => setCloneCkNo(e.target.value.toUpperCase())} />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Date</label>
-              <input type="date" className="form-input" value={cloneDate} onChange={e => setCloneDate(e.target.value)} />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-              <button className="btn btn-secondary" onClick={() => setShowClone(false)}>Cancel</button>
-              <button className="btn btn-primary" onClick={() => void cloneCurrentCheck()}>Clone</button>
+            <div className="p-6 flex flex-col gap-4">
+              <div><label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">New CDV No.</label><input className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest font-mono uppercase outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" value={cloneJvNo} onChange={e => setCloneJvNo(e.target.value.toUpperCase())} /></div>
+              <div><label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">New Check No.</label><input className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest font-mono uppercase outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" value={cloneCkNo} onChange={e => setCloneCkNo(e.target.value.toUpperCase())} /></div>
+              <div><label className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">Date</label><input type="date" className="w-full px-3 py-2 border border-outline-variant/30 rounded-lg bg-surface-container-lowest outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" value={cloneDate} onChange={e => setCloneDate(e.target.value)} /></div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button onClick={() => setShowClone(false)} className="px-4 py-2 text-sm font-bold text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors">Cancel</button>
+                <button onClick={() => void cloneCurrentCheck()} className="px-5 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 shadow-sm transition-all">Clone</button>
+              </div>
             </div>
           </div>
         </div>
       )}
 
+      {/* Recycle Bin Dialog */}
       {showRecycleBin && (
-        <div className="modal-overlay" onClick={() => setShowRecycleBin(false)}>
-          <div className="modal" style={{ maxWidth: '760px', maxHeight: '80vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title">Deleted Vouchers</h3>
-              <button className="modal-close" onClick={() => setShowRecycleBin(false)}>—</button>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowRecycleBin(false)}>
+          <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-[800px] max-h-[80vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95" onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-outline-variant/20 flex items-center justify-between flex-shrink-0">
+              <h3 className="font-headline font-bold text-lg text-red-600 flex items-center gap-2"><span className="material-symbols-outlined">delete</span> Deleted Vouchers</h3>
+              <button onClick={() => setShowRecycleBin(false)} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-surface-container-high transition-colors"><span className="material-symbols-outlined text-[20px]">close</span></button>
             </div>
-            <table className="data-table" style={{ fontSize: 12 }}>
-              <thead><tr><th>CDV</th><th>Check</th><th>Date</th><th>Payee</th><th style={{ textAlign: 'right' }}>Amount</th><th></th></tr></thead>
-              <tbody>
-                {deletedMasters.length === 0 ? (
-                  <tr><td colSpan={6} style={{ textAlign: 'center' }}>No deleted vouchers found.</td></tr>
-                ) : deletedMasters.map((m) => (
-                  <tr key={m.id}>
-                    <td>{m.jJvNo}</td>
-                    <td>{m.jCkNo}</td>
-                    <td>{displayDate(m.jDate)}</td>
-                    <td>{m.jPayTo}</td>
-                    <td style={{ textAlign: 'right' }}>{m.jCkAmt.toFixed(2)}</td>
-                    <td><button className="btn btn-secondary" onClick={() => void restoreCheck(m.jCkNo)}>Restore</button></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="flex-1 overflow-y-auto">
+              <table className="w-full text-[13px]">
+                <thead className="bg-surface-container-low sticky top-0"><tr><th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider">CDV</th><th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider">Check</th><th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider">Date</th><th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider">Payee</th><th className="px-4 py-2 text-right text-[11px] font-bold uppercase tracking-wider">Amount</th><th className="px-4 py-2 text-center text-[11px] font-bold uppercase tracking-wider">Action</th></tr></thead>
+                <tbody className="divide-y divide-outline-variant/10">
+                  {deletedMasters.length === 0 ? (
+                    <tr><td colSpan={6} className="px-4 py-8 text-center text-on-surface-variant/50 italic">No deleted vouchers found</td></tr>
+                  ) : deletedMasters.map((m) => (
+                    <tr key={m.id} className="hover:bg-surface-container-lowest transition-colors">
+                      <td className="px-4 py-2 font-mono">{m.jJvNo}</td><td className="px-4 py-2 font-mono">{m.jCkNo}</td><td className="px-4 py-2">{displayDate(m.jDate)}</td><td className="px-4 py-2">{m.jPayTo}</td>
+                      <td className="px-4 py-2 text-right font-mono">{m.jCkAmt.toFixed(2)}</td>
+                      <td className="px-4 py-2 text-center"><button onClick={() => void restoreCheck(m.jCkNo)} className="text-primary hover:bg-primary/10 px-3 py-1 rounded-md font-bold text-xs transition-colors">Restore</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Unbalanced Checks Dialog (QUIT flow) */}
+      {/* Unbalanced Checks Dialog */}
       {showUnbalanced && (
-        <div className="modal-overlay" onClick={() => setShowUnbalanced(false)}>
-          <div className="modal" style={{ maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3 className="modal-title" style={{ color: '#dc2626' }}>⚠ Unbalanced Checks</h3>
-              <button className="modal-close" onClick={() => setShowUnbalanced(false)}>—</button>
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowUnbalanced(false)}>
+          <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-[520px] overflow-hidden animate-in fade-in zoom-in-95" onClick={e => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-red-200 bg-red-50">
+              <h3 className="font-headline font-bold text-lg text-red-700 flex items-center gap-2"><span className="material-symbols-outlined">warning</span> Unbalanced Checks</h3>
+              <p className="text-xs text-red-600/80 mt-0.5">Click "Navigate" to jump to the problematic voucher.</p>
             </div>
-            <p style={{ fontSize: '13px', color: '#dc2626', marginBottom: '12px' }}>
-              Cannot exit: the following check(s) have unbalanced amounts. Please resolve before quitting.
-            </p>
-            <table className="data-table" style={{ fontSize: '13px', marginBottom: '16px' }}>
-              <thead><tr><th>Check No.</th><th style={{ textAlign: 'right' }}>Out of Balance</th></tr></thead>
-              <tbody>
-                {unbalancedChecks.map(u => (
-                  <tr key={u.ckNo}>
-                    <td style={{ fontFamily: 'monospace' }}>{u.ckNo}</td>
-                    <td style={{ textAlign: 'right', color: '#dc2626', fontFamily: 'monospace' }}>{u.balance.toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button className="btn btn-primary" onClick={() => setShowUnbalanced(false)}>OK — Return to Fix</button>
+            <div className="p-6 flex flex-col gap-4">
+              <p className="text-sm text-red-700 font-medium">Cannot exit: the following check(s) have unbalanced amounts. Please resolve before quitting.</p>
+              <table className="w-full text-sm">
+                <thead><tr>
+                  <th className="px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-on-surface-variant border-b border-outline-variant/20">Check No.</th>
+                  <th className="px-3 py-2 text-right text-[11px] font-bold uppercase tracking-wider text-red-600 border-b border-outline-variant/20">Out of Balance</th>
+                  <th className="px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wider text-on-surface-variant border-b border-outline-variant/20" style={{ width: '90px' }}>Action</th>
+                </tr></thead>
+                <tbody className="divide-y divide-outline-variant/10">
+                  {unbalancedChecks.map(u => (
+                    <tr key={u.ckNo} className="hover:bg-red-50/50">
+                      <td className="px-3 py-2 font-mono font-medium">{u.ckNo}</td>
+                      <td className="px-3 py-2 text-right text-red-600 font-mono font-bold">{u.balance.toFixed(2)}</td>
+                      <td className="px-3 py-2 text-center">
+                        <button onClick={() => {
+                          const idx = masters.findIndex(m => m.jCkNo === u.ckNo)
+                          if (idx >= 0) {
+                            setCurrentMasterIdx(idx)
+                            setShowUnbalanced(false)
+                            showMsg(`Navigated to unbalanced check: ${u.ckNo}`, 'error')
+                          }
+                        }} className="px-3 py-1 bg-primary text-white text-xs font-bold rounded-md hover:bg-primary/90 transition-colors">
+                          Navigate
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="flex justify-end pt-2">
+                <button onClick={() => setShowUnbalanced(false)} className="px-5 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary/90 shadow-sm transition-all">OK — Return to Fix</button>
+              </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* ── Toast ── */}
+      {message.text && (
+        <div className={`fixed bottom-6 right-6 z-[100] px-5 py-3.5 rounded-xl border text-sm font-semibold shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-3 ${
+          message.type === 'error'
+            ? 'bg-red-600 text-white border-red-700'
+            : message.type === 'success'
+              ? 'bg-emerald-600 text-white border-emerald-700'
+              : 'bg-surface text-on-surface border-outline-variant/30 shadow-lg'
+        }`}>
+          <span className="material-symbols-outlined text-[18px]">
+            {message.type === 'error' ? 'error' : message.type === 'success' ? 'check_circle' : 'info'}
+          </span>
+          {message.text}
+          <button type="button" onClick={() => setMessage({ text: '', type: 'info', field: '' })} className="ml-3 opacity-70 hover:opacity-100 transition-opacity">
+            <span className="material-symbols-outlined text-[16px]">close</span>
+          </button>
         </div>
       )}
     </div>

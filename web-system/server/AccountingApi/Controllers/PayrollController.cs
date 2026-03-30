@@ -977,25 +977,42 @@ public sealed class PayrollController : ControllerBase
     // Mirrors FILEBACK.PRG: copy all DB files to backup location.
     // Modern equivalent: stream the SQLite DB file as a download.
     [HttpGet("backup-db")]
-    public IActionResult BackupDatabase()
+    public async Task<IActionResult> BackupDatabase()
     {
         var connString = _configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting.db";
         var match = System.Text.RegularExpressions.Regex.Match(connString, @"[Dd]ata\s*[Ss]ource=([^;]+)");
         var dbPath = match.Success ? match.Groups[1].Value.Trim() : "accounting.db";
 
-        // Resolve relative path against the content root
         if (!System.IO.Path.IsPathRooted(dbPath))
             dbPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), dbPath);
 
         if (!System.IO.File.Exists(dbPath))
             return NotFound(new { error = "Database file not found at: " + dbPath });
 
+        // WAL checkpoint so .db file has all committed data
+        try
+        {
+            using var rawConn = (Microsoft.Data.Sqlite.SqliteConnection)_db.Database.GetDbConnection();
+            if (rawConn.State != System.Data.ConnectionState.Open)
+                await rawConn.OpenAsync();
+            using var walCmd = rawConn.CreateCommand();
+            walCmd.CommandText = "PRAGMA wal_checkpoint(PASSIVE);";
+            await walCmd.ExecuteNonQueryAsync();
+        }
+        catch { /* best effort */ }
+
         var timestamp = DateTime.Now.ToString("yyyyMMdd-HHmm");
         var downloadName = $"payroll-backup-{timestamp}.db";
+        var tempPath = Path.Combine(Path.GetTempPath(), $"backup_{Guid.NewGuid():N}.db");
 
-        // Read into memory so we don't lock the file
-        var bytes = System.IO.File.ReadAllBytes(dbPath);
-        return File(bytes, "application/octet-stream", downloadName);
+        await Task.Run(() => System.IO.File.Copy(dbPath, tempPath, overwrite: true));
+
+        var fileInfo = new FileInfo(tempPath);
+        var stream = new FileStream(tempPath, FileMode.Open, FileAccess.Read, FileShare.Read,
+            bufferSize: 65536, options: FileOptions.DeleteOnClose | FileOptions.SequentialScan);
+
+        Response.Headers["Content-Length"] = fileInfo.Length.ToString();
+        return File(stream, "application/octet-stream", downloadName);
     }
 
     // ── CHANGE EMPLOYEE NUMBER ────────────────────────────────────────────────

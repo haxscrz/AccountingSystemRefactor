@@ -1,0 +1,7801 @@
+{
+  "tableName": "pay_premmast",
+  "sourcePath": "PAY/RANK/PREMMAST.DBF",
+  "rowCount": 865,
+  "columns": [
+    "PERIOD",
+    "EMP_NO",
+    "EMP_NM",
+    "M_SSEE",
+    "M_MEDEE",
+    "M_PGEE",
+    "M_PGER"
+  ],
+  "rows": [
+    {
+      "PERIOD": "199802",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 66.7,
+      "M_MEDEE": 25,
+      "M_PGEE": 38.5,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199802",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 50,
+      "M_MEDEE": 18.75,
+      "M_PGEE": 14.66,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199802",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 66.7,
+      "M_MEDEE": 25,
+      "M_PGEE": 35.88,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199802",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 66.7,
+      "M_MEDEE": 25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199802",
+      "EMP_NO": "080007",
+      "EMP_NM": "PATUGA         VICENTE        S.",
+      "M_SSEE": 66.7,
+      "M_MEDEE": 25,
+      "M_PGEE": 35.88,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199802",
+      "EMP_NO": "080008",
+      "EMP_NM": "QUINTOS        CHRISTOPHER    A.",
+      "M_SSEE": 66.7,
+      "M_MEDEE": 25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199802",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 66.7,
+      "M_MEDEE": 25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199803",
+      "EMP_NO": "080001",
+      "EMP_NM": "GRANATIN       RENE           M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199803",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199803",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199803",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199803",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199803",
+      "EMP_NO": "080007",
+      "EMP_NM": "PATUGA         VICENTE        S.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199803",
+      "EMP_NO": "080008",
+      "EMP_NM": "QUINTOS        CHRISTOPHER    A.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199803",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199803",
+      "EMP_NO": "080010",
+      "EMP_NM": "CAMAT          J              X",
+      "M_SSEE": 0,
+      "M_MEDEE": 0,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199803",
+      "EMP_NO": "080011",
+      "EMP_NM": "LERONA         EDSEL          Q.",
+      "M_SSEE": 66.7,
+      "M_MEDEE": 25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080001",
+      "EMP_NM": "GRANATIN       RENE           M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080002",
+      "EMP_NM": "FRANCISCO      GELACIO SR.    M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080007",
+      "EMP_NM": "PATUGA         VICENTE        S.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080008",
+      "EMP_NM": "QUINTOS        CHRISTOPHER    A.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080010",
+      "EMP_NM": "CAMAT          JORGIE         R.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080011",
+      "EMP_NM": "LERONA         EDSEL          Q.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080012",
+      "EMP_NM": "MONTILLANO     JOEL           M.",
+      "M_SSEE": 50,
+      "M_MEDEE": 18.75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199804",
+      "EMP_NO": "080013",
+      "EMP_NM": "MERCADO        FERDINAND      P.",
+      "M_SSEE": 0,
+      "M_MEDEE": 0,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080001",
+      "EMP_NM": "GRANATIN       RENE           M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080002",
+      "EMP_NM": "FRANCISCO      GELACIO SR.    M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 200,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080007",
+      "EMP_NM": "PATUGA         VICENTE        S.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080008",
+      "EMP_NM": "QUINTOS        CHRISTOPHER    A.",
+      "M_SSEE": 200,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080010",
+      "EMP_NM": "CAMAT          JORGIE         R.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080011",
+      "EMP_NM": "LERONA         EDSEL          Q.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080012",
+      "EMP_NM": "MONTILLANO     JOEL           M.",
+      "M_SSEE": 200,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080013",
+      "EMP_NM": "MERCADO        FERDINAND      P.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080014",
+      "EMP_NM": "LLAMIDO        LEONIDES       R.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199806",
+      "EMP_NO": "080015",
+      "EMP_NM": "PAGADOR        ALEXANDER      L.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080001",
+      "EMP_NM": "GRANATIN       RENE           M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080002",
+      "EMP_NM": "FRANCISCO      GELACIO SR.    M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080007",
+      "EMP_NM": "PATUGA         VICENTE        S.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080008",
+      "EMP_NM": "QUINTOS        CHRISTOPHER    A.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080010",
+      "EMP_NM": "CAMAT          JORGIE         R.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080011",
+      "EMP_NM": "LERONA         EDSEL          Q.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080012",
+      "EMP_NM": "MONTILLANO     JOEL           M.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080013",
+      "EMP_NM": "MERCADO        FERDINAND      P.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080014",
+      "EMP_NM": "LLAMIDO        LEONIDES       R.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199807",
+      "EMP_NO": "080015",
+      "EMP_NM": "PAGADOR        ALEXANDER      L.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080001",
+      "EMP_NM": "GRANATIN       RENE           M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080002",
+      "EMP_NM": "FRANCISCO      GELACIO SR.    M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 200,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080007",
+      "EMP_NM": "PATUGA         VICENTE        S.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 31.25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080008",
+      "EMP_NM": "QUINTOS        CHRISTOPHER    A.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080010",
+      "EMP_NM": "CAMAT          JORGIE         R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080011",
+      "EMP_NM": "LERONA         EDSEL          Q.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 31.25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080012",
+      "EMP_NM": "MONTILLANO     JOEL           M.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080013",
+      "EMP_NM": "MERCADO        FERDINAND      P.",
+      "M_SSEE": 0,
+      "M_MEDEE": 0,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080014",
+      "EMP_NM": "LLAMIDO        LEONIDES       R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199808",
+      "EMP_NO": "080015",
+      "EMP_NM": "PAGADOR        ALEXANDER      L.",
+      "M_SSEE": 100,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080001",
+      "EMP_NM": "GRANATIN       RENE           M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080002",
+      "EMP_NM": "FRANCISCO      GELACIO SR.    M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 31.25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 31.25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080010",
+      "EMP_NM": "CAMAT          JORGIE         R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080011",
+      "EMP_NM": "LERONA         EDSEL          Q.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080012",
+      "EMP_NM": "MONTILLANO     JOEL           M.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080014",
+      "EMP_NM": "LLAMIDO        LEONIDES       R.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199809",
+      "EMP_NO": "080015",
+      "EMP_NM": "PAGADOR        ALEXANDER      L.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080001",
+      "EMP_NM": "GRANATIN       RENE           M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080002",
+      "EMP_NM": "FRANCISCO      GELACIO SR.    M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 100,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080010",
+      "EMP_NM": "CAMAT          JORGIE         R.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080011",
+      "EMP_NM": "LERONA         EDSEL          Q.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080012",
+      "EMP_NM": "MONTILLANO     JOEL           M.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080014",
+      "EMP_NM": "LLAMIDO        LEONIDES       R.",
+      "M_SSEE": 66.7,
+      "M_MEDEE": 25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080015",
+      "EMP_NM": "PAGADOR        ALEXANDER      L.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199810",
+      "EMP_NO": "080016",
+      "EMP_NM": "AMARANTE       D.             X.",
+      "M_SSEE": 50,
+      "M_MEDEE": 18.75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080001",
+      "EMP_NM": "GRANATIN       RENE           M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080002",
+      "EMP_NM": "FRANCISCO      GELACIO SR.    M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080010",
+      "EMP_NM": "CAMAT          JORGIE         R.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080011",
+      "EMP_NM": "LERONA         EDSEL          Q.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080012",
+      "EMP_NM": "MONTILLANO     JOEL           M.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080015",
+      "EMP_NM": "PAGADOR        ALEXANDER      L.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199811",
+      "EMP_NO": "080016",
+      "EMP_NM": "AMARANTE       D.             X.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080001",
+      "EMP_NM": "GRANATIN       RENE           M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080002",
+      "EMP_NM": "FRANCISCO      GELACIO SR.    M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 250,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 250,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 200,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 200,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080010",
+      "EMP_NM": "CAMAT          JORGIE         R.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080011",
+      "EMP_NM": "LERONA         EDSEL          Q.",
+      "M_SSEE": 200,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080012",
+      "EMP_NM": "MONTILLANO     JOEL           M.",
+      "M_SSEE": 250,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080015",
+      "EMP_NM": "PAGADOR        ALEXANDER      L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199812",
+      "EMP_NO": "080016",
+      "EMP_NM": "AMARANTE       OMAR           V.",
+      "M_SSEE": 200,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080001",
+      "EMP_NM": "GRANATIN       RENE           M.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080002",
+      "EMP_NM": "FRANCISCO      GELACIO SR.    M.",
+      "M_SSEE": 300,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080003",
+      "EMP_NM": "GABATO         DANILO         R.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080004",
+      "EMP_NM": "NEVALGA        GREGORIO       P.",
+      "M_SSEE": 33.3,
+      "M_MEDEE": 12.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080005",
+      "EMP_NM": "PABLO          ALEJANDRO      O.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080006",
+      "EMP_NM": "GALENZOGA      CELSO          P.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080009",
+      "EMP_NM": "SABAYBAY       PERCIVAL       D.",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080010",
+      "EMP_NM": "CAMAT          JORGIE         R.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080012",
+      "EMP_NM": "MONTILLANO     JOEL           M.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080015",
+      "EMP_NM": "PAGADOR        ALEXANDER      L.",
+      "M_SSEE": 100,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080016",
+      "EMP_NM": "AMARANTE       OMAR           V.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080017",
+      "EMP_NM": "MORA           ARLYN          O",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199901",
+      "EMP_NO": "080022",
+      "EMP_NM": "MORA           ARLYN          O.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199902",
+      "EMP_NO": "080022",
+      "EMP_NM": "MORA           ARLYN          O.",
+      "M_SSEE": 350,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199902",
+      "EMP_NO": "080022",
+      "EMP_NM": "MORA           ARLYN          O.",
+      "M_SSEE": 350,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199904",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 85.25,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199904",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 77.39,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199905",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 79.2,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199905",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 86.1,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199906",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 77,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199906",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 150,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 90.2,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199907",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 96.8,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199907",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199908",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199908",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199909",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 200,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 92.9,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199909",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199910",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 99.29,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199910",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 99.36,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199911",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 77.55,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199911",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 350,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 97.2,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199912",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "199912",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200001",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200001",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 95.04,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200002",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200002",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 97.2,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200002",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200003",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 150,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 84.6,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200003",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 95.04,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200003",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200004",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 150,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 82.25,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200004",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 87.48,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200004",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200005",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 81.66,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200005",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 86.4,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200005",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200006",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 98.11,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200006",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 99.36,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200006",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200007",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 96.94,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200007",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200007",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200008",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200008",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 83.16,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200008",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200009",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200009",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200009",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200010",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200010",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200010",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200011",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 78.73,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200011",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 150,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 85.88,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200011",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200012",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          X",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200012",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200012",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 100,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 56.99,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 61.02,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALD         X.",
+      "M_SSEE": 100,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080005",
+      "EMP_NM": "SINANDO        MERCADO        X.",
+      "M_SSEE": 0,
+      "M_MEDEE": 0,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080006",
+      "EMP_NM": "TIO            RIZALLOS       X.",
+      "M_SSEE": 0,
+      "M_MEDEE": 0,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 100,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 56.99,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 61.02,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALD         X.",
+      "M_SSEE": 100,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080005",
+      "EMP_NM": "SINANDO        MERCADO        X.",
+      "M_SSEE": 0,
+      "M_MEDEE": 0,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200101",
+      "EMP_NO": "080006",
+      "EMP_NM": "TIO            RIZALLOS       X.",
+      "M_SSEE": 0,
+      "M_MEDEE": 0,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200102",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 96.94,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200102",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200102",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200102",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALD         X.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200103",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200103",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200103",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200103",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALD         X.",
+      "M_SSEE": 250,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200104",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200104",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200104",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200104",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALD         X.",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200104",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     X.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200105",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 99.39,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200105",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 95.91,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200105",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200105",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALD         X.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200105",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     X.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200106",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 250,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200106",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200106",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALD         X.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200106",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     X.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200107",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200107",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200107",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200107",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALD         X.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200107",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     X.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 43.75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200108",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 54.51,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200108",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 79.01,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200108",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200108",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALD         X.",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200108",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     X.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200109",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200109",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200109",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200109",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALD         X.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200109",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     X.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200110",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200110",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 150,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 92.12,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200110",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200110",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200110",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     X.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200111",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200111",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200111",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200111",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200111",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     X.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200112",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200112",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 250,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200112",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200112",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200112",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     X.",
+      "M_SSEE": 250,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200201",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 83.36,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200201",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 91.08,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200201",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200201",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200201",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     X.",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200201",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 83.36,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200201",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 91.08,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200201",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 400,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200201",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200201",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200202",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 106.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200202",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200202",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200202",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200202",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200202",
+      "EMP_NO": "080006",
+      "EMP_NM": "BORAGAY        ROGELIO        V.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200202",
+      "EMP_NO": "080007",
+      "EMP_NM": "ALMONICAR      JAREM          X",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200203",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 100,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 59.61,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200203",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 68.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200203",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200203",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 98,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200203",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 91,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200203",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200203",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 43.75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200204",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200204",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200204",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200204",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200204",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200204",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 68.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200204",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200205",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 98.03,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200205",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200205",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200205",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 200,
+      "M_MEDEE": 68.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200205",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 98.1,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200205",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200205",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200206",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200206",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200206",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200206",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200206",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200206",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200206",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 43.75,
+      "M_PGEE": 83.01,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 43.75,
+      "M_PGEE": 87.56,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 43.75,
+      "M_PGEE": 80.61,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 74.31,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 52.53,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 54.49,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200207",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200208",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200208",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200208",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200208",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 106.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200208",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 300,
+      "M_MEDEE": 106.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200208",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200208",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200209",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200209",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200209",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200209",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200209",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200209",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200209",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200210",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200210",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200210",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200210",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200210",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 68.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200210",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200210",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200211",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200211",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 200,
+      "M_MEDEE": 68.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200211",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200211",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200211",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 200,
+      "M_MEDEE": 68.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200211",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200211",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200212",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200212",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200212",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200212",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200212",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200212",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200212",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200301",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 54.51,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200301",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 150,
+      "M_MEDEE": 56.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200301",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200301",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 66.7,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 42.8,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200301",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 100,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 71.55,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200301",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 100,
+      "M_MEDEE": 37.5,
+      "M_PGEE": 62.82,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200301",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 43.75,
+      "M_PGEE": 75.58,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200302",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200302",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         X",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200302",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200302",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200302",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200302",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200302",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200303",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 200,
+      "M_MEDEE": 68.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200303",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200303",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200303",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 43.75,
+      "M_PGEE": 79.07,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200303",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 96.87,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200303",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200303",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200304",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200304",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200304",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200304",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200304",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200304",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200304",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200305",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200305",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200305",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200305",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200305",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200305",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200305",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200306",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200306",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 300,
+      "M_MEDEE": 106.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200306",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200306",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200306",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200306",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200306",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200307",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200307",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200307",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200307",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200307",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200307",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200307",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200308",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200308",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200308",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200308",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200308",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 250,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200308",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 300,
+      "M_MEDEE": 106.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200308",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 106.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200309",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200309",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200309",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200309",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200309",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200309",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200309",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200310",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200310",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200310",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200310",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200310",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200310",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 93.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200310",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200311",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 81.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200311",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200311",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200311",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200311",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200311",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 118.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200311",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 118.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200312",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 118.75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200312",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200312",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200312",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 106.25,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200312",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200312",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200312",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200402",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200402",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200402",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200402",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200402",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200402",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200402",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200402",
+      "EMP_NO": "080010",
+      "EMP_NM": "GABO           DEOSEPH        V.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200403",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200403",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200403",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200403",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200403",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200403",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 300,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200403",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200403",
+      "EMP_NO": "080010",
+      "EMP_NM": "GABO           DEOSEPH        V.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200404",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200404",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200404",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200404",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200404",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200404",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200404",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200404",
+      "EMP_NO": "080010",
+      "EMP_NM": "GABO           DEOSEPH        V.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200405",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200405",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200405",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200405",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 300,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200405",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 300,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200405",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 400,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200405",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200405",
+      "EMP_NO": "080010",
+      "EMP_NM": "GABO           DEOSEPH        V.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200406",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200406",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200406",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200406",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200406",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200406",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200406",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200406",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200406",
+      "EMP_NO": "080010",
+      "EMP_NM": "GABO           DEOSEPH        V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200407",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200407",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200407",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200407",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200407",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200407",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200407",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200407",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200407",
+      "EMP_NO": "080010",
+      "EMP_NM": "GABO           DEOSEPH        V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080012",
+      "EMP_NM": "SUBALDO        MICHAEL        S.",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080013",
+      "EMP_NM": "MALUNES        CHARLIE        L.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080014",
+      "EMP_NM": "SAN JUAN       ALEX           S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200408",
+      "EMP_NO": "080015",
+      "EMP_NM": "GALOS          PORTACIO       G.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080012",
+      "EMP_NM": "SUBALDO        MICHAEL        S.",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080013",
+      "EMP_NM": "MALUNES        CHARLIE        L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080014",
+      "EMP_NM": "SAN JUAN       ALEX           S.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200409",
+      "EMP_NO": "080015",
+      "EMP_NM": "GALOS          PORTACIO       G.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080013",
+      "EMP_NM": "MALUNES        CHARLIE        L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080014",
+      "EMP_NM": "SAN JUAN       ALEX           S.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200410",
+      "EMP_NO": "080015",
+      "EMP_NM": "GALOS          PORTACIO       G.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 300,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080013",
+      "EMP_NM": "MALUNES        CHARLIE        L.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080014",
+      "EMP_NM": "SAN JUAN       ALEX           S.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200411",
+      "EMP_NO": "080015",
+      "EMP_NM": "GALOS          PORTACIO       G.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 50,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080013",
+      "EMP_NM": "MALUNES        CHARLIE        L.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080014",
+      "EMP_NM": "SAN JUAN       ALEX           S.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200412",
+      "EMP_NO": "080015",
+      "EMP_NM": "GALOS          PORTACIO       G.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200501",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200501",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 450,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200501",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200501",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200501",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200501",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 237.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200501",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 466.7,
+      "M_MEDEE": 175,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200501",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200501",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 450,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200502",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200502",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200502",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200502",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200502",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200502",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200502",
+      "EMP_NO": "080008",
+      "EMP_NM": "ASTILLO        LEMUEL         G.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200502",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200502",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200503",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200503",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200503",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200503",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200503",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200503",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200503",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200503",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200504",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200504",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200504",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200504",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200504",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200504",
+      "EMP_NO": "080006",
+      "EMP_NM": "FUENTES        MARYROSE       V.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200504",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200504",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200505",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200505",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200505",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200505",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200505",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200505",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200506",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200506",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200506",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200506",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200506",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200506",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200507",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200507",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200507",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200507",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200507",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200508",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200508",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200508",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200508",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200508",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200509",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200509",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200509",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200509",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200509",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200510",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200510",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200510",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200510",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200510",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200511",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200511",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200511",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200511",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200511",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 116.7,
+      "M_MEDEE": 50,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200512",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200512",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200512",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 250,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200512",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200512",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200601",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200601",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200601",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 312.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200601",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 400,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200601",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200601",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200601",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 50,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200601",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 287.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200601",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 50,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200601",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200602",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200602",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200602",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 312.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200602",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200602",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200602",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 100,
+      "M_MEDEE": 50,
+      "M_PGEE": 70.21,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200603",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200603",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200603",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 300,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200603",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200603",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 50,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200603",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200604",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200604",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200604",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 300,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200604",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200604",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200604",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200605",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200605",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200605",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 312.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200605",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200605",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200605",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200606",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200606",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200606",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 312.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200606",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200606",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200606",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200607",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200607",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200607",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 312.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200607",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200607",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 300,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200607",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200608",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200608",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200608",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 312.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200608",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200608",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200608",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 450,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200609",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200609",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200609",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 312.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200609",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200609",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200609",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200610",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200610",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200610",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 312.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200610",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200610",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200610",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200610",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200610",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200610",
+      "EMP_NO": "080016",
+      "EMP_NM": "VILLALON       ANGELITO       M.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 312.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 466.7,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080016",
+      "EMP_NM": "VILLALON       ANGELITO       M.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080017",
+      "EMP_NM": "ANGULO         JESUS MARCIAL  R.",
+      "M_SSEE": 150,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080018",
+      "EMP_NM": "SUROP          WILDON         L.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080019",
+      "EMP_NM": "LAMOC          ENRIQUE        Q.",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080020",
+      "EMP_NM": "OCAMPO         JAYSON         L.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200611",
+      "EMP_NO": "080021",
+      "EMP_NM": "ODO¥O          MARDEN         C.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 312.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 400,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 500,
+      "M_MEDEE": 200,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080016",
+      "EMP_NM": "VILLALON       ANGELITO       M.",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080017",
+      "EMP_NM": "ANGULO         JESUS MARCIAL  R.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080018",
+      "EMP_NM": "SUROP          WILDON         L.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080019",
+      "EMP_NM": "LAMOC          ENRIQUE        Q.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080020",
+      "EMP_NM": "OCAMPO         JAYSON         L.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200612",
+      "EMP_NO": "080021",
+      "EMP_NM": "ODO¥O          MARDEN         C.",
+      "M_SSEE": 133.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 216.7,
+      "M_MEDEE": 75,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 375,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080016",
+      "EMP_NM": "VILLALON       ANGELITO       M.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080018",
+      "EMP_NM": "SUROP          WELDON         L.",
+      "M_SSEE": 183.3,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080019",
+      "EMP_NM": "LAMOC          ENRIQUE        Q.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080020",
+      "EMP_NM": "OCAMPO         JAYSON         L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200701",
+      "EMP_NO": "080022",
+      "EMP_NM": "FUENTES        LEONARDO JR.   V.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 400,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 375,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 466.7,
+      "M_MEDEE": 175,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080016",
+      "EMP_NM": "VILLALON       ANGELITO       M.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080018",
+      "EMP_NM": "SUROP          WELDON         L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080019",
+      "EMP_NM": "LAMOC          ENRIQUE        Q.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080020",
+      "EMP_NM": "OCAMPO         JAYSON         L.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200702",
+      "EMP_NO": "080022",
+      "EMP_NM": "FUENTES        LEONARDO JR.   V.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 375,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 500,
+      "M_MEDEE": 175,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080016",
+      "EMP_NM": "VILLALON       ANGELITO       M.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080018",
+      "EMP_NM": "SUROP          WELDON         L.",
+      "M_SSEE": 300,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080019",
+      "EMP_NM": "LAMOC          ENRIQUE        Q.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080020",
+      "EMP_NM": "OCAMPO         JAYSON         L.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200703",
+      "EMP_NO": "080022",
+      "EMP_NM": "FUENTES        LEONARDO JR.   V.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 450,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 466.7,
+      "M_MEDEE": 175,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 375,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 500,
+      "M_MEDEE": 200,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080022",
+      "EMP_NM": "FUENTES        LEONARDO JR.   V.",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 150,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080023",
+      "EMP_NM": "DEINLA         CHRISTIAN      V.",
+      "M_SSEE": 166.7,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080024",
+      "EMP_NM": "DE GUZMAN      RYAN JAN       F.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200704",
+      "EMP_NO": "080025",
+      "EMP_NM": "CALINGASAN     RICO           T.",
+      "M_SSEE": 66.7,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 375,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 500,
+      "M_MEDEE": 212.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 500,
+      "M_MEDEE": 225,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 466.7,
+      "M_MEDEE": 175,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080019",
+      "EMP_NM": "LAMOC          ENRIQUE        Q.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080020",
+      "EMP_NM": "OCAMPO         JAYSON         L.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080023",
+      "EMP_NM": "DEINLA         CHRISTIAN      V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080024",
+      "EMP_NM": "DE GUZMAN      RYAN JAY       F.",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080025",
+      "EMP_NM": "CALINGASAN     RICO           T.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080026",
+      "EMP_NM": "LAZO           LORNA          S.",
+      "M_SSEE": 83.3,
+      "M_MEDEE": 50,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200705",
+      "EMP_NO": "080027",
+      "EMP_NM": "VILLALON       ANGELITO       M.",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 450,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 375,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 500,
+      "M_MEDEE": 200,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 500,
+      "M_MEDEE": 200,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 466.7,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 500,
+      "M_MEDEE": 200,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080016",
+      "EMP_NM": "VILLALON       ANGELITO       M.",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 150,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080019",
+      "EMP_NM": "LAMOC          ENRIQUE        Q.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080020",
+      "EMP_NM": "OCAMPO         JAYSON         L.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080023",
+      "EMP_NM": "DEINLA         CHRISTIAN      V.",
+      "M_SSEE": 450,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080024",
+      "EMP_NM": "DE GUZMAN      RYAN JAY       F.",
+      "M_SSEE": 466.7,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080025",
+      "EMP_NM": "CALINGASAN     RICO           T.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080026",
+      "EMP_NM": "LAZO           LORNA          S.",
+      "M_SSEE": 450,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080028",
+      "EMP_NM": "FUENTES        MARYLOU        V.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080029",
+      "EMP_NM": "OCAMPO         JEFFREY        L.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200706",
+      "EMP_NO": "080030",
+      "EMP_NM": "FLORES         TIM JR.        V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 416.7,
+      "M_MEDEE": 150,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 375,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 500,
+      "M_MEDEE": 200,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 500,
+      "M_MEDEE": 225,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 483.3,
+      "M_MEDEE": 175,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080016",
+      "EMP_NM": "VILLALON       ANGELITO       M.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080019",
+      "EMP_NM": "LAMOC          ENRIQUE        Q.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080020",
+      "EMP_NM": "OCAMPO         JAYSON         L.",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080024",
+      "EMP_NM": "DE GUZMAN      RYAN JAY       F.",
+      "M_SSEE": 500,
+      "M_MEDEE": 175,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080025",
+      "EMP_NM": "CALINGASAN     RICO           T.",
+      "M_SSEE": 233.3,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080026",
+      "EMP_NM": "LAZO           LORNA          S.",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080028",
+      "EMP_NM": "FUENTES        MARYLOU        V.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080029",
+      "EMP_NM": "OCAMPO         JEFFREY        L.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200707",
+      "EMP_NO": "080030",
+      "EMP_NM": "FLORES         TIM JR.        V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 466.7,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 466.7,
+      "M_MEDEE": 175,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 375,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080004",
+      "EMP_NM": "DE GUZMAN      RONALDO        L.",
+      "M_SSEE": 500,
+      "M_MEDEE": 212.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 483.3,
+      "M_MEDEE": 175,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080006",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 500,
+      "M_MEDEE": 237.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080009",
+      "EMP_NM": "LAMOC          FRANCISCO      Q.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 450,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080016",
+      "EMP_NM": "VILLALON       ANGELITO       M.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080019",
+      "EMP_NM": "LAMOC          ENRIQUE        Q.",
+      "M_SSEE": 400,
+      "M_MEDEE": 150,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080020",
+      "EMP_NM": "OCAMPO         JAYSON         L.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080023",
+      "EMP_NM": "DEINLA         CHRISTIAN      V.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080024",
+      "EMP_NM": "DE GUZMAN      RYAN JAY       F.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080028",
+      "EMP_NM": "FUENTES        MARYLOU        V.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080029",
+      "EMP_NM": "OCAMPO         JEFFREY        L.",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080030",
+      "EMP_NM": "FLORES         TIM JR.        V.",
+      "M_SSEE": 350,
+      "M_MEDEE": 125,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080031",
+      "EMP_NM": "DINGLE         CRISANTO       M.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080032",
+      "EMP_NM": "CALIMBAS       EUGENIO        J.",
+      "M_SSEE": 400,
+      "M_MEDEE": 150,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080033",
+      "EMP_NM": "AGLORO         AMANTE         S.",
+      "M_SSEE": 383.3,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080034",
+      "EMP_NM": "MAJESTRADO     ANSELMO        V.",
+      "M_SSEE": 200,
+      "M_MEDEE": 75,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "200708",
+      "EMP_NO": "080035",
+      "EMP_NM": "SE¥ORA         AUGUSTO        M.",
+      "M_SSEE": 400,
+      "M_MEDEE": 137.5,
+      "M_PGEE": 0,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080001",
+      "EMP_NM": "HEMBRA         ERNIE          S.",
+      "M_SSEE": 200,
+      "M_MEDEE": 62.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080002",
+      "EMP_NM": "MALIG-ON       ROBERT         S",
+      "M_SSEE": 366.7,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080003",
+      "EMP_NM": "FUENTES        LEO            V.",
+      "M_SSEE": 500,
+      "M_MEDEE": 375,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080005",
+      "EMP_NM": "CASIANO        BIENVENIDO     R.",
+      "M_SSEE": 500,
+      "M_MEDEE": 187.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080011",
+      "EMP_NM": "GRETA          ROBERTO        G.",
+      "M_SSEE": 300,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080019",
+      "EMP_NM": "LAMOC          ENRIQUE        Q.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080020",
+      "EMP_NM": "OCAMPO         JAYSON         L.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080033",
+      "EMP_NM": "AGLORO         AMANTE         S.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080034",
+      "EMP_NM": "MAJESTRADO     ANSELMO        V.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080041",
+      "EMP_NM": "BALADJAY       RICKY          F.",
+      "M_SSEE": 316.7,
+      "M_MEDEE": 112.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080043",
+      "EMP_NM": "URSUA          NORMAN         M.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080044",
+      "EMP_NM": "ODO¥O          ARNEL          V.",
+      "M_SSEE": 266.7,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080045",
+      "EMP_NM": "FRONDOZO       ARNEL          E.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080051",
+      "EMP_NM": "CALIMBAS       EUGENIO        J.",
+      "M_SSEE": 283.3,
+      "M_MEDEE": 100,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080052",
+      "EMP_NM": "NOGRADO        ANTHONY        A.",
+      "M_SSEE": 333.3,
+      "M_MEDEE": 125,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080056",
+      "EMP_NM": "LLORENTE       MARYROSE       F.",
+      "M_SSEE": 500,
+      "M_MEDEE": 225,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080058",
+      "EMP_NM": "ELPA           MAR JOSEPH     B.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080059",
+      "EMP_NM": "DIACAJO        NOEL           D.",
+      "M_SSEE": 250,
+      "M_MEDEE": 87.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    },
+    {
+      "PERIOD": "201101",
+      "EMP_NO": "080065",
+      "EMP_NM": "FUENTES        CAROL          R.",
+      "M_SSEE": 433.3,
+      "M_MEDEE": 162.5,
+      "M_PGEE": 100,
+      "M_PGER": null
+    }
+  ]
+}

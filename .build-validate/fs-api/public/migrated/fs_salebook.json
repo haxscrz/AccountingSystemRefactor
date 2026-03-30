@@ -1,0 +1,35 @@
+{
+  "tableName": "fs_salebook",
+  "sourcePath": "FS_test/Real Data/data/SALEBOOK.DBF",
+  "rowCount": 3,
+  "columns": [
+    "J_JV_NO",
+    "J_DATE",
+    "ACCT_CODE",
+    "J_CK_AMT",
+    "J_D_OR_C"
+  ],
+  "rows": [
+    {
+      "J_JV_NO": "SB#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "1123",
+      "J_CK_AMT": 2882335.37,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "SB#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2122",
+      "J_CK_AMT": 308821.65,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "SB#02",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4200",
+      "J_CK_AMT": 2573513.72,
+      "J_D_OR_C": "C"
+    }
+  ]
+}

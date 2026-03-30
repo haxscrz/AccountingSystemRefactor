@@ -492,3 +492,76 @@ public sealed class FSSysId : CompanyScopedEntity
     [Column("updated_at")]
     public DateTime UpdatedAt { get; set; }
 }
+
+[Table("fs_banks")]
+public sealed class FSBank : CompanyScopedEntity
+{
+    [Key]
+    public int Id { get; set; }
+
+    [Column("bank_no")]
+    public int BankNo { get; set; }
+
+    [Required]
+    [Column("bank_name")]
+    [MaxLength(100)]
+    public string BankName { get; set; } = string.Empty;
+
+    [Column("bank_addr")]
+    [MaxLength(200)]
+    public string? BankAddr { get; set; }
+
+    [Column("bank_acct")]
+    [MaxLength(50)]
+    public string? BankAcct { get; set; }
+}
+
+[Table("fs_supplier")]
+public sealed class FSSupplier : CompanyScopedEntity
+{
+    [Key]
+    public int Id { get; set; }
+
+    [Column("sup_no")]
+    public int SupNo { get; set; }
+
+    [Required]
+    [Column("sup_name")]
+    [MaxLength(150)]
+    public string SupName { get; set; } = string.Empty;
+
+    [Column("sup_addr")]
+    [MaxLength(250)]
+    public string? SupAddr { get; set; }
+
+    [Column("sup_phone")]
+    [MaxLength(50)]
+    public string? SupPhone { get; set; }
+
+    [Column("sup_fax")]
+    [MaxLength(50)]
+    public string? SupFax { get; set; }
+
+    [Column("sup_contak")]
+    [MaxLength(100)]
+    public string? SupContak { get; set; }
+}
+
+[Table("fs_signatories")]
+public sealed class FSSignatory : CompanyScopedEntity
+{
+    [Key]
+    public int Id { get; set; }
+
+    [Required]
+    [Column("sign_name")]
+    [MaxLength(100)]
+    public string SignName { get; set; } = string.Empty;
+
+    [Column("sign_title")]
+    [MaxLength(100)]
+    public string? SignTitle { get; set; }
+
+    [Column("is_active")]
+    public bool IsActive { get; set; } = true;
+}

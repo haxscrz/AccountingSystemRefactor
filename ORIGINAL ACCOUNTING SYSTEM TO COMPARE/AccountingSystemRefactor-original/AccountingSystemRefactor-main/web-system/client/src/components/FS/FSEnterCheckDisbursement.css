@@ -1,0 +1,428 @@
+/* FSEnterCheckDisbursement.css - Based on PRG terminal interface */
+
+.fs-check-disbursement {
+  background-color: #000033;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+  padding: 1rem;
+  min-height: 100vh;
+  border: 3px outset #0000ff;
+}
+
+.screen-container {
+  max-width: 85ch;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #ffff00;
+  padding-bottom: 0.5rem;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+}
+
+.message {
+  background-color: #ff0000;
+  color: #ffffff;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ffff00;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Data display section */
+.data-display {
+  background-color: #000055;
+  border: 3px outset #ffff00;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.field-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+}
+
+.field-group label {
+  min-width: 20ch;
+  font-weight: bold;
+  text-align: right;
+}
+
+.field-group .value {
+  min-width: 20ch;
+  background-color: #000033;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #00ff00;
+}
+
+.field-group .value.numeric {
+  text-align: right;
+  font-weight: bold;
+  color: #00ff00;
+}
+
+.field-group .description {
+  flex: 1;
+  color: #00ff00;
+  padding-left: 1rem;
+}
+
+.divider {
+  border-top: 1px dotted #ffff00;
+  margin: 1rem 0;
+}
+
+/* Menu buttons */
+.menu-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #000055;
+  border: 2px solid #ffff00;
+}
+
+.menu-buttons button {
+  background-color: #0000ff;
+  color: #ffff00;
+  border: 2px outset #ffff00;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  min-width: 80px;
+  transition: all 0.2s;
+}
+
+.menu-buttons button:hover {
+  background-color: #ffff00;
+  color: #0000ff;
+  border-style: inset;
+}
+
+.menu-buttons button:active {
+  border-style: inset;
+}
+
+/* Unbalanced checks notice */
+.unbalanced-notice {
+  background-color: #ff0000;
+  color: #ffffff;
+  border: 3px solid #ffff00;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.unbalanced-notice h3 {
+  margin-top: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.unbalanced-notice ul {
+  list-style: none;
+  padding: 0;
+}
+
+.unbalanced-notice li {
+  padding: 0.25rem 0;
+  font-weight: bold;
+}
+
+/* Edit container */
+.edit-container {
+  background-color: #000055;
+  border: 3px outset #ffff00;
+  padding: 1.5rem;
+  max-width: 90ch;
+}
+
+.edit-container h3 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #ffff00;
+  padding-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.edit-form {
+  margin-bottom: 1.5rem;
+}
+
+.form-section {
+  background-color: #000033;
+  border: 2px solid #00ff00;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-section h4,
+.form-section h5 {
+  background-color: #0000ff;
+  color: #ffff00;
+  padding: 0.25rem 0.5rem;
+  margin: 0 -1rem 0.75rem -1rem;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.form-group label {
+  min-width: 22ch;
+  text-align: right;
+  font-weight: bold;
+  color: #ffff00;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  flex: 1;
+  background-color: #ffffff;
+  color: #000033;
+  border: 2px inset #00ff00;
+  padding: 0.4rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+}
+
+.form-group input:disabled,
+.form-group select:disabled {
+  background-color: #cccccc;
+  color: #666666;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  background-color: #00ff00;
+  color: #000033;
+  border-color: #ffff00;
+}
+
+/* Voucher list */
+.voucher-list {
+  margin: 1rem 0;
+}
+
+.voucher-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.voucher-list table th {
+  background-color: #0000ff;
+  color: #ffff00;
+  padding: 0.5rem;
+  text-align: left;
+  border: 1px solid #00ff00;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.voucher-list table td {
+  background-color: #000033;
+  color: #ffff00;
+  padding: 0.4rem;
+  border: 1px solid #00ff00;
+}
+
+.voucher-list table tr.active td {
+  background-color: #0000ff;
+  color: #00ff00;
+  font-weight: bold;
+}
+
+.voucher-list table td.numeric {
+  text-align: right;
+  font-weight: bold;
+}
+
+.voucher-list table button {
+  background-color: #0000ff;
+  color: #ffff00;
+  border: 1px solid #ffff00;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+
+.voucher-list table button:hover {
+  background-color: #ffff00;
+  color: #0000ff;
+}
+
+/* Totals display */
+.totals {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2rem;
+  background-color: #000055;
+  padding: 0.75rem;
+  border: 1px solid #00ff00;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.totals span {
+  min-width: 20ch;
+  text-align: right;
+}
+
+.totals span.balanced {
+  color: #00ff00;
+}
+
+.totals span.unbalanced {
+  color: #ff0000;
+  font-weight: bold;
+}
+
+/* Button groups */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.btn-primary {
+  background-color: #0000ff;
+  color: #ffff00;
+  border: 2px outset #ffff00;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.btn-primary:hover {
+  background-color: #ffff00;
+  color: #0000ff;
+  border-style: inset;
+}
+
+.btn-primary:active {
+  border-style: inset;
+}
+
+.btn-secondary {
+  background-color: #00ff00;
+  color: #000033;
+  border: 2px outset #ffff00;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.btn-secondary:hover {
+  background-color: #ffff00;
+  color: #000033;
+  border-style: inset;
+}
+
+.btn-secondary:active {
+  border-style: inset;
+}
+
+.btn-danger {
+  background-color: #ff0000;
+  color: #ffffff;
+  border: 2px outset #ffff00;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.btn-danger:hover {
+  background-color: #ffff00;
+  color: #ff0000;
+  border-style: inset;
+}
+
+.btn-danger:active {
+  border-style: inset;
+}
+
+/* Responsive adjustments */
+@media (max-width: 800px) {
+  .field-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .field-group label {
+    min-width: auto;
+    text-align: left;
+  }
+
+  .form-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form-group label {
+    min-width: auto;
+    text-align: left;
+  }
+
+  .menu-buttons {
+    flex-direction: column;
+  }
+
+  .menu-buttons button {
+    width: 100%;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    width: 100%;
+  }
+}

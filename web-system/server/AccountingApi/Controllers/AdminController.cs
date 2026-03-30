@@ -8,7 +8,7 @@ namespace AccountingApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Policy = "SuperAdminOnly")]
+[Authorize]
 public sealed class AdminController : ControllerBase
 {
     private readonly DatabaseSeeder _seeder;
@@ -21,6 +21,7 @@ public sealed class AdminController : ControllerBase
     }
 
     [HttpPost("seed")]
+    [Authorize(Policy = "SuperAdminOnly")]
     public async Task<IActionResult> SeedDatabase()
     {
         var seeded = await _seeder.SeedAsync();
@@ -38,7 +39,9 @@ public sealed class AdminController : ControllerBase
         });
     }
 
+    // Audit logs: accessible to any authenticated FS user (not superadmin-only)
     [HttpGet("audit-logs")]
+    [Authorize(Policy = "CanFs")]
     public async Task<IActionResult> GetAuditLogs(
         [FromQuery] string? username,
         [FromQuery] string? eventType,

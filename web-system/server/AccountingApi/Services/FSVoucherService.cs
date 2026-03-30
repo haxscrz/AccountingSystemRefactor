@@ -61,7 +61,7 @@ public interface IFSVoucherService
     Task<VoucherBalance> GetVoucherBalanceAsync(string checkNo);
 
     /// <summary>Get all checks with unbalanced totals</summary>
-    Task<List<FSCheckMas>> GetUnbalancedChecksAsync();
+    Task<List<object>> GetUnbalancedChecksAsync();
 
     Task<bool> CheckNumberExistsAsync(string checkNo);
     Task<bool> JVNumberExistsAsync(string jvNo);
@@ -424,20 +424,25 @@ public class FSVoucherService : IFSVoucherService
     /// <summary>
     /// Get list of all unbalanced checks (Total Debit != Total Credit)
     /// </summary>
-    public async Task<List<FSCheckMas>> GetUnbalancedChecksAsync()
+    public async Task<List<object>> GetUnbalancedChecksAsync()
     {
         var allChecks = await _context.FSCheckMas
             .AsNoTracking()
             .ToListAsync();
 
-        var unbalanced = new List<FSCheckMas>();
+        var unbalanced = new List<object>();
 
         foreach (var check in allChecks)
         {
             var balance = await GetVoucherBalanceAsync(check.JCkNo);
             if (!balance.IsBalanced)
             {
-                unbalanced.Add(check);
+                unbalanced.Add(new {
+                    jCkNo = check.JCkNo,
+                    balance = balance.Balance,
+                    totalDebit = balance.TotalDebit,
+                    totalCredit = balance.TotalCredit
+                });
             }
         }
 

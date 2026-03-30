@@ -1,5 +1,6 @@
-﻿﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
+import PageHeader from '../PageHeader'
 
 interface Account {
   acctCode: string
@@ -13,16 +14,41 @@ interface Account {
   initialize: boolean
 }
 
+const ACCOUNT_GROUPS = [
+  { key: 'asset', label: 'Asset', icon: 'account_balance' },
+  { key: 'liability', label: 'Liability', icon: 'payments' },
+  { key: 'equity', label: 'Equity', icon: 'pie_chart' },
+  { key: 'revenue', label: 'Revenue', icon: 'trending_up' },
+  { key: 'expense', label: 'Expense', icon: 'receipt_long' },
+]
+
+// Categorize by account code prefix, matching the original PRG system:
+// 1xxx = Asset, 2xxx = Liability, 3xxx = Equity, 4xxx = Revenue, 5xxx+ = Expense
+function getGroup(a: Account): string {
+  const code = (a.acctCode || '').trim()
+  const first = code.charAt(0)
+  if (first === '1') return 'asset'
+  if (first === '2') return 'liability'
+  if (first === '3') return 'equity'
+  if (first === '4') return 'revenue'
+  return 'expense' // 5xxx and above
+}
+
+function fmt(n: number) {
+  return n.toLocaleString('en-PH', { minimumFractionDigits: 2 })
+}
+
 export default function FSChartOfAccounts() {
   const API_BASE = '/api/fs'
   const [accounts, setAccounts] = useState<Account[]>([])
   const [currentAccountIndex, setCurrentAccountIndex] = useState(0)
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState<'main' | 'editing'>('main')
   const [editMode, setEditMode] = useState<'add' | 'edit' | null>(null)
   const [showFindDialog, setShowFindDialog] = useState(false)
   const [findCode, setFindCode] = useState('')
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['asset']))
 
   // Form state
   const [acctCode, setAcctCode] = useState('')
@@ -35,10 +61,7 @@ export default function FSChartOfAccounts() {
   const [formula, setFormula] = useState('DC')
   const [initialize, setInitialize] = useState(false)
 
-  useEffect(() => {
-    loadAllAccounts()
-  }, [])
-
+  useEffect(() => { loadAllAccounts() }, [])
   useEffect(() => {
     if (accounts.length > 0 && currentAccountIndex >= 0 && currentAccountIndex < accounts.length) {
       displayAccount(accounts[currentAccountIndex])
@@ -48,457 +71,448 @@ export default function FSChartOfAccounts() {
   const loadAllAccounts = async () => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`${API_BASE}/accounts`)
-      const data = response.data?.data || response.data || []
+      const res = await axios.get(`${API_BASE}/accounts`)
+      const data = res.data?.data || res.data || []
       setAccounts(data)
-      if (data.length > 0) {
-        setCurrentAccountIndex(0)
-        displayAccount(data[0])
-      }
-      setMessage('')
-    } catch (error: any) {
-      setMessage(`Error loading accounts: ${error.message}`)
-    } finally {
-      setIsLoading(false)
-    }
+      if (data.length > 0) { setCurrentAccountIndex(0); displayAccount(data[0]) }
+    } catch (e: any) { setMessage(`Error: ${e.message}`) }
+    finally { setIsLoading(false) }
   }
 
-  const displayAccount = (account: Account) => {
-    setAcctCode(account.acctCode || '')
-    setAcctDesc(account.acctDesc || '')
-    setOpenBal(parseFloat(String(account.openBal || 0)).toFixed(2))
-    setCurDebit(parseFloat(String(account.curDebit || 0)).toFixed(2))
-    setCurCredit(parseFloat(String(account.curCredit || 0)).toFixed(2))
-    setGlReport(account.glReport || '')
-    setGlEffect(account.glEffect || '')
-    setFormula(account.formula || 'DC')
-    setInitialize(account.initialize === true || account.initialize === 'Y' as any)
+  const displayAccount = (a: Account) => {
+    setAcctCode(a.acctCode || '')
+    setAcctDesc(a.acctDesc || '')
+    setOpenBal(parseFloat(String(a.openBal || 0)).toFixed(2))
+    setCurDebit(parseFloat(String(a.curDebit || 0)).toFixed(2))
+    setCurCredit(parseFloat(String(a.curCredit || 0)).toFixed(2))
+    setGlReport(a.glReport || '')
+    setGlEffect(a.glEffect || '')
+    setFormula(a.formula || 'DC')
+    setInitialize(a.initialize === true || (a.initialize as any) === 'Y')
   }
 
   const clearDisplay = () => {
-    setAcctCode('')
-    setAcctDesc('')
-    setOpenBal('0.00')
-    setCurDebit('0.00')
-    setCurCredit('0.00')
-    setGlReport('')
-    setGlEffect('')
-    setFormula('DC')
-    setInitialize(false)
+    setAcctCode(''); setAcctDesc(''); setOpenBal('0.00')
+    setCurDebit('0.00'); setCurCredit('0.00')
+    setGlReport(''); setGlEffect(''); setFormula('DC'); setInitialize(false)
   }
 
   const handleFind = async () => {
-    if (!findCode.trim()) {
-      setMessage('Please enter an account code')
-      return
-    }
+    if (!findCode.trim()) return
     try {
-      const response = await axios.get(`${API_BASE}/accounts/navigation/seek/${findCode}`)
-      const account = response.data?.data
+      const res = await axios.get(`${API_BASE}/accounts/navigation/seek/${findCode}`)
+      const account = res.data?.data
       if (account) {
-        const index = accounts.findIndex(a => a.acctCode === account.acctCode)
-        if (index >= 0) {
-          setCurrentAccountIndex(index)
-          setMessage('')
-        }
-      } else {
-        setMessage(`No account found with code >= "${findCode}"`)
+        const idx = accounts.findIndex(a => a.acctCode === account.acctCode)
+        if (idx >= 0) setCurrentAccountIndex(idx)
       }
-    } catch (error: any) {
-      setMessage(`Find failed: ${error.message}`)
-    }
-    setShowFindDialog(false)
-    setFindCode('')
-  }
-
-  const handleNext = () => {
-    if (accounts.length === 0) {
-      setMessage('No accounts to navigate')
-      return
-    }
-    if (currentAccountIndex >= accounts.length - 1) {
-      setMessage('This is the last record!')
-      return
-    }
-    setCurrentAccountIndex(currentAccountIndex + 1)
-  }
-
-  const handlePrevious = () => {
-    if (accounts.length === 0) {
-      setMessage('No accounts to navigate')
-      return
-    }
-    if (currentAccountIndex <= 0) {
-      setMessage('This is the first record!')
-      return
-    }
-    setCurrentAccountIndex(currentAccountIndex - 1)
-  }
-
-  const handleFirst = () => {
-    if (accounts.length === 0) {
-      setMessage('No accounts')
-      return
-    }
-    setCurrentAccountIndex(0)
-  }
-
-  const handleLast = () => {
-    if (accounts.length === 0) {
-      setMessage('No accounts')
-      return
-    }
-    setCurrentAccountIndex(accounts.length - 1)
-  }
-
-  const handleAdd = () => {
-    clearDisplay()
-    setEditMode('add')
-    setActiveTab('editing')
-  }
-
-  const handleEdit = () => {
-    if (accounts.length === 0 || !acctCode) {
-      setMessage('No account selected to edit')
-      return
-    }
-    setEditMode('edit')
-    setActiveTab('editing')
+    } catch (e: any) { setMessage(`Find failed: ${e.message}`) }
+    setShowFindDialog(false); setFindCode('')
   }
 
   const handleSave = async () => {
-    if (!acctCode.trim()) {
-      setMessage('Account Code is required')
-      return
+    if (!acctCode.trim()) { setMessage('Account Code is required'); return }
+    if (!acctDesc.trim()) { setMessage('Account Description is required'); return }
+    const payload = {
+      acctCode: acctCode.toUpperCase(), acctDesc,
+      openBal: parseFloat(openBal) || 0, curDebit: parseFloat(curDebit) || 0,
+      curCredit: parseFloat(curCredit) || 0, glReport: glReport.toUpperCase(),
+      glEffect: glEffect.toUpperCase(), formula: formula.toUpperCase(), initialize
     }
-    if (!acctDesc.trim()) {
-      setMessage('Account Description is required')
-      return
-    }
-    if (!['CD', 'DC'].includes(formula.toUpperCase())) {
-      setMessage('Formula must be either CD or DC')
-      return
-    }
-
-    const accountData = {
-      acctCode: acctCode.toUpperCase(),
-      acctDesc: acctDesc,
-      openBal: parseFloat(openBal) || 0,
-      curDebit: parseFloat(curDebit) || 0,
-      curCredit: parseFloat(curCredit) || 0,
-      glReport: glReport.toUpperCase(),
-      glEffect: glEffect.toUpperCase(),
-      formula: formula.toUpperCase(),
-      initialize: initialize
-    }
-
     try {
       if (editMode === 'add') {
-        const response = await axios.post(`${API_BASE}/accounts`, accountData)
-        setMessage(`Account ${accountData.acctCode} added successfully`)
-        setAccounts([...accounts, response.data?.data || accountData as Account])
-      } else if (editMode === 'edit') {
-        await axios.put(`${API_BASE}/accounts/${acctCode}`, accountData)
-        const updatedAccounts = accounts.map(a => 
-          a.acctCode === acctCode ? { ...a, ...accountData } : a
-        )
-        setAccounts(updatedAccounts)
-        setMessage(`Account ${accountData.acctCode} updated successfully`)
+        const res = await axios.post(`${API_BASE}/accounts`, payload)
+        setAccounts([...accounts, res.data?.data || payload as Account])
+        setMessage(`Account ${payload.acctCode} added`)
+      } else {
+        await axios.put(`${API_BASE}/accounts/${acctCode}`, payload)
+        setAccounts(accounts.map(a => a.acctCode === acctCode ? { ...a, ...payload } : a))
+        setMessage(`Account ${payload.acctCode} updated`)
       }
-      setActiveTab('main')
       setEditMode(null)
-    } catch (error: any) {
-      setMessage(`Error saving account: ${error.response?.data?.message || error.message}`)
-    }
+    } catch (e: any) { setMessage(`Error: ${e.response?.data?.message || e.message}`) }
   }
 
   const handleDelete = async () => {
-    if (!acctCode) {
-      setMessage('No account selected to delete')
-      return
-    }
-    if (!window.confirm(`Are you sure you want to delete account ${acctCode}?`)) {
-      return
-    }
+    if (!acctCode || !window.confirm(`Delete account ${acctCode}?`)) return
     try {
       await axios.delete(`${API_BASE}/accounts/${acctCode}`)
-      const updatedAccounts = accounts.filter(a => a.acctCode !== acctCode)
-      setAccounts(updatedAccounts)
-      if (updatedAccounts.length > 0) {
-        if (currentAccountIndex >= updatedAccounts.length) {
-          setCurrentAccountIndex(updatedAccounts.length - 1)
-        } else {
-          displayAccount(updatedAccounts[currentAccountIndex])
-        }
-      } else {
-        clearDisplay()
-      }
-      setMessage(`Account ${acctCode} deleted successfully`)
-    } catch (error: any) {
-      setMessage(`Error deleting account: ${error.message}`)
-    }
+      const updated = accounts.filter(a => a.acctCode !== acctCode)
+      setAccounts(updated)
+      if (updated.length > 0) setCurrentAccountIndex(Math.min(currentAccountIndex, updated.length - 1))
+      else clearDisplay()
+      setMessage(`Account ${acctCode} deleted`)
+    } catch (e: any) { setMessage(`Error: ${e.message}`) }
   }
 
-  const handleCancel = () => {
-    setActiveTab('main')
-    setEditMode(null)
-    if (accounts.length > 0) {
-      displayAccount(accounts[currentAccountIndex])
-    }
-  }
+  const current = accounts[currentAccountIndex] || null
+  const filteredAccounts = selectedGroup
+    ? accounts.filter(a => getGroup(a) === selectedGroup)
+    : accounts
+
 
   return (
-    <div className="card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div>
-          <h2>Chart of Accounts Maintenance</h2>
-          <p className="subtitle">Manage account codes, balances and settings</p>
-          {isLoading && <span style={{ color: '#00bb00', marginLeft: '10px' }}>Loading...</span>}
+    <div className="flex gap-0 h-full -mx-10 -my-10">
+      {/* ── Left Account Tree ─────────────────────────────────── */}
+      <div className="w-56 flex-shrink-0 bg-surface-container-low border-r border-outline-variant/15 flex flex-col overflow-y-auto">
+        <div className="px-4 py-4 border-b border-outline-variant/10">
+          <div className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/50">Accounts</div>
+        </div>
+        <nav className="flex-grow py-2">
+          {ACCOUNT_GROUPS.map(group => {
+            const groupAccounts = accounts.filter(a => getGroup(a) === group.key)
+            const isExpanded = expandedGroups.has(group.key)
+            const isSelected = selectedGroup === group.key
+            return (
+              <div key={group.key}>
+                <button
+                  onClick={() => {
+                    setSelectedGroup(isSelected ? null : group.key)
+                    setExpandedGroups(prev => {
+                      const next = new Set(prev)
+                      isExpanded ? next.delete(group.key) : next.add(group.key)
+                      return next
+                    })
+                  }}
+                  className={`w-full flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${isSelected ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container'}`}
+                >
+                  <span className="material-symbols-outlined text-[16px]">{group.icon}</span>
+                  <span className="flex-grow text-left">{group.label}</span>
+                  <span className="text-[10px] font-bold">{groupAccounts.length}</span>
+                  <span className="material-symbols-outlined text-[12px]">{isExpanded ? 'expand_less' : 'expand_more'}</span>
+                </button>
+                {isExpanded && groupAccounts.slice(0, 8).map(a => (
+                  <button
+                    key={a.acctCode}
+                    onClick={() => {
+                      const idx = accounts.findIndex(acc => acc.acctCode === a.acctCode)
+                      if (idx >= 0) { setCurrentAccountIndex(idx); setEditMode(null) }
+                    }}
+                    className={`w-full flex items-center gap-2 pl-9 pr-4 py-1.5 text-xs transition-colors ${acctCode === a.acctCode ? 'bg-primary text-white font-semibold' : 'text-on-surface-variant hover:bg-surface-container-highest'}`}
+                  >
+                    <span className="font-mono font-bold">{a.acctCode}</span>
+                    <span className="truncate">{a.acctDesc}</span>
+                  </button>
+                ))}
+                {isExpanded && groupAccounts.length > 8 && (
+                  <div className="pl-9 py-1 text-[10px] text-on-surface-variant/40">+{groupAccounts.length - 8} more</div>
+                )}
+              </div>
+            )
+          })}
+        </nav>
+        <div className="px-4 py-3 border-t border-outline-variant/10">
+          <button onClick={() => { clearDisplay(); setEditMode('add') }} className="w-full text-xs font-bold text-primary hover:text-primary/70 transition-colors flex items-center gap-1">
+            <span className="material-symbols-outlined text-[14px]">add</span> New Account
+          </button>
         </div>
       </div>
 
-      {message && (
-        <div style={{
-          padding: '10px 15px',
-          marginBottom: '15px',
-          border: `1px solid ${message.includes('Error') ? '#cc0000' : '#00cc00'}`,
-          backgroundColor: message.includes('Error') ? '#ffebee' : '#e8f5e9',
-          color: message.includes('Error') ? '#8b0000' : '#1b5e20',
-          borderRadius: '4px'
-        }}>
-          {message}
+      {/* ── Right Content Area ─────────────────────────────────── */}
+      <div className="flex-grow flex flex-col overflow-y-auto p-6">
+        <PageHeader
+          breadcrumb="FILE MAINTENANCE"
+          title="Chart of Accounts"
+          subtitle="Configure the hierarchical ledger structure for fiscal management, balance reporting, and financial statement generation."
+          actions={
+            <>
+              {!editMode && (
+                <>
+                  <button onClick={() => setShowFindDialog(true)} className="flex items-center gap-1.5 px-3 py-2 border border-outline-variant/20 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
+                    <span className="material-symbols-outlined text-[16px]">search</span> Find
+                  </button>
+                  <button onClick={() => { if (acctCode) setEditMode('edit') }} disabled={!acctCode} className="flex items-center gap-1.5 px-3 py-2 border border-outline-variant/20 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-40">
+                    <span className="material-symbols-outlined text-[16px]">edit</span> Edit
+                  </button>
+                  <button onClick={handleDelete} disabled={!acctCode} className="flex items-center gap-1.5 px-3 py-2 border border-error/20 rounded-lg text-sm font-medium text-error hover:bg-error/5 transition-colors disabled:opacity-40">
+                    <span className="material-symbols-outlined text-[16px]">delete</span> Delete
+                  </button>
+                  <button onClick={() => { clearDisplay(); setEditMode('add') }} className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary/90 transition-colors">
+                    <span className="material-symbols-outlined text-[16px]">add</span> New Account
+                  </button>
+                </>
+              )}
+              {editMode && (
+                <>
+                  <button onClick={() => { setEditMode(null); if (accounts.length > 0) displayAccount(accounts[currentAccountIndex]) }} className="px-4 py-2 border border-outline-variant/20 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
+                    Cancel
+                  </button>
+                  <button onClick={handleSave} className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold shadow-sm hover:bg-primary/90 transition-colors">
+                    Save Account
+                  </button>
+                </>
+              )}
+            </>
+          }
+        />
+
+        {/* Status message */}
+        {message && (
+          <div className={`mb-4 px-4 py-3 rounded-lg text-sm flex items-center gap-2 ${message.includes('Error') ? 'bg-error/10 text-error border border-error/20' : 'bg-[#3f89ff]/10 text-primary border border-primary/20'}`}>
+            <span className="material-symbols-outlined text-[16px]">{message.includes('Error') ? 'error' : 'check_circle'}</span>
+            {message}
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="text-center py-12 text-on-surface-variant/60 text-sm animate-pulse">Loading accounts...</div>
+        )}
+
+        {!isLoading && accounts.length === 0 && !editMode && (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <span className="material-symbols-outlined text-5xl text-on-surface-variant/20 mb-4">account_tree</span>
+            <p className="font-semibold text-on-surface-variant">No accounts in system</p>
+            <p className="text-sm text-on-surface-variant/60 mt-1 mb-4">Click New Account to create the first account</p>
+            <button onClick={() => { clearDisplay(); setEditMode('add') }} className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold">+ New Account</button>
+          </div>
+        )}
+
+        {/* ── Main View: Two-column detail + metadata ─────────── */}
+        {!editMode && current && (
+          <div className="grid grid-cols-3 gap-6">
+            {/* Left: Account form fields */}
+            <div className="col-span-2 space-y-5">
+              {/* Header fields */}
+              <div className="bg-white rounded-2xl border border-outline-variant/15 shadow-sm p-5">
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Account Code <span className="text-error">*</span></label>
+                    <div className="px-3 py-2.5 bg-surface-container-highest rounded-lg text-sm font-mono font-bold text-on-surface border border-outline-variant/10">
+                      {acctCode}
+                    </div>
+                    <div className="text-[10px] text-on-surface-variant/40 mt-1">Unique primary ledger identifier.</div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Description <span className="text-error">*</span></label>
+                    <div className="px-3 py-2.5 bg-surface-container-highest rounded-lg text-sm text-on-surface border border-outline-variant/10">
+                      {acctDesc}
+                    </div>
+                  </div>
+                </div>
+                {/* Balances row */}
+                <div className="grid grid-cols-3 gap-3 pt-3 border-t border-outline-variant/10">
+                  {[
+                    { label: 'Opening Balance', val: fmt(parseFloat(openBal)) },
+                    { label: 'Current Debit', val: fmt(parseFloat(curDebit)) },
+                    { label: 'Current Credit', val: fmt(parseFloat(curCredit)) },
+                  ].map(f => (
+                    <div key={f.label} className="text-center p-3 bg-surface-container-low rounded-xl">
+                      <div className="text-[10px] uppercase tracking-wider font-bold text-on-surface-variant/60 mb-1">{f.label}</div>
+                      <div className="font-mono font-bold text-on-surface">{f.val}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Formula Logic + Report Mapping */}
+              <div className="bg-white rounded-2xl border border-outline-variant/15 shadow-sm p-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Formula Logic</label>
+                    <div className="px-3 py-2.5 bg-surface-container-highest rounded-lg text-sm font-medium border border-outline-variant/10">
+                      {formula === 'DC' ? 'Debit - Credit (Standard Asset)' : 'Credit - Debit (Standard Liability)'}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Report Mapping</label>
+                    <div className="px-3 py-2.5 bg-surface-container-highest rounded-lg text-sm font-medium border border-outline-variant/10">
+                      {glReport || '—'} {glEffect ? `/ ${glEffect}` : ''}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center gap-2 text-xs text-on-surface-variant/60">
+                  <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${initialize ? 'bg-primary border-primary' : 'border-outline-variant'}`}>
+                    {initialize && <span className="material-symbols-outlined text-white text-[10px]">check</span>}
+                  </span>
+                  Initialize account for new period calculations
+                </div>
+              </div>
+
+              {/* Accounts list table (paginated) */}
+              {filteredAccounts.length > 0 && (
+                <div className="bg-white rounded-2xl border border-outline-variant/15 shadow-sm overflow-hidden">
+                  <div className="grid grid-cols-5 px-5 py-2.5 bg-surface-container-highest text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/60">
+                    <span>Code</span><span>Description</span><span className="text-right">Open Bal</span><span className="text-right">Cur Debit</span><span className="text-right">Cur Credit</span>
+                  </div>
+                  <div className="max-h-[480px] overflow-y-auto custom-scrollbar">
+                  {filteredAccounts.map((a) => (
+                    <div key={a.acctCode}
+                      onClick={() => { const idx = accounts.indexOf(a); if (idx >= 0) setCurrentAccountIndex(idx) }}
+                      className={`grid grid-cols-5 px-5 py-3 border-t border-outline-variant/10 cursor-pointer transition-colors text-sm ${a.acctCode === acctCode ? 'bg-primary/5' : 'hover:bg-surface-container-lowest'}`}
+                    >
+                      <span className={`font-mono font-bold ${a.acctCode === acctCode ? 'text-primary' : ''}`}>{a.acctCode}</span>
+                      <span className="text-on-surface-variant truncate">{a.acctDesc}</span>
+                      <span className="text-right font-mono text-on-surface">{fmt(a.openBal || 0)}</span>
+                      <span className="text-right font-mono text-on-surface">{fmt(a.curDebit || 0)}</span>
+                      <span className="text-right font-mono text-on-surface">{fmt(a.curCredit || 0)}</span>
+                    </div>
+                  ))}
+                  </div>
+                  <div className="px-5 py-2 bg-surface-container-lowest border-t border-outline-variant/10 flex items-center justify-between">
+                    <button 
+                      onClick={() => {
+                        const currentFilteredIdx = filteredAccounts.findIndex(a => a.acctCode === accounts[currentAccountIndex]?.acctCode);
+                        if (currentFilteredIdx > 0) {
+                          const target = filteredAccounts[currentFilteredIdx - 1];
+                          const globalIdx = accounts.findIndex(a => a.acctCode === target.acctCode);
+                          if (globalIdx >= 0) setCurrentAccountIndex(globalIdx);
+                        }
+                      }} 
+                      disabled={filteredAccounts.findIndex(a => a.acctCode === accounts[currentAccountIndex]?.acctCode) <= 0}
+                      className="text-xs font-bold text-on-surface-variant/60 hover:text-primary flex items-center gap-1 disabled:opacity-30 disabled:hover:text-on-surface-variant/60"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">chevron_left</span> Prev
+                    </button>
+                    <span className="text-[10px] text-on-surface-variant/50">
+                      {Math.max(0, filteredAccounts.findIndex(a => a.acctCode === accounts[currentAccountIndex]?.acctCode)) + 1} of {filteredAccounts.length}
+                    </span>
+                    <button 
+                      onClick={() => {
+                        const currentFilteredIdx = filteredAccounts.findIndex(a => a.acctCode === accounts[currentAccountIndex]?.acctCode);
+                        if (currentFilteredIdx >= 0 && currentFilteredIdx < filteredAccounts.length - 1) {
+                          const target = filteredAccounts[currentFilteredIdx + 1];
+                          const globalIdx = accounts.findIndex(a => a.acctCode === target.acctCode);
+                          if (globalIdx >= 0) setCurrentAccountIndex(globalIdx);
+                        }
+                      }} 
+                      disabled={filteredAccounts.findIndex(a => a.acctCode === accounts[currentAccountIndex]?.acctCode) >= filteredAccounts.length - 1}
+                      className="text-xs font-bold text-on-surface-variant/60 hover:text-primary flex items-center gap-1 disabled:opacity-30 disabled:hover:text-on-surface-variant/60"
+                    >
+                      Next <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right column: account detail info */}
+            <div className="flex flex-col gap-4">
+              {/* Real Account Info — fields from original PRG system only */}
+              <div className="bg-white rounded-2xl border border-outline-variant/15 shadow-sm p-5">
+                <h3 className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-4">Account Info</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-on-surface-variant">GL Report Code</span>
+                    <span className="font-mono font-bold text-on-surface">{glReport || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-on-surface-variant">GL Effect Code</span>
+                    <span className="font-mono font-bold text-on-surface">{glEffect || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-on-surface-variant">Formula</span>
+                    <span className="font-mono font-bold text-on-surface">{formula || 'DC'}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-on-surface-variant">Initialize on Close</span>
+                    <span className={`px-2 py-0.5 text-[11px] font-bold rounded-full ${
+                      initialize ? 'bg-emerald-100 text-emerald-800' : 'bg-surface-container text-on-surface-variant'
+                    }`}>{initialize ? 'YES' : 'NO'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Balance summary card */}
+              <div className="bg-[#05111E] rounded-2xl p-5 text-white">
+                <h3 className="text-[10px] uppercase tracking-widest font-bold text-white/50 mb-4">Balance Summary</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/60">Opening Bal</span>
+                    <span className="font-mono font-bold">{fmt(parseFloat(openBal))}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/60">Current Debit</span>
+                    <span className="font-mono font-bold text-[#3f89ff]">{fmt(parseFloat(curDebit))}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/60">Current Credit</span>
+                    <span className="font-mono font-bold text-[#3f89ff]">{fmt(parseFloat(curCredit))}</span>
+                  </div>
+                  <div className="border-t border-white/10 pt-2 flex justify-between text-sm font-bold">
+                    <span className="text-white/60">End Balance</span>
+                    <span className="font-mono">
+                      {formula === 'DC'
+                        ? fmt(parseFloat(openBal) + parseFloat(curDebit) - parseFloat(curCredit))
+                        : fmt(parseFloat(openBal) + parseFloat(curCredit) - parseFloat(curDebit))}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Edit / Add Form ─────────────────────────────────── */}
+        {editMode && (
+          <div className="grid grid-cols-3 gap-6">
+            <div className="col-span-2">
+              <div className="bg-white rounded-2xl border border-outline-variant/15 shadow-sm p-6">
+                <h3 className="text-sm font-bold text-on-surface mb-5">{editMode === 'add' ? 'New Account' : `Edit Account — ${acctCode}`}</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Account Code <span className="text-error">*</span></label>
+                    <input className="w-full px-3 py-2.5 border border-outline-variant/20 rounded-lg text-sm font-mono bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" value={acctCode} onChange={e => setAcctCode(e.target.value.toUpperCase())} maxLength={4} disabled={editMode === 'edit'} placeholder="e.g. 1010" autoFocus />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Description <span className="text-error">*</span></label>
+                    <input className="w-full px-3 py-2.5 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" value={acctDesc} onChange={e => setAcctDesc(e.target.value)} maxLength={30} placeholder="Account description" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Opening Balance</label>
+                    <input type="number" step="0.01" className="w-full px-3 py-2.5 border border-outline-variant/20 rounded-lg text-sm font-mono bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" value={openBal} onChange={e => setOpenBal(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Report Code</label>
+                    <input className="w-full px-3 py-2.5 border border-outline-variant/20 rounded-lg text-sm font-mono bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" value={glReport} onChange={e => setGlReport(e.target.value.toUpperCase())} maxLength={4} placeholder="e.g. BS" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Effect Code</label>
+                    <input className="w-full px-3 py-2.5 border border-outline-variant/20 rounded-lg text-sm font-mono bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" value={glEffect} onChange={e => setGlEffect(e.target.value.toUpperCase())} maxLength={3} placeholder="e.g. DR" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Formula Logic <span className="text-error">*</span></label>
+                    <select className="w-full px-3 py-2.5 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" value={formula} onChange={e => setFormula(e.target.value)}>
+                      <option value="DC">Debit - Credit (Standard Asset)</option>
+                      <option value="CD">Credit - Debit (Standard Liability)</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center gap-2 text-sm">
+                  <input type="checkbox" id="init-chk" checked={initialize} onChange={e => setInitialize(e.target.checked)} className="rounded" />
+                  <label htmlFor="init-chk" className="text-on-surface-variant cursor-pointer">Initialize account for new period calculations</label>
+                </div>
+              </div>
+            </div>
+            {/* side info panel */}
+            <div className="bg-surface-container-low rounded-2xl border border-outline-variant/10 p-5">
+              <h3 className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-4">Field Guide</h3>
+              <ul className="space-y-3 text-xs text-on-surface-variant leading-relaxed">
+                <li><strong className="text-on-surface">Account Code</strong>: 4-char unique identifier (e.g. 1010)</li>
+                <li><strong className="text-on-surface">Report Code</strong>: Maps account to financial report section (e.g. BS for Balance Sheet)</li>
+                <li><strong className="text-on-source">Effect Code</strong>: Balance effect direction (DR/CR)</li>
+                <li><strong className="text-on-surface">Formula DC</strong>: Debit minus Credit — standard for Asset accounts</li>
+                <li><strong className="text-on-surface">Formula CD</strong>: Credit minus Debit — standard for Liability/Equity</li>
+                <li><strong className="text-on-surface">Initialize</strong>: Reset balance at year-end close</li>
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Find Dialog ─────────────────────────────────────── */}
+      {showFindDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setShowFindDialog(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-96" onClick={e => e.stopPropagation()}>
+            <h2 className="font-headline font-bold text-lg text-on-surface mb-4">Find Account</h2>
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Account Code (Soft-Seek)</label>
+            <input autoFocus className="w-full px-3 py-2.5 border border-outline-variant/20 rounded-lg text-sm font-mono bg-surface-container-lowest mb-4 focus:outline-none focus:ring-2 focus:ring-primary/30" value={findCode} onChange={e => setFindCode(e.target.value.toUpperCase())} maxLength={4} placeholder="Enter code" onKeyDown={e => { if (e.key === 'Enter') handleFind() }} />
+            <div className="flex gap-3 justify-end">
+              <button onClick={() => setShowFindDialog(false)} className="px-4 py-2 border border-outline-variant/20 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container">Cancel</button>
+              <button onClick={handleFind} className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary/90">Find</button>
+            </div>
+          </div>
         </div>
       )}
-
-      {activeTab === 'main' && (
-        <>
-          {accounts.length > 0 && (
-            <div className="card">
-              <h3 style={{ marginTop: 0 }}>Account Details</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                <div>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Code</label>
-                    <div style={{ padding: '8px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>{acctCode}</div>
-                  </div>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Description</label>
-                    <div style={{ padding: '8px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>{acctDesc}</div>
-                  </div>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Opening Balance</label>
-                    <div style={{ padding: '8px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>{parseFloat(openBal).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
-                  </div>
-                </div>
-                <div>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Report Code</label>
-                    <div style={{ padding: '8px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>{glReport}</div>
-                  </div>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Effect Code</label>
-                    <div style={{ padding: '8px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>{glEffect}</div>
-                  </div>
-                  <div style={{ marginBottom: '15px' }}>
-                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Formula</label>
-                    <div style={{ padding: '8px', backgroundColor: '#f5f5f5', border: '1px solid #ddd' }}>{formula}</div>
-                  </div>
-                </div>
-              </div>
-              <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f9f9f9', borderTop: '1px dashed #ddd', fontSize: '12px', textAlign: 'right' }}>
-                Account {currentAccountIndex + 1} of {accounts.length}
-              </div>
-            </div>
-          )}
-
-          {accounts.length === 0 && (
-            <div style={{ padding: '40px', textAlign: 'center', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
-              <p>No accounts in system</p>
-              <p style={{ color: '#666' }}>Click ADD to create the first account</p>
-            </div>
-          )}
-
-          <div style={{ marginTop: '20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-            <button className="btn btn-primary" onClick={handleAdd}>ADD</button>
-            <button className="btn btn-secondary" onClick={() => setShowFindDialog(true)}>FIND</button>
-            <button className="btn btn-secondary" onClick={handleEdit} disabled={!acctCode}>EDIT</button>
-            <button className="btn btn-secondary" onClick={handleFirst} disabled={accounts.length === 0}>FIRST</button>
-            <button className="btn btn-secondary" onClick={handlePrevious} disabled={accounts.length === 0}>PREV</button>
-            <button className="btn btn-secondary" onClick={handleNext} disabled={accounts.length === 0}>NEXT</button>
-            <button className="btn btn-secondary" onClick={handleLast} disabled={accounts.length === 0}>LAST</button>
-            <button className="btn btn-danger" onClick={handleDelete} disabled={!acctCode}>DELETE</button>
-          </div>
-
-          {/* Find Dialog */}
-          {showFindDialog && (
-            <div className="modal-overlay" onClick={() => setShowFindDialog(false)}>
-              <div className="modal" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                  <h3 className="modal-title">Find Account by Code</h3>
-                  <button onClick={() => setShowFindDialog(false)} className="modal-close">—</button>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Account Code (Soft-Seek):</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={findCode}
-                    onChange={(e) => setFindCode(e.target.value.toUpperCase())}
-                    maxLength={4}
-                    placeholder="Enter account code"
-                    autoFocus
-                  />
-                </div>
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '20px' }}>
-                  <button className="btn btn-secondary" onClick={() => setShowFindDialog(false)}>Cancel</button>
-                  <button className="btn btn-primary" onClick={handleFind}>Find</button>
-                </div>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      {activeTab === 'editing' && (
-        <div className="card">
-          <h3>{editMode === 'add' ? 'Add New Account' : 'Edit Account'}</h3>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-            <div className="form-group">
-              <label className="form-label">Account Code <span style={{ color: 'red' }}>*</span></label>
-              <input
-                type="text"
-                className="form-input"
-                value={acctCode}
-                onChange={(e) => setAcctCode(e.target.value.toUpperCase())}
-                maxLength={4}
-                disabled={editMode === 'edit'}
-                placeholder="4-char code"
-                autoFocus
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Description <span style={{ color: 'red' }}>*</span></label>
-              <input
-                type="text"
-                className="form-input"
-                value={acctDesc}
-                onChange={(e) => setAcctDesc(e.target.value)}
-                maxLength={30}
-                placeholder="Account description"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Opening Balance</label>
-              <input
-                type="number"
-                className="form-input"
-                value={openBal}
-                onChange={(e) => setOpenBal(e.target.value)}
-                step="0.01"
-                placeholder="0.00"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Current Debit</label>
-              <input
-                type="number"
-                className="form-input"
-                value={curDebit}
-                onChange={(e) => setCurDebit(e.target.value)}
-                step="0.01"
-                placeholder="0.00"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Current Credit</label>
-              <input
-                type="number"
-                className="form-input"
-                value={curCredit}
-                onChange={(e) => setCurCredit(e.target.value)}
-                step="0.01"
-                placeholder="0.00"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Report Code</label>
-              <input
-                type="text"
-                className="form-input"
-                value={glReport}
-                onChange={(e) => setGlReport(e.target.value.toUpperCase())}
-                maxLength={4}
-                placeholder="Report code"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Effect Code</label>
-              <input
-                type="text"
-                className="form-input"
-                value={glEffect}
-                onChange={(e) => setGlEffect(e.target.value.toUpperCase())}
-                maxLength={3}
-                placeholder="Effect code"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Formula <span style={{ color: 'red' }}>*</span></label>
-              <select
-                className="form-input"
-                value={formula}
-                onChange={(e) => setFormula(e.target.value)}
-              >
-                <option value="DC">DC (Debit - Credit)</option>
-                <option value="CD">CD (Credit - Debit)</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label className="form-label">Initialize at Year-End</label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <input
-                  type="checkbox"
-                  checked={initialize}
-                  onChange={(e) => setInitialize(e.target.checked)}
-                />
-                {initialize ? 'YES' : 'NO'}
-              </label>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px' }}>
-            <button className="btn btn-secondary" onClick={handleCancel}>Cancel</button>
-            <button className="btn btn-primary" onClick={handleSave}>Save</button>
-          </div>
-        </div>
-      )}
-
-      <table className="data-table" style={{ marginTop: '20px', display: accounts.length > 0 ? 'table' : 'none' }}>
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Description</th>
-            <th style={{ textAlign: 'right' }}>Open Bal</th>
-            <th style={{ textAlign: 'right' }}>Cur Debit</th>
-            <th style={{ textAlign: 'right' }}>Cur Credit</th>
-            <th>Formula</th>
-          </tr>
-        </thead>
-        <tbody>
-          {accounts.map(account => (
-            <tr key={account.acctCode}>
-              <td><strong>{account.acctCode}</strong></td>
-              <td>{account.acctDesc}</td>
-              <td style={{ textAlign: 'right' }}>{parseFloat(String(account.openBal || 0)).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-              <td style={{ textAlign: 'right' }}>{parseFloat(String(account.curDebit || 0)).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-              <td style={{ textAlign: 'right' }}>{parseFloat(String(account.curCredit || 0)).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-              <td>{account.formula}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
     </div>
   )
 }
-

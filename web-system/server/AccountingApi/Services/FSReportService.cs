@@ -329,6 +329,52 @@ public sealed class FSReportService
         decimal totalEquity = totalCapital + totalEarnings;
         decimal totalLiabilitiesAndEquity = totalLiabilities + totalEquity;
 
+        var schedules = await _context.FSScheduleEntries
+            .OrderBy(s => s.GlHead).ThenBy(s => s.AcctCode)
+            .ToListAsync();
+
+        var allAccounts = await _context.FSAccounts.ToListAsync();
+        var subsidiarySchedules = new List<SubsidiaryScheduleGroup>();
+        var scheduleGroups = schedules.GroupBy(s => s.GlHead);
+        
+        foreach (var group in scheduleGroups)
+        {
+            var lines = new List<BalanceSheetLine>();
+            decimal total = 0;
+            foreach (var s in group)
+            {
+                var account = allAccounts.FirstOrDefault(a => a.AcctCode == s.AcctCode);
+                if (account != null)
+                {
+                    decimal endBal;
+                    if (account.Formula == "CD")
+                        endBal = account.OpenBal - account.CurDebit + account.CurCredit;
+                    else
+                        endBal = account.OpenBal + account.CurDebit - account.CurCredit;
+                        
+                    if (endBal != 0)
+                    {
+                        lines.Add(new BalanceSheetLine
+                        {
+                            AccountCode = account.AcctCode,
+                            Description = account.AcctDesc,
+                            Amount = endBal
+                        });
+                        total += endBal;
+                    }
+                }
+            }
+            if (lines.Count > 0)
+            {
+                subsidiarySchedules.Add(new SubsidiaryScheduleGroup
+                {
+                    GlHead = group.Key ?? string.Empty,
+                    Lines = lines,
+                    Total = total
+                });
+            }
+        }
+
         return new BalanceSheetReport
         {
             PeriodEnding = periodEnding,
@@ -350,7 +396,8 @@ public sealed class FSReportService
             TotalEarnings = totalEarnings,
             TotalEquity = totalEquity,
             TotalLiabilitiesAndEquity = totalLiabilitiesAndEquity,
-            InBalance = Math.Abs(totalAssets - totalLiabilitiesAndEquity) < 0.01m
+            InBalance = Math.Abs(totalAssets - totalLiabilitiesAndEquity) < 0.01m,
+            SubsidiarySchedules = subsidiarySchedules
         };
     }
 
@@ -453,6 +500,16 @@ public sealed class BalanceSheetReport
     
     public decimal TotalLiabilitiesAndEquity { get; set; }
     public bool InBalance { get; set; }
+    
+    // Subsidiary Schedules
+    public List<SubsidiaryScheduleGroup> SubsidiarySchedules { get; set; } = new();
+}
+
+public sealed class SubsidiaryScheduleGroup
+{
+    public string GlHead { get; set; } = string.Empty;
+    public List<BalanceSheetLine> Lines { get; set; } = new();
+    public decimal Total { get; set; }
 }
 
 public sealed class BalanceSheetLine

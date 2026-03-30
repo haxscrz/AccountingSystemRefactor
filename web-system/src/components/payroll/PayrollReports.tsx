@@ -1,9 +1,10 @@
-﻿import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import React from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { readSelectedCompanyName } from '../../utils/companyContext'
+import PageHeader from '../PageHeader'
 
 //  Types 
 
@@ -174,22 +175,20 @@ function SubOptionSelector({ parentTitle, options, onSelect }: {
   onSelect: (key: string, label: string) => void
 }) {
   return (
-    <div style={{ maxWidth: 520 }}>
-      <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 4 }}>
-          Report Generation
-        </div>
-        <h3 style={{ fontSize: 17, fontWeight: 900, letterSpacing: '-0.02em', color: 'var(--text)' }}>{parentTitle}</h3>
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div className="flex flex-col gap-6 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2">
+      <PageHeader 
+        breadcrumb="REPORT GENERATION" 
+        title={parentTitle} 
+        subtitle={`Select a specific ${parentTitle.toLowerCase()} option to generate.`}
+      />
+      <div className="flex flex-col gap-3 max-w-[520px]">
         {options.map((opt, i) => (
           <button key={opt.key} onClick={() => onSelect(opt.key, opt.label)}
-            style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '10px 14px', cursor: 'pointer', textAlign: 'left', transition: 'all var(--t-base)' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.background = 'var(--primary-light)' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--surface)' }}>
-            <span style={{ fontSize: 11, color: 'var(--text-muted)', minWidth: 18 }}>{i + 1}.</span>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{opt.label}</span>
-            <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--text-muted)' }}>&gt;</span>
+            className="flex items-center gap-3 bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-5 py-4 text-left transition-all hover:border-primary/50 hover:bg-primary/5 group"
+          >
+            <span className="text-xs font-mono text-on-surface-variant/50 w-6 group-hover:text-primary transition-colors">{i + 1}.</span>
+            <span className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">{opt.label}</span>
+            <span className="material-symbols-outlined ml-auto text-[18px] text-on-surface-variant/40 group-hover:text-primary transition-colors">chevron_right</span>
           </button>
         ))}
       </div>
@@ -1213,32 +1212,40 @@ function ReportViewer({ reportType, subOptionKey, title, onBack }: {
   const canShowSummary = reportType==='register' || reportType==='payslip'
 
   return (
-    <div className="card">
+    <div className="flex flex-col gap-6 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2">
       <style>{PRINT_STYLE}</style>
-      {onBack && (
-        <button onClick={onBack} className="btn btn-secondary" style={{ marginBottom:12, fontSize:12 }}>
-          &larr; Back
-        </button>
-      )}
-      <h2 style={{ fontSize:16, fontWeight:800, marginBottom:4 }}>{title}</h2>
-      <div style={{ display:'flex', gap:8, marginBottom:14, flexWrap:'wrap' }}>
-        <button className="btn btn-secondary" style={{ fontSize:12, padding:'4px 14px' }} onClick={() => void load()} disabled={loading}>
-          {loading ? 'Loading...' : '\u21BA Refresh'}
-        </button>
-        <button className="btn btn-primary" style={{ fontSize:12, padding:'4px 14px' }} onClick={() => { void handlePrint() }} disabled={!data||loading||pdfLoading}>
-          {pdfLoading ? 'Generating PDF...' : 'Export PDF'}
-        </button>
-        {canShowSummary && (
-          <button className="btn btn-secondary" style={{ fontSize:12, padding:'4px 14px' }} onClick={() => setShowSummary(s=>!s)}>
-            {showSummary ? 'Hide Summary' : 'Show Payroll Summary'}
-          </button>
-        )}
-      </div>
-      {error && <div style={{ color:'var(--error)', marginBottom:10 }}>{error}</div>}
-      {loading && <div style={{ color:'var(--text-muted)', marginBottom:10 }}>Loading report data...</div>}
+      <PageHeader 
+        breadcrumb="PAYROLL REPORTS" 
+        title={title} 
+        subtitle="View, generate, and export payroll report data."
+        actions={
+          <div className="flex gap-2">
+             {onBack && (
+              <button onClick={onBack} className="btn btn-secondary">
+                <span className="material-symbols-outlined">arrow_back</span> Back
+              </button>
+            )}
+            <button className="btn btn-secondary" onClick={() => void load()} disabled={loading}>
+              <span className="material-symbols-outlined text-[18px]">refresh</span> Refresh
+            </button>
+            <button className="btn btn-primary" onClick={() => { void handlePrint() }} disabled={!data||loading||pdfLoading}>
+              <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span> {pdfLoading ? 'Generating...' : 'Export PDF'}
+            </button>
+            {canShowSummary && (
+              <button className="btn btn-secondary" onClick={() => setShowSummary(s=>!s)}>
+                <span className="material-symbols-outlined text-[18px]">{showSummary ? 'visibility_off' : 'visibility'}</span>
+                {showSummary ? 'Hide Summary' : 'Summary'}
+              </button>
+            )}
+          </div>
+        }
+      />
+      {error && <div className="text-error mb-2">{error}</div>}
+      {loading && <div className="text-on-surface-variant/60 mb-2">Loading report data...</div>}
       {data && (
         <div id="pay-print-area" ref={printRef}
-          style={{ background:'white', border:'1px solid var(--border)', borderRadius:6, padding:10, overflowX:'auto' }}>
+          className="bg-white border border-outline-variant/20 rounded-2xl p-6 overflow-x-auto shadow-sm"
+          style={{ minHeight: '500px' }}>
           {reportNode}
           {showSummary && <PayrollSummaryPage data={data} />}
         </div>

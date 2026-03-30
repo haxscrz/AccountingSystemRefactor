@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import PageHeader from '../PageHeader'
 
 interface SystemInfo {
   currentMonth: number
@@ -33,7 +34,7 @@ export default function FSPosting() {
     setLoadingInfo(true)
     try {
       const resp = await axios.get(`${API_BASE}/system-info`)
-      setSysInfo(resp.data)
+      setSysInfo(resp.data?.data ?? resp.data)
     } catch {
       setSysInfo(null)
     } finally {
@@ -46,14 +47,18 @@ export default function FSPosting() {
   }, [])
 
   const handlePost = async () => {
+    if (!sysInfo) return
+    if (sysInfo.totalUnposted === 0) {
+      alert("No transactions to post for the current period.")
+      return
+    }
+
     if (!window.confirm(
-      'POST ALL TRANSACTIONS?\n\n' +
-      'This will:\n' +
-      '1. Clear the posted journals table (pournals)\n' +
-      '2. Reset all account current period balances to zero\n' +
-      '3. Re-post ALL transactions from all 6 journals to accounts\n' +
-      '4. Recalculate ending balances\n\n' +
-      'Continue?'
+      'POST ALL TRANSACTIONS?\\n\\n' +
+      'This action will:\\n' +
+      '1. Move all unposted entries into the posted ledger\\n' +
+      '2. Recalculate all Chart of Account ending balances\\n\\n' +
+      `Proceed with posting ${sysInfo.totalUnposted} transactions?`
     )) return
 
     setPosting(true)
@@ -77,80 +82,140 @@ export default function FSPosting() {
     ? `${MONTH_NAMES[sysInfo.currentMonth]} ${sysInfo.currentYear}`
     : '—'
 
-  return (
-    <div className="card">
-      <h2>Post All Transactions</h2>
-      <p className="subtitle">Post all unposted entries to the general ledger accounts (f_a_postng)</p>
+  const STATS = [
+    { label: 'Disbursement Vouchers', val: sysInfo?.unpostedChecks ?? 0 },
+    { label: 'Cash Receipts', val: sysInfo?.unpostedCashReceipts ?? 0 },
+    { label: 'Sales Book Journals', val: sysInfo?.unpostedSalesBook ?? 0 },
+    { label: 'Journal Vouchers', val: sysInfo?.unpostedJournals ?? 0 },
+    { label: 'Purchase Book Journals', val: sysInfo?.unpostedPurchaseBook ?? 0 },
+    { label: 'Adjustments', val: sysInfo?.unpostedAdjustments ?? 0 },
+  ]
 
-      <div style={{ background: 'var(--background)', padding: '20px', borderRadius: '8px', marginBottom: '24px' }}>
-        <h4>Pre-Posting Summary — {loadingInfo ? 'Loading...' : periodLabel}</h4>
-        {!loadingInfo && sysInfo && (
-          <div style={{ marginTop: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-              <span>Cash Disbursement Vouchers:</span>
-              <strong>{sysInfo.unpostedChecks} entries</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-              <span>Cash Receipts:</span>
-              <strong>{sysInfo.unpostedCashReceipts} entries</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-              <span>Sales Book Journals:</span>
-              <strong>{sysInfo.unpostedSalesBook} entries</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-              <span>Journal Vouchers:</span>
-              <strong>{sysInfo.unpostedJournals} entries</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-              <span>Purchase Book Journals:</span>
-              <strong>{sysInfo.unpostedPurchaseBook} entries</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-              <span>Adjustments:</span>
-              <strong>{sysInfo.unpostedAdjustments} entries</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontWeight: 600, borderTop: '2px solid var(--border)', marginTop: '4px' }}>
-              <span>Total Entries to Post:</span>
-              <strong className={sysInfo.totalUnposted > 0 ? 'badge badge-primary' : ''}>
-                {sysInfo.totalUnposted} entries
-              </strong>
-            </div>
-          </div>
-        )}
-        {!loadingInfo && !sysInfo && (
-          <p style={{ color: 'var(--text-secondary)', marginTop: '12px' }}>
-            Could not load system info. Backend may be offline.
-          </p>
-        )}
-      </div>
+  return (
+    <div className="flex flex-col gap-6 max-w-[1000px] mx-auto w-full">
+      <PageHeader
+        breadcrumb="PROCESSING / POSTING"
+        title="Post All Transactions"
+        subtitle="Apply unposted journal entries to the core ledger accounts"
+      />
 
       {resultMessage && (
-        <div style={{
-          background: resultSuccess ? 'rgba(22, 163, 74, 0.1)' : 'rgba(220,38,38,0.1)',
-          border: `1px solid ${resultSuccess ? 'var(--success)' : 'var(--error, #dc2626)'}`,
-          borderRadius: '8px',
-          padding: '16px',
-          marginBottom: '24px',
-          color: resultSuccess ? 'var(--success)' : 'var(--error, #dc2626)'
-        }}>
-          {resultSuccess
-            ? `✓ ${resultMessage}  (${recordsPosted} records posted to pournals)`
-            : `✗ ${resultMessage}`}
+        <div className={`px-5 py-4 rounded-xl border-l-4 font-bold text-sm shadow-sm flex items-center justify-between transition-all animate-in fade-in slide-in-from-top-2 ${
+          resultSuccess
+            ? 'bg-emerald-50 text-emerald-800 border-emerald-500'
+            : 'bg-error-container text-on-error-container border-error'
+        }`}>
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-[20px]">
+              {resultSuccess ? 'check_circle' : 'error'}
+            </span>
+            <span>
+              {resultSuccess
+                ? `✓ ${resultMessage} (${recordsPosted} records applied to ledger)`
+                : `✗ ${resultMessage}`}
+            </span>
+          </div>
+          <button onClick={() => setResultMessage('')} className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+            <span className="material-symbols-outlined text-[18px]">close</span>
+          </button>
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '12px' }}>
-        <button
-          className="btn btn-primary"
-          onClick={handlePost}
-          disabled={posting || loadingInfo}
-        >
-          {posting ? 'Posting...' : 'Post All Transactions'}
-        </button>
-        <button className="btn btn-secondary" onClick={loadSystemInfo} disabled={posting || loadingInfo}>
-          Refresh Counts
-        </button>
+      {/* Main Content Card */}
+      <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-sm overflow-hidden flex flex-col md:flex-row">
+        
+        {/* Left Panel: Actions & Description */}
+        <div className="flex-1 p-8 bg-surface-container-lowest flex flex-col justify-center">
+          <div className="mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary mb-4">
+              <span className="material-symbols-outlined text-3xl">publish</span>
+            </div>
+            <h2 className="font-headline text-2xl font-bold text-on-surface tracking-tight mb-2">Execute Ledger Posting</h2>
+            <p className="text-on-surface-variant text-sm leading-relaxed max-w-sm">
+              Commits all finalized but unposted journal line items into the Chart of Accounts, recalculating period-to-date and year-to-date balances. This transaction process is comprehensive and updates the permanent ledger.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 mt-auto">
+            <button
+              className={`flex-1 py-3.5 px-6 rounded-xl font-bold tracking-wide text-sm flex items-center justify-center gap-2 shadow-sm transition-all ${
+                posting || loadingInfo || (sysInfo && sysInfo.totalUnposted === 0)
+                  ? 'bg-surface-container-high text-on-surface-variant/50 cursor-not-allowed border-none'
+                  : 'bg-gradient-to-br from-primary to-primary-container text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 border border-primary/20'
+              }`}
+              onClick={handlePost}
+              disabled={posting || loadingInfo || (sysInfo ? sysInfo.totalUnposted === 0 : false)}
+            >
+              {posting ? (
+                <><span className="material-symbols-outlined text-[18px] animate-spin">sync</span> POSTING IN PROGRESS...</>
+              ) : (
+                <><span className="material-symbols-outlined text-[18px]">done_all</span> POST TRANSACTIONS</>
+              )}
+            </button>
+            <button 
+              className="py-3.5 px-4 rounded-xl font-bold tracking-wide text-sm flex items-center justify-center bg-transparent border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors whitespace-nowrap"
+              onClick={loadSystemInfo} 
+              disabled={posting || loadingInfo}
+            >
+              <span className="material-symbols-outlined text-[18px]">refresh</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Right Panel: Data Preview */}
+        <div className="flex-1 bg-surface-container-low border-l border-outline-variant/30 p-8 flex flex-col">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-outline-variant/20">
+            <h3 className="font-headline font-bold text-sm tracking-[0.1em] text-on-surface-variant uppercase flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">summarize</span> Pre-Posting Summary
+            </h3>
+            {loadingInfo ? (
+               <span className="text-xs font-mono bg-surface-container font-bold px-2 py-1 rounded w-16 h-6 animate-pulse"></span>
+            ) : (
+              <span className="text-xs font-mono font-bold bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-md tracking-wider">
+                {periodLabel}
+              </span>
+            )}
+          </div>
+
+          <div className="flex-1 space-y-3">
+            {loadingInfo ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-10 bg-surface-container/50 rounded-lg animate-pulse"></div>
+              ))
+            ) : sysInfo ? (
+              <table className="w-full text-sm">
+                <tbody className="divide-y divide-outline-variant/10">
+                  {STATS.map((s) => (
+                    <tr key={s.label} className="group hover:bg-surface-container transition-colors">
+                      <td className="py-2.5 pr-4 text-on-surface-variant font-medium group-hover:text-on-surface transition-colors">{s.label}</td>
+                      <td className="py-2.5 pl-4 text-right">
+                        {s.val > 0 
+                          ? <span className="font-mono font-bold text-primary">{s.val}</span>
+                          : <span className="font-mono text-on-surface-variant/50">0</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td className="pt-4 pb-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant border-t border-outline-variant/20 mt-2">Total Unposted</td>
+                    <td className="pt-4 pb-2 text-right border-t border-outline-variant/20 mt-2">
+                      <span className={`font-mono font-black text-lg ${sysInfo.totalUnposted > 0 ? 'text-primary' : 'text-emerald-600'}`}>
+                        {sysInfo.totalUnposted}
+                      </span>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 text-on-surface-variant/50 gap-2">
+                <span className="material-symbols-outlined text-3xl">cloud_off</span>
+                <p className="text-sm font-medium">Unable to connect to financial server</p>
+              </div>
+            )}
+          </div>
+          
+        </div>
       </div>
     </div>
   )

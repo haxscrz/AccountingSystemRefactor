@@ -1413,35 +1413,237 @@ public sealed class FSController : ControllerBase
     /// Download a point-in-time copy of the SQLite database file.
     /// Equivalent to f_a_backup() in A_BACKUP.PRG.
     /// Returns the raw .db file as an octet-stream download.
+    /// 
+    /// Strategy: Checkpoint any pending WAL data into the main db file,
+    /// then stream-copy the .db file directly. This avoids VACUUM INTO
+    /// which deadlocks when EF Core holds an open connection.
     /// </summary>
     [HttpGet("backup")]
-    public IActionResult DownloadBackup()
+    public async Task<IActionResult> DownloadBackup()
     {
-        // Resolve the db file path from the connection string (Data Source=accounting.db)
-        var connStr = _config.GetConnectionString("DefaultConnection")
-                      ?? "Data Source=accounting.db";
+        try
+        {
+            // 1. Resolve the db file path
+            var connStr = _config.GetConnectionString("DefaultConnection")
+                          ?? "Data Source=accounting.db";
+            var dbPath = connStr
+                .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .Select(p => p.Trim())
+                .FirstOrDefault(p => p.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase))
+                ?.Substring("Data Source=".Length)
+                ?? "accounting.db";
 
-        // Parse "Data Source=<path>" from the connection string
-        var dbPath = connStr
-            .Split(';', StringSplitOptions.RemoveEmptyEntries)
-            .Select(p => p.Trim())
-            .FirstOrDefault(p => p.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase))
-            ?.Substring("Data Source=".Length)
-            ?? "accounting.db";
+            if (!Path.IsPathRooted(dbPath))
+                dbPath = Path.Combine(Directory.GetCurrentDirectory(), dbPath);
 
-        if (!Path.IsPathRooted(dbPath))
-            dbPath = Path.Combine(Directory.GetCurrentDirectory(), dbPath);
+            if (!System.IO.File.Exists(dbPath))
+                return NotFound(new { error = $"Database file not found at: {dbPath}" });
 
-        if (!System.IO.File.Exists(dbPath))
-            return NotFound(new { error = $"Database file not found at: {dbPath}" });
+            // 2. Force a WAL checkpoint so the .db file has all committed data
+            try
+            {
+                using var rawConn = (Microsoft.Data.Sqlite.SqliteConnection)_db.Database.GetDbConnection();
+                if (rawConn.State != System.Data.ConnectionState.Open)
+                    await rawConn.OpenAsync();
+                using var walCmd = rawConn.CreateCommand();
+                walCmd.CommandText = "PRAGMA wal_checkpoint(PASSIVE);";
+                await walCmd.ExecuteNonQueryAsync();
+            }
+            catch
+            {
+                // Best effort — even without checkpoint, .db contains committed data
+            }
 
-        var stamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
-        var downloadName = $"accounting_backup_{stamp}.db";
+            // 3. Copy the .db file to a temp file to avoid file locks during transfer
+            var stamp = DateTime.Now.ToString("yyyyMMdd_HHmm");
+            var downloadName = $"accounting_backup_{stamp}.db";
+            var tempPath = Path.Combine(Path.GetTempPath(), $"backup_{Guid.NewGuid():N}.db");
 
-        // Read into memory so the file stream is not held open
-        var bytes = System.IO.File.ReadAllBytes(dbPath);
-        return File(bytes, "application/octet-stream", downloadName);
+            await Task.Run(() => System.IO.File.Copy(dbPath, tempPath, overwrite: true));
+
+            // 4. Stream the temp file to the client with Content-Length for progress tracking
+            var fileInfo = new FileInfo(tempPath);
+            var stream = new FileStream(tempPath, FileMode.Open, FileAccess.Read, FileShare.Read,
+                bufferSize: 65536, options: FileOptions.DeleteOnClose | FileOptions.SequentialScan);
+
+            Response.Headers["Content-Length"] = fileInfo.Length.ToString();
+            return File(stream, "application/octet-stream", downloadName);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = $"Backup failed: {ex.Message}" });
+        }
     }
 
     #endregion
+
+    /// <summary>
+    /// Transfer all Advance CDB vouchers into the current period (moves 'advance' checks to main set)
+    /// </summary>
+    [HttpPost("transfer-advance-cdb")]
+    public async Task<IActionResult> TransferAdvanceCdb(CancellationToken cancellationToken)
+    {
+        var companyCode = _companyContextAccessor.CompanyCode;
+        var now = DateTime.UtcNow;
+        var currentPeriod = now.Date;
+
+        var advanceChecks = await _db.FSCheckMas
+            .Where(c => (c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV")) && !c.IsDeleted && c.CompanyCode == companyCode)
+            .ToListAsync(cancellationToken);
+
+        if (advanceChecks.Count == 0)
+            return Ok(new { message = "No advance CDB vouchers found to transfer." });
+
+        foreach (var check in advanceChecks)
+        {
+            check.JDate = currentPeriod;
+            check.UpdatedAt = now;
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return Ok(new { message = $"Transferred {advanceChecks.Count} advance CDB voucher(s) to the current period." });
+    }
+
+    // ---------------------------------------------------------
+    // Banks
+    // ---------------------------------------------------------
+    [HttpGet("banks")]
+    public async Task<IActionResult> GetBanks(CancellationToken cancellationToken)
+    {
+        var banks = await _db.FSBanks
+            .AsNoTracking()
+            .OrderBy(b => b.BankNo)
+            .ToListAsync(cancellationToken);
+        return Ok(new { data = banks });
+    }
+
+    [HttpPost("banks")]
+    public async Task<IActionResult> CreateBank([FromBody] FSBank dto, CancellationToken cancellationToken)
+    {
+        _db.FSBanks.Add(dto);
+        await _db.SaveChangesAsync(cancellationToken);
+        return CreatedAtAction(nameof(GetBanks), new { id = dto.Id }, new { data = dto });
+    }
+
+    [HttpPut("banks/{id}")]
+    public async Task<IActionResult> UpdateBank(int id, [FromBody] FSBank dto, CancellationToken cancellationToken)
+    {
+        var bank = await _db.FSBanks.FindAsync(new object[] { id }, cancellationToken);
+        if (bank == null) return NotFound("Bank not found.");
+
+        bank.BankNo = dto.BankNo;
+        bank.BankName = dto.BankName;
+        bank.BankAddr = dto.BankAddr;
+        bank.BankAcct = dto.BankAcct;
+        
+        await _db.SaveChangesAsync(cancellationToken);
+        return Ok(new { data = bank });
+    }
+
+    [HttpDelete("banks/{id}")]
+    public async Task<IActionResult> DeleteBank(int id, CancellationToken cancellationToken)
+    {
+        var bank = await _db.FSBanks.FindAsync(new object[] { id }, cancellationToken);
+        if (bank == null) return NotFound("Bank not found.");
+
+        _db.FSBanks.Remove(bank);
+        await _db.SaveChangesAsync(cancellationToken);
+        return NoContent();
+    }
+
+    // ---------------------------------------------------------
+    // Suppliers
+    // ---------------------------------------------------------
+    [HttpGet("suppliers")]
+    public async Task<IActionResult> GetSuppliers(CancellationToken cancellationToken)
+    {
+        var suppliers = await _db.FSSuppliers
+            .AsNoTracking()
+            .OrderBy(s => s.SupNo)
+            .ToListAsync(cancellationToken);
+        return Ok(new { data = suppliers });
+    }
+
+    [HttpPost("suppliers")]
+    public async Task<IActionResult> CreateSupplier([FromBody] FSSupplier dto, CancellationToken cancellationToken)
+    {
+        _db.FSSuppliers.Add(dto);
+        await _db.SaveChangesAsync(cancellationToken);
+        return CreatedAtAction(nameof(GetSuppliers), new { id = dto.Id }, new { data = dto });
+    }
+
+    [HttpPut("suppliers/{id}")]
+    public async Task<IActionResult> UpdateSupplier(int id, [FromBody] FSSupplier dto, CancellationToken cancellationToken)
+    {
+        var sup = await _db.FSSuppliers.FindAsync(new object[] { id }, cancellationToken);
+        if (sup == null) return NotFound("Supplier not found.");
+
+        sup.SupNo = dto.SupNo;
+        sup.SupName = dto.SupName;
+        sup.SupAddr = dto.SupAddr;
+        sup.SupPhone = dto.SupPhone;
+        sup.SupFax = dto.SupFax;
+        sup.SupContak = dto.SupContak;
+        
+        await _db.SaveChangesAsync(cancellationToken);
+        return Ok(new { data = sup });
+    }
+
+    [HttpDelete("suppliers/{id}")]
+    public async Task<IActionResult> DeleteSupplier(int id, CancellationToken cancellationToken)
+    {
+        var sup = await _db.FSSuppliers.FindAsync(new object[] { id }, cancellationToken);
+        if (sup == null) return NotFound("Supplier not found.");
+
+        _db.FSSuppliers.Remove(sup);
+        await _db.SaveChangesAsync(cancellationToken);
+        return NoContent();
+    }
+
+    // ---------------------------------------------------------
+    // Signatories
+    // ---------------------------------------------------------
+    [HttpGet("signatories")]
+    public async Task<IActionResult> GetSignatories(CancellationToken cancellationToken)
+    {
+        var signatories = await _db.FSSignatories
+            .AsNoTracking()
+            .OrderBy(s => s.SignName)
+            .ToListAsync(cancellationToken);
+        return Ok(new { data = signatories });
+    }
+
+    [HttpPost("signatories")]
+    public async Task<IActionResult> CreateSignatory([FromBody] FSSignatory dto, CancellationToken cancellationToken)
+    {
+        _db.FSSignatories.Add(dto);
+        await _db.SaveChangesAsync(cancellationToken);
+        return CreatedAtAction(nameof(GetSignatories), new { id = dto.Id }, new { data = dto });
+    }
+
+    [HttpPut("signatories/{id}")]
+    public async Task<IActionResult> UpdateSignatory(int id, [FromBody] FSSignatory dto, CancellationToken cancellationToken)
+    {
+        var sig = await _db.FSSignatories.FindAsync(new object[] { id }, cancellationToken);
+        if (sig == null) return NotFound("Signatory not found.");
+
+        sig.SignName = dto.SignName;
+        sig.SignTitle = dto.SignTitle;
+        sig.IsActive = dto.IsActive;
+        
+        await _db.SaveChangesAsync(cancellationToken);
+        return Ok(new { data = sig });
+    }
+
+    [HttpDelete("signatories/{id}")]
+    public async Task<IActionResult> DeleteSignatory(int id, CancellationToken cancellationToken)
+    {
+        var sig = await _db.FSSignatories.FindAsync(new object[] { id }, cancellationToken);
+        if (sig == null) return NotFound("Signatory not found.");
+
+        _db.FSSignatories.Remove(sig);
+        await _db.SaveChangesAsync(cancellationToken);
+        return NoContent();
+    }
 }

@@ -1,14 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
-
-// A_QUEACT.PRG — f_a_queact(m_which)
-// Read-only browse component for all 7 query types (m_which 1–7).
-// m_which=1 → accounts   (acct_code, open_bal, cur_debit, cur_credit, end_bal)
-// m_which=2 → cdv        (j_jv_no, j_ck_no, j_ck_amt, j_pay_to, bank_no, sup_no, j_desc)
-// m_which=3–7 → journals (j_date, j_jv_no, acct_code, j_ck_amt, j_d_or_c)
-
-const API_BASE = '/api/fs'
+import PageHeader from '../PageHeader'
 
 type QueryType = 'accounts' | 'cdv' | 'receipt' | 'sales' | 'general' | 'purchase' | 'adjustment'
 
@@ -33,7 +26,6 @@ function fmtDate(v: any): string {
   return dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' })
 }
 
-// Columns for journal types 3–7 (identical in original)
 const JOURNAL_COLS: ColumnDef[] = [
   { key: 'jDate',    label: 'Date',                 format: fmtDate },
   { key: 'jJvNo',    label: 'Reference',             mono: true },
@@ -77,24 +69,22 @@ const TITLES: Record<QueryType, string> = {
 }
 
 const SEARCH_LABEL: Record<QueryType, string> = {
-  accounts:   'Enter Account Code:',
-  cdv:        'Enter CDV No.:',
-  receipt:    'Enter Date:',
-  sales:      'Enter Date:',
-  general:    'Enter Date:',
-  purchase:   'Enter Date:',
-  adjustment: 'Enter Date:',
+  accounts:   'Account Code',
+  cdv:        'CDV No.',
+  receipt:    'Search Ref',
+  sales:      'Search Ref',
+  general:    'Search Ref',
+  purchase:   'Search Ref',
+  adjustment: 'Search Ref',
 }
 
-// Which field is searched / seeked (matches original index-based seek)
 export default function FSQueryBrowser() {
   const { queryType } = useParams<{ queryType: string }>()
   const qt = (queryType ?? 'accounts') as QueryType
   const columns  = COLUMNS[qt]     ?? JOURNAL_COLS
   const title    = TITLES[qt]      ?? 'Query'
-  const searchLabel = SEARCH_LABEL[qt] ?? 'Search:'
+  const searchLabel = SEARCH_LABEL[qt] ?? 'Search'
 
-  const [rows,     setRows]     = useState<any[]>([])
   const [filtered, setFiltered] = useState<any[]>([])
   const [search,   setSearch]   = useState('')
   const [fromDate, setFromDate] = useState('')
@@ -106,42 +96,20 @@ export default function FSQueryBrowser() {
   const [loading,  setLoading]  = useState(true)
   const [error,    setError]    = useState('')
 
-  // Re-fetch whenever the query type changes
   useEffect(() => {
-    setLoading(true)
-    setError('')
-    setSearch('')
-    setFromDate('')
-    setToDate('')
-    setIncludeDeleted(false)
-    setPage(1)
-    setRows([])
-    setFiltered([])
-
+    setLoading(true); setError(''); setSearch(''); setFromDate(''); setToDate('')
+    setIncludeDeleted(false); setPage(1); setFiltered([])
     setLoading(false)
   }, [qt])
 
-  // Server-side filtering/pagination for large datasets
   useEffect(() => {
-    setLoading(true)
-    setError('')
-    axios.get(`${API_BASE}/query/${qt}`, {
-      params: {
-        search: search.trim() || undefined,
-        from: fromDate || undefined,
-        to: toDate || undefined,
-        page,
-        pageSize,
-        includeDeleted
-      }
-    })
-      .then(resp => {
-        const data = resp.data?.data ?? []
-        setRows(data)
-        setFiltered(data)
-        setTotal(resp.data?.total ?? data.length)
-      })
-      .catch(e => setError(e.response?.data?.error ?? e.message ?? 'Failed to load data'))
+    setLoading(true); setError('')
+    axios.get(`/api/fs/query/${qt}`, {
+      params: { search: search.trim() || undefined, from: fromDate || undefined, to: toDate || undefined, page, pageSize, includeDeleted }
+    }).then(resp => {
+      const data = resp.data?.data ?? []
+      setFiltered(data); setTotal(resp.data?.total ?? data.length)
+    }).catch(e => setError(e.response?.data?.error ?? e.message ?? 'Failed to load data'))
       .finally(() => setLoading(false))
   }, [qt, search, fromDate, toDate, page, pageSize, includeDeleted])
 
@@ -151,111 +119,131 @@ export default function FSQueryBrowser() {
     return raw == null ? '—' : String(raw)
   }
 
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
+
   return (
-    <div className="card">
-      {/* ── Header ── */}
-      <div style={{ marginBottom: 16, paddingBottom: 14, borderBottom: '2px solid var(--border)' }}>
-        <h2>{title}</h2>
-        <p className="subtitle">
-          Read-only view · {rows.length} record{rows.length !== 1 ? 's' : ''}
-        </p>
+    <div className="flex flex-col gap-6 max-w-[1200px]">
+      <PageHeader
+        breadcrumb={`QUERY/REPORT / ${title.toUpperCase()}`}
+        title={title}
+        subtitle="Read-only view with server-side pagination and filtering."
+      />
+
+      {/* Filter Bar */}
+      <div className="bg-white border border-outline-variant/15 rounded-2xl shadow-sm p-5">
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="flex-1 min-w-[180px]">
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">{searchLabel}</label>
+            <div className="relative">
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant/50">search</span>
+              <input type="text" value={search} onChange={e => { setPage(1); setSearch(e.target.value) }} placeholder="Type to seek..."
+                className="w-full pl-9 pr-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" />
+            </div>
+          </div>
+          <div className="w-[150px]">
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">From Date</label>
+            <input type="date" value={fromDate} onChange={e => { setPage(1); setFromDate(e.target.value) }}
+              className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" />
+          </div>
+          <div className="w-[150px]">
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1">To Date</label>
+            <input type="date" value={toDate} onChange={e => { setPage(1); setToDate(e.target.value) }}
+              className="w-full px-3 py-2 border border-outline-variant/20 rounded-lg text-sm bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary/30" />
+          </div>
+          {qt !== 'accounts' && (
+            <label className="flex items-center gap-2 h-[38px] px-3 border border-outline-variant/20 rounded-lg bg-surface-container-lowest cursor-pointer hover:bg-surface-container transition-colors">
+              <input type="checkbox" checked={includeDeleted} onChange={e => { setPage(1); setIncludeDeleted(e.target.checked) }} className="rounded border-outline-variant/30 text-primary focus:ring-primary" />
+              <span className="text-sm font-medium text-on-surface-variant">Include Deleted</span>
+            </label>
+          )}
+          {search && (
+            <button onClick={() => { setSearch(''); setPage(1) }} className="h-[38px] px-4 border border-outline-variant/20 rounded-lg text-sm font-bold text-on-surface-variant hover:bg-surface-container transition-colors">
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* ── Error ── */}
       {error && (
-        <div style={{
-          padding: '8px 12px', background: 'rgba(196,43,28,0.06)',
-          border: '1px solid rgba(196,43,28,0.25)',
-          borderLeft: '3px solid var(--error)',
-          borderRadius: 'var(--radius)', marginBottom: 16, fontSize: 12, color: 'var(--error)'
-        }}>
-          {error}
+        <div className="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+          <span className="material-symbols-outlined text-[18px]">error</span> {error}
         </div>
       )}
 
-      {/* ── Seek / filter bar (mirrors original's @24 GET prompt) ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-        <label className="form-label" style={{ whiteSpace: 'nowrap', marginBottom: 0 }}>{searchLabel}</label>
-        <input
-          type="text"
-          className="form-input"
-          value={search}
-          onChange={e => { setPage(1); setSearch(e.target.value) }}
-          placeholder="Type to seek…"
-          style={{ width: 220 }}
-        />
-        <input type="date" className="form-input" value={fromDate} onChange={e => { setPage(1); setFromDate(e.target.value) }} style={{ width: 160 }} />
-        <input type="date" className="form-input" value={toDate} onChange={e => { setPage(1); setToDate(e.target.value) }} style={{ width: 160 }} />
-        {qt !== 'accounts' && (
-          <label style={{ fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-            <input type="checkbox" checked={includeDeleted} onChange={e => { setPage(1); setIncludeDeleted(e.target.checked) }} />
-            Recycle Bin
-          </label>
-        )}
-        {search && (
-          <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 10px' }} onClick={() => setSearch('')}>
-            Clear
-          </button>
-        )}
-        <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 4 }}>
-          {total} record(s)
-        </span>
-      </div>
-
-      {/* ── Browse table ── */}
-      {loading ? (
-        <p style={{ color: 'var(--text-secondary)' }}>Loading…</p>
-      ) : (
-        <div style={{ overflowX: 'auto' }}>
-          <table className="data-table" style={{ tableLayout: 'auto' }}>
-            <thead>
+      {/* Table */}
+      <div className="bg-white border border-outline-variant/15 rounded-2xl shadow-sm flex flex-col overflow-hidden">
+        <div className="px-5 py-3 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-lowest">
+          <span className="text-sm font-bold text-on-surface">{total.toLocaleString()} <span className="text-on-surface-variant font-normal">record(s)</span></span>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-surface-container-highest text-[10px] uppercase font-bold text-on-surface-variant/60 tracking-widest">
               <tr>
                 {columns.map(col => (
-                  <th key={col.key} style={{
-                    textAlign: col.align === 'right' ? 'right' : col.align === 'center' ? 'center' : 'left'
-                  }}>
+                  <th key={col.key} className={`px-5 py-3 ${col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : ''}`}>
                     {col.label}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {filtered.length === 0 ? (
+            <tbody className="divide-y divide-outline-variant/10">
+              {loading ? (
                 <tr>
-                  <td colSpan={columns.length} style={{ textAlign: 'center', fontStyle: 'italic', color: 'var(--text-secondary)' }}>
-                    No records found.
+                  <td colSpan={columns.length} className="px-5 py-10 text-center text-on-surface-variant/50">
+                    <div className="flex items-center justify-center animate-pulse">
+                      <span className="material-symbols-outlined animate-spin mr-2">sync</span>Loading…
+                    </div>
                   </td>
                 </tr>
-              ) : (
-                filtered.map((row, i) => (
-                  <tr key={row.id ?? i}>
-                    {columns.map(col => (
-                      <td key={col.key} style={{
-                        textAlign: col.align === 'right' ? 'right' : col.align === 'center' ? 'center' : 'left',
-                        whiteSpace: (col.key === 'jDesc' || col.key === 'jPayTo') ? 'normal' : 'nowrap',
-                        fontFamily: col.mono ? "'Consolas', monospace" : undefined
-                      }}>
-                        {getCellVal(row, col)}
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              )}
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="px-5 py-14 text-center text-on-surface-variant/40">
+                    <span className="material-symbols-outlined text-4xl mb-2">search_off</span>
+                    <p>No records found.</p>
+                  </td>
+                </tr>
+              ) : filtered.map((row, i) => (
+                <tr key={row.id ?? i} className={`hover:bg-primary/5 transition-colors ${i % 2 === 0 ? '' : 'bg-surface-container-lowest/30'}`}>
+                  {columns.map(col => (
+                    <td key={col.key} className={`px-5 py-3 ${
+                      col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : ''
+                    } ${col.mono ? 'font-mono text-primary font-bold text-xs' : 'text-on-surface-variant'}`}>
+                      {col.key === 'jCkAmt' || col.key === 'openBal' || col.key === 'curDebit' || col.key === 'curCredit' || col.key === 'endBal' ? (
+                        <span className="text-emerald-700 font-semibold font-mono">₱{getCellVal(row, col)}</span>
+                      ) : (
+                        getCellVal(row, col)
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
-      )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
-        <button className="btn btn-secondary" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Previous</button>
-        <span style={{ fontSize: 12 }}>Page {page}</span>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <select className="form-input" value={pageSize} onChange={e => { setPage(1); setPageSize(parseInt(e.target.value, 10)) }} style={{ width: 90 }}>
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-          <button className="btn btn-secondary" disabled={page * pageSize >= total} onClick={() => setPage(p => p + 1)}>Next</button>
+        {/* Pagination Details */}
+        <div className="px-5 py-3 border-t border-outline-variant/10 flex items-center justify-between bg-surface-container-lowest">
+          <div className="flex items-center gap-2">
+            <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}
+              className="p-1.5 rounded-lg border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container disabled:opacity-30 transition-colors">
+              <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+            </button>
+            <span className="text-sm text-on-surface-variant font-medium mx-2">Page {page} of {totalPages}</span>
+            <button disabled={page * pageSize >= total} onClick={() => setPage((p) => p + 1)}
+              className="p-1.5 rounded-lg border border-outline-variant/20 text-on-surface-variant hover:bg-surface-container disabled:opacity-30 transition-colors">
+              <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-on-surface-variant uppercase tracking-wider font-bold">Rows</span>
+            <select value={pageSize} onChange={(e) => { setPageSize(parseInt(e.target.value, 10)); setPage(1) }}
+              className="px-2 py-1 border border-outline-variant/20 rounded-md text-sm bg-white focus:outline-none">
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, Fragment } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
+import PageHeader from '../PageHeader'
 import {
   exportTableCSV,    exportFinancialCSV,
   exportTableXLSX,   exportFinancialXLSX,
@@ -12,9 +13,8 @@ const API_BASE = '/api/fs'
 
 // --- Report title map -------------------------------------------------------
 const reportTitles: Record<string, string> = {
-  'cdv':                  'Cash Disbursement Voucher Register',
-  'cds':                  'Cash Disbursement Summary',
-  'cds-code':             'Cash Disbursement Summary by Code',
+  'cdv':                  'Check Disbursement Register (Detailed)',
+  'cds':                  'Check Disbursement Register (Summary)',
   'receipts':             'Cash Receipts Transactions',
   'sales':                'Sales Book Journals',
   'journals':             'Journal Vouchers',
@@ -27,6 +27,7 @@ const reportTitles: Record<string, string> = {
   'coa':                  'Chart of Accounts',
   'groups':               'Account Groupings',
   'schedules':            'Subsidiary Schedule Groups',
+  'subsidiary-schedule':  'Subsidiary Schedule of Balance Sheet'
 }
 
 // --- Types ------------------------------------------------------------------
@@ -117,12 +118,26 @@ function filterByDate<T extends { jDate: string }>(rows: T[], from: string, to: 
 function ExportBar({ onCSV, onXLSX, onPDF }: {
   onCSV: () => void; onXLSX: () => void; onPDF: () => void
 }) {
+  const [error, setError] = useState('')
+  const wrap = (fn: () => void) => () => {
+    try { setError(''); fn() }
+    catch (e: any) { setError(e.message || String(e)) }
+  }
   return (
-    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', margin: '0 0 20px' }}>
-      <span className="form-label" style={{ margin: 0, alignSelf: 'center' }}>Export as:</span>
-      <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '4px 14px' }} onClick={onCSV}>&#11015; CSV</button>
-      <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '4px 14px' }} onClick={onXLSX}>&#11015; XLSX</button>
-      <button className="btn btn-secondary" style={{ fontSize: '12px', padding: '4px 14px' }} onClick={onPDF}>&#11015; PDF</button>
+    <div style={{ marginBottom: '20px' }}>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <span className="form-label" style={{ margin: 0, alignSelf: 'center', fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)' }}>EXPORT AS:</span>
+        <button className="btn btn-secondary" style={{ padding: '4px 12px', background: '#f8fafc', borderColor: '#cbd5e1', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} onClick={wrap(onCSV)}>
+          <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>download</span> CSV
+        </button>
+        <button className="btn btn-secondary" style={{ padding: '4px 12px', background: '#f8fafc', borderColor: '#cbd5e1', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} onClick={wrap(onXLSX)}>
+          <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>download</span> XLSX
+        </button>
+        <button className="btn btn-secondary" style={{ padding: '4px 12px', background: '#f8fafc', borderColor: '#cbd5e1', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} onClick={wrap(onPDF)}>
+          <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>print</span> PDF
+        </button>
+      </div>
+      {error && <div style={{ marginTop: '8px', color: '#dc2626', fontSize: '12px', fontWeight: 500 }}>Export Error: {error}</div>}
     </div>
   )
 }
@@ -167,9 +182,9 @@ export default function FSReports() {
       } else if (type === 'income-statement') {
         const r = await axios.get(`${API_BASE}/reports/income-statement`, { params: { periodEnding: dateTo } })
         setFinancialData({ kind: 'income-statement', ...(r.data as object) })
-      } else if (type === 'balance-sheet') {
+      } else if (type === 'balance-sheet' || type === 'subsidiary-schedule') {
         const r = await axios.get(`${API_BASE}/reports/balance-sheet`, { params: { periodEnding: dateTo } })
-        setFinancialData({ kind: 'balance-sheet', ...(r.data as object) })
+        setFinancialData({ kind: type, ...(r.data as object) })
       } else if (['receipts','sales','journals','purchase','adjustments'].includes(type)) {
         const ep = type === 'receipts' ? 'receipts'
                  : type === 'sales'    ? 'sales'
@@ -233,17 +248,16 @@ export default function FSReports() {
   const type            = reportType || ''
   const isTransactional = ['receipts','sales','journals','purchase','adjustments'].includes(type)
   const isVoucher       = ['cdv','cds','cds-code'].includes(type)
-  const isFinancial     = ['trial-balance','trial-balance-detail','income-statement','balance-sheet'].includes(type)
+  const isFinancial     = ['trial-balance','trial-balance-detail','income-statement','balance-sheet','subsidiary-schedule'].includes(type)
   const isCodeFile      = ['coa','groups','schedules'].includes(type)
   const showDateFilter  = isTransactional || isVoucher || isFinancial
 
   const voucherTotal = voucherMasters.reduce((s, r) => s + r.jCkAmt, 0)
 
-  // CDS-by-Code: group lines by account code, filter via master check-no list (date range already applied to masters)
   const validCheckNos = new Set(voucherMasters.map(m => m.jCkNo))
   interface CodeGroup { acctCode: string; description: string; count: number; debit: number; credit: number }
   const byCode: Record<string, CodeGroup> = {}
-  if (type === 'cds-code') {
+  if (type === 'cds') {
     for (const line of voucherLines) {
       if (!validCheckNos.has(line.jCkNo)) continue
       if (!byCode[line.acctCode]) {
@@ -297,31 +311,76 @@ export default function FSReports() {
       return
     }
 
-    if (type === 'cdv' || type === 'cds') {
-      // Flat export: one row per master header (detail lines omitted for CDV flat table)
+    if (type === 'cdv') {
       const cols: ExportCol[] = [
-        { header: 'CDV No.',     key: 'jJvNo',     width: 12 },
         { header: 'Date',        key: 'jDateStr',  width: 14 },
-        { header: 'Sup#',        key: 'supNo',     width: 8  },
-        { header: 'Payee',       key: 'jPayTo',    width: 30 },
-        { header: 'Bank#',       key: 'bankNo',    width: 8  },
-        { header: 'Check No.',   key: 'jCkNo',     width: 14 },
-        { header: 'Amount',      key: 'jCkAmtStr', width: 16, numeric: true },
-        { header: 'Particulars', key: 'jDesc',     width: 30 },
+        { header: 'CDV No.',     key: 'jJvNo',     width: 15 },
+        { header: 'Payee',       key: 'jPayTo',    width: 32 },
+        { header: 'Sup#',        key: 'supNo',     width: 15 },
+        { header: 'Bank#',       key: 'bankNo',    width: 22, numeric: true },
+        { header: 'Check No.',   key: 'jCkNo',     width: 22, numeric: true },
       ]
-      const rows = voucherMasters.map(r => ({
-        jJvNo: r.jJvNo, jDateStr: fmtDate(r.jDate), supNo: String(r.supNo ?? ''),
-        jPayTo: r.jPayTo ?? '', bankNo: String(r.bankNo ?? ''), jCkNo: r.jCkNo,
-        jCkAmtStr: fmt(r.jCkAmt), jDesc: r.jDesc ?? '',
-      }))
-      const footer = { jJvNo: 'TOTAL', jDateStr: '', supNo: '', jPayTo: '', bankNo: '', jCkNo: '', jCkAmtStr: fmt(voucherTotal), jDesc: '' }
+      
+      const rows: any[] = []
+      voucherMasters.forEach(master => {
+        const lines = voucherLines.filter(l => l.jCkNo === master.jCkNo)
+        const linDebit  = lines.filter(l => l.jDOrC.toUpperCase() === 'D').reduce((s, l) => s + l.jCkAmt, 0)
+        const linCredit = lines.filter(l => l.jDOrC.toUpperCase() === 'C').reduce((s, l) => s + l.jCkAmt, 0)
+
+        // Master Row
+        rows.push({
+          jDateStr: fmtDate(master.jDate),
+          jJvNo: master.jJvNo,
+          jPayTo: master.jPayTo ?? '',
+          supNo: String(master.supNo ?? ''),
+          bankNo: String(master.bankNo ?? ''),
+          jCkNo: String(master.jCkNo ?? '')
+        })
+
+        // Detail Lines
+        lines.forEach(l => {
+          rows.push({
+            jDateStr: '',
+            jJvNo: '',
+            jPayTo: `${l.acctCode}  ${acctDescMap[l.acctCode] ?? ''}`,
+            supNo: '',
+            bankNo: l.jDOrC.toUpperCase() === 'D' ? fmt(l.jCkAmt) : '',
+            jCkNo:  l.jDOrC.toUpperCase() === 'C' ? fmt(l.jCkAmt) : ''
+          })
+        })
+
+        // Subtotals/Remarks Row
+        rows.push({
+          jDateStr: master.jDesc ? `Remarks: ${master.jDesc}` : '',
+          jJvNo: '',
+          jPayTo: '',
+          supNo: 'Totals ->',
+          bankNo: fmt(linDebit),
+          jCkNo: fmt(linCredit)
+        })
+
+        // Unbalanced Warning if any
+        if (Math.abs(linDebit - linCredit) > 0.01) {
+          rows.push({
+            jDateStr: '', jJvNo: '',
+            jPayTo: '*** WARNING: UNBALANCED ***',
+            supNo: '', bankNo: '', jCkNo: ''
+          })
+        }
+      })
+
+      const footer = {
+        jDateStr: 'GRAND TOTALS', jJvNo: '', jPayTo: '', supNo: '',
+        bankNo: '', jCkNo: ''
+      }
+
       if (format === 'csv')  exportTableCSV(reportTitle, cols, rows)
       if (format === 'xlsx') exportTableXLSX(reportTitle, cols, rows)
       if (format === 'pdf')  exportTablePDF(reportTitle, subtitle, cols, rows, footer)
       return
     }
 
-    if (type === 'cds-code') {
+    if (type === 'cds') {
       const cols: ExportCol[] = [
         { header: 'Acct#',         key: 'acctCode',    width: 8  },
         { header: 'Description',   key: 'description', width: 32 },
@@ -427,6 +486,29 @@ export default function FSReports() {
       return
     }
 
+    if (type === 'subsidiary-schedule') {
+      if (!financialData) return
+      const hsCols: ExportCol[] = [
+        { header: 'Description', key: 'description', width: 44 },
+        { header: 'Amount',      key: 'amountStr',   width: 22, numeric: true },
+      ]
+      const schedules = (financialData.subsidiarySchedules as any[]) ?? []
+      const sections: FinSection[] = schedules.map(sec => ({
+        heading: sec.glHead,
+        cols: hsCols,
+        rows: (sec.lines || []).map((l: any) => ({
+          description: l.description,
+          amountStr: fmt(parseFloat(String(l.amount ?? 0)))
+        })),
+        totalRow: { description: 'TOTAL', amountStr: fmt(parseFloat(String(sec.total ?? 0))) }
+      }))
+
+      if (format === 'csv')  exportFinancialCSV(reportTitle, subtitle, sections)
+      if (format === 'xlsx') exportFinancialXLSX(reportTitle, subtitle, sections)
+      if (format === 'pdf')  exportFinancialPDF(reportTitle, subtitle, sections)
+      return
+    }
+
     if (type === 'coa') {
       const cols: ExportCol[] = [
         { header: 'Acct#',        key: 'acctCode',  width: 8  },
@@ -486,8 +568,12 @@ export default function FSReports() {
   // Render
   // -------------------------------------------------------------------------
   return (
-    <div className="card">
-      <h2>{reportTitle}</h2>
+    <div className="flex flex-col gap-6 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2">
+      <PageHeader 
+        breadcrumb="REPORTS & INQUIRIES" 
+        title={reportTitle} 
+        subtitle={`Generate, view, and export ${reportTitle}.`}
+      />
 
       {/* Parameters */}
       {showDateFilter && (
@@ -581,116 +667,50 @@ export default function FSReports() {
         </div>
       )}
 
-      {/* CDV REGISTER — per-voucher cards matching A_REPVOU.PRG */}
+      {/* CDV REGISTER — tabular view matching A_REPVSM.PRG */}
       {!loading && type === 'cdv' && (
-        <div>
+        <div style={{ overflowX: 'auto' }}>
           <p className="subtitle" style={{ marginBottom: '12px' }}>
             {voucherMasters.length} voucher(s) | {periodLabel}
           </p>
-          {voucherMasters.length === 0 ? (
-            <p style={{ fontFamily: "'Consolas', monospace" }}>No records to print...</p>
-          ) : voucherMasters.map(master => {
-            const lines = voucherLines.filter(l => l.jCkNo === master.jCkNo)
-            const linDebit  = lines.filter(l => l.jDOrC.toUpperCase() === 'D').reduce((s, l) => s + l.jCkAmt, 0)
-            const linCredit = lines.filter(l => l.jDOrC.toUpperCase() === 'C').reduce((s, l) => s + l.jCkAmt, 0)
-            return (
-              <div key={master.id} style={{ marginBottom: '24px', border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden' }}>
-                {/* Voucher header */}
-                <div style={{ background: 'var(--background)', padding: '10px 14px', borderBottom: '1px solid var(--border)',
-                  display: 'flex', flexWrap: 'wrap', gap: '20px', fontFamily: "'Consolas', monospace", fontSize: '13px' }}>
-                  <span><b>CDV No.:</b> {master.jJvNo}</span>
-                  <span><b>Date:</b> {fmtDate(master.jDate)}</span>
-                  <span><b>Sup#:</b> {master.supNo ?? ''}</span>
-                  <span><b>Payee:</b> {master.jPayTo}</span>
-                  <span><b>Bank#:</b> {master.bankNo ?? ''}</span>
-                  <span><b>Check No.:</b> {master.jCkNo}</span>
-                </div>
-                {/* Account detail lines */}
-                <table className="data-table" style={{ margin: 0 }}>
-                  <thead>
-                    <tr>
-                      <th>Acct#</th><th>Account Description</th>
-                      <th style={{ textAlign: 'right' }}>Debit</th>
-                      <th style={{ textAlign: 'right' }}>Credit</th>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>CDV No.</th>
+                <th>Payee</th>
+                <th>Sup#</th>
+                <th>Bank#</th>
+                <th>Check No.</th>
+              </tr>
+            </thead>
+            <tbody>
+              {voucherMasters.length === 0 ? (
+                <tr><td colSpan={6} style={{ fontFamily: "'Consolas', monospace" }}>No records to print...</td></tr>
+              ) : voucherMasters.map(master => {
+                const lines = voucherLines.filter(l => l.jCkNo === master.jCkNo)
+                const linDebit  = lines.filter(l => l.jDOrC.toUpperCase() === 'D').reduce((s, l) => s + l.jCkAmt, 0)
+                const linCredit = lines.filter(l => l.jDOrC.toUpperCase() === 'C').reduce((s, l) => s + l.jCkAmt, 0)
+                return (
+                  <Fragment key={master.id}>
+                    {/* Master Header Row */}
+                    <tr style={{ borderTop: '2px solid var(--border)'  }}>
+                      <td>{fmtDate(master.jDate)}</td>
+                      <td style={{ fontFamily: "'Consolas', monospace", fontWeight: 600 }}>{master.jJvNo}</td>
+                      <td style={{ fontWeight: 600 }}>{master.jPayTo}</td>
+                      <td>{master.supNo ?? ''}</td>
+                      <td>{master.bankNo ?? ''}</td>
+                      <td style={{ fontFamily: "'Consolas', monospace" }}>{master.jCkNo}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {lines.length === 0 ? (
-                      <tr><td colSpan={4} style={{ fontFamily: "'Consolas', monospace", color: 'var(--text-secondary)' }}>No account lines.</td></tr>
-                    ) : lines.map((l, li) => (
-                      <tr key={li}>
-                        <td style={{ fontFamily: "'Consolas', monospace", fontWeight: 600 }}>{l.acctCode}</td>
-                        <td>{acctDescMap[l.acctCode] ?? ''}</td>
-                        <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace" }}>
-                          {l.jDOrC.toUpperCase() === 'D' ? fmt(l.jCkAmt) : ''}
-                        </td>
-                        <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace" }}>
-                          {l.jDOrC.toUpperCase() === 'C' ? fmt(l.jCkAmt) : ''}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colSpan={2} style={{ fontWeight: 700, fontFamily: "'Consolas', monospace", textAlign: 'right' }}>Totals &rarr;</td>
-                      <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 700 }}>{fmt(linDebit)}</td>
-                      <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 700 }}>{fmt(linCredit)}</td>
-                    </tr>
-                  </tfoot>
-                </table>
-                {/* Explanation */}
-                {master.jDesc && (
-                  <div style={{ padding: '8px 14px', borderTop: '1px solid var(--border)', fontFamily: "'Consolas', monospace", fontSize: '12px', color: 'var(--text-secondary)' }}>
-                    <b>EXPLANATION:</b> {master.jDesc}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-          {voucherMasters.length > 0 && (
-            <div style={{ fontWeight: 700, fontFamily: "'Consolas', monospace", marginTop: '8px', fontSize: '13px' }}>
-              Grand Total: {fmt(voucherTotal)}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* CDS SUMMARY (same card format as CDV per A_REPVSM.PRG) */}
-      {!loading && type === 'cds' && (
-        <div>
-          <p className="subtitle" style={{ marginBottom: '8px' }}>
-            {voucherMasters.length} check(s) | {periodLabel}
-          </p>
-          {voucherMasters.length === 0 && (
-            <p style={{ color: 'var(--text-secondary)' }}>No records found for this period.</p>
-          )}
-          {voucherMasters.map(master => {
-            const lines = voucherLines.filter(l => l.jCkNo === master.jCkNo)
-            const linDebit  = lines.reduce((s, l) => s + (l.jDOrC.toUpperCase() === 'D' ? l.jCkAmt : 0), 0)
-            const linCredit = lines.reduce((s, l) => s + (l.jDOrC.toUpperCase() === 'C' ? l.jCkAmt : 0), 0)
-            return (
-              <div key={master.id} style={{ marginBottom: '24px', border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden' }}>
-                <div style={{ background: 'var(--background)', padding: '10px 14px', display: 'flex', flexWrap: 'wrap', gap: '6px 18px', fontSize: '12px' }}>
-                  <span><b>CDV No.:</b> {master.jJvNo}</span>
-                  <span><b>Date:</b> {fmtDate(master.jDate)}</span>
-                  <span><b>Sup#:</b> {master.supNo ?? ''}</span>
-                  <span><b>Payee:</b> {master.jPayTo}</span>
-                  <span><b>Bank#:</b> {master.bankNo ?? ''}</span>
-                  <span><b>Check No.:</b> {master.jCkNo}</span>
-                </div>
-                <table className="data-table" style={{ margin: 0, borderRadius: 0 }}>
-                  <thead>
-                    <tr>
-                      <th>Acct#</th><th>Account Description</th>
-                      <th style={{ textAlign: 'right' }}>Debit</th>
-                      <th style={{ textAlign: 'right' }}>Credit</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                    
+                    {/* Detail Lines Area */}
                     {lines.map((l, li) => (
-                      <tr key={li}>
-                        <td style={{ fontFamily: "'Consolas', monospace", fontWeight: 600 }}>{l.acctCode}</td>
-                        <td>{acctDescMap[l.acctCode] ?? ''}</td>
+                      <tr key={`${master.id}-line-${li}`}>
+                        <td colSpan={2}></td>
+                        <td colSpan={2} style={{ padding: '4px 12px' }}>
+                          <span style={{ fontFamily: "'Consolas', monospace", fontWeight: 600, marginRight: '8px' }}>{l.acctCode}</span>
+                          <span style={{ color: 'var(--text-secondary)' }}>{acctDescMap[l.acctCode] ?? ''}</span>
+                        </td>
                         <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace" }}>
                           {l.jDOrC.toUpperCase() === 'D' ? fmt(l.jCkAmt) : ''}
                         </td>
@@ -699,33 +719,59 @@ export default function FSReports() {
                         </td>
                       </tr>
                     ))}
-                  </tbody>
-                  <tfoot>
+
+                    {/* Voucher Subtotal */}
                     <tr>
-                      <td colSpan={2} style={{ fontWeight: 700 }}>Totals &rarr;</td>
-                      <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 700 }}>{fmt(linDebit)}</td>
-                      <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 700 }}>{fmt(linCredit)}</td>
+                      <td colSpan={2}>
+                        {master.jDesc && (
+                           <div style={{ color: 'var(--text-secondary)', fontSize: '11px', paddingLeft: '12px' }}>
+                             <b>Remarks:</b> {master.jDesc}
+                           </div>
+                        )}
+                      </td>
+                      <td colSpan={2} style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", color: 'var(--text-secondary)' }}>Totals &rarr;</td>
+                      <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 600 }}>{fmt(linDebit)}</td>
+                      <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 600 }}>{fmt(linCredit)}</td>
                     </tr>
-                  </tfoot>
-                </table>
-                {master.jDesc && (
-                  <div style={{ padding: '8px 14px', fontSize: '12px', borderTop: '1px solid var(--border)', background: 'var(--panel-2)' }}>
-                    <b>Remarks:</b> {master.jDesc}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-          {voucherMasters.length > 0 && (
-            <div style={{ fontWeight: 700, fontFamily: "'Consolas', monospace", marginTop: '8px', fontSize: '13px' }}>
-              Grand Total: {fmt(voucherTotal)}
-            </div>
-          )}
+                    
+                    {/* Warning if unbalanced */}
+                    {Math.abs(linDebit - linCredit) > 0.01 && (
+                      <tr>
+                        <td colSpan={2}></td>
+                        <td colSpan={4} style={{ color: '#991b1b', fontWeight: 700, fontSize: '12px', padding: '4px 12px' }}>
+                          ***** WARNING!!! TOTAL CREDIT IS NOT EQUAL TO TOTAL DEBIT! *****
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                )
+              })}
+            </tbody>
+            {voucherMasters.length > 0 && (
+              <tfoot>
+                <tr>
+                  <td colSpan={4} style={{ fontWeight: 700, fontSize: '14px', paddingTop: '16px' }}>GRAND TOTAL &rarr;</td>
+                  <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 700, fontSize: '14px', paddingTop: '16px' }}>
+                    {fmt(voucherMasters.reduce((s, m) => {
+                      const lines = voucherLines.filter(l => l.jCkNo === m.jCkNo);
+                      return s + lines.filter(l => l.jDOrC.toUpperCase() === 'D').reduce((s2, l) => s2 + l.jCkAmt, 0);
+                    }, 0))}
+                  </td>
+                  <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 700, fontSize: '14px', paddingTop: '16px' }}>
+                    {fmt(voucherMasters.reduce((s, m) => {
+                      const lines = voucherLines.filter(l => l.jCkNo === m.jCkNo);
+                      return s + lines.filter(l => l.jDOrC.toUpperCase() === 'C').reduce((s2, l) => s2 + l.jCkAmt, 0);
+                    }, 0))}
+                  </td>
+                </tr>
+              </tfoot>
+            )}
+          </table>
         </div>
       )}
 
       {/* CDS BY CODE (per A_REPCDS.PRG) */}
-      {!loading && type === 'cds-code' && (
+      {!loading && type === 'cds' && (
         <div style={{ overflowX: 'auto' }}>
           <p className="subtitle" style={{ marginBottom: '8px' }}>
             {cdsCodeRows.length} account code(s) | {periodLabel}
@@ -760,7 +806,7 @@ export default function FSReports() {
               return (
                 <tfoot>
                   <tr>
-                    <td colSpan={2} style={{ fontWeight: 700 }}>TOTAL</td>
+                    <td colSpan={2} style={{ fontWeight: 700 }}>T O T A L S &rarr;</td>
                     <td style={{ textAlign: 'right', fontWeight: 700 }}>{totN}</td>
                     <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 700 }}>{fmt(totD)}</td>
                     <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 700 }}>{fmt(totC)}</td>
@@ -1181,6 +1227,76 @@ function FinancialStmtView({ data }: { data: Record<string, unknown> }) {
           borderTop: '2px solid var(--border)', padding: '6px 12px', marginTop: '8px', fontSize: '14px' }}>
           TOTAL LIABILITY &amp; EQUITY: {fmt(mkn('totalLiabilitiesAndEquity'))}
         </div>
+
+        {Array.isArray((data as any).subsidiarySchedules) && ((data as any).subsidiarySchedules as any[]).length > 0 && (
+          <div style={{ marginTop: '32px' }}>
+            <h4 style={{ fontWeight: 700, marginBottom: '6px', textTransform: 'uppercase' }}>*** SUBSIDIARY SCHEDULE ***</h4>
+            {(data.subsidiarySchedules as any[]).map((group, idx) => (
+              <div key={idx} style={{ marginBottom: '16px' }}>
+                <p style={{ fontWeight: 700, margin: '8px 0 4px', fontSize: '13px', color: 'var(--text-secondary)' }}>{group.glHead}</p>
+                <table className="data-table" style={{ margin: 0 }}>
+                  <tbody>
+                    {group.lines.length === 0 ? (
+                      <tr><td colSpan={2} style={{ fontFamily: "'Consolas', monospace", color: 'var(--text-secondary)' }}>(none)</td></tr>
+                    ) : group.lines.map((l: any, i: number) => (
+                      <tr key={i}>
+                        <td style={{ paddingLeft: '24px' }}>{l.description}</td>
+                        <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", width: '150px' }}>{fmt(l.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {group.lines.length > 1 && (
+                  <div style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontSize: '13px',
+                    borderTop: '1px solid var(--border)', padding: '4px 12px', fontWeight: 600 }}>
+                    {fmt(group.total)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  if (kind === 'subsidiary-schedule') {
+    const schedules = (data.subsidiarySchedules as any[]) ?? []
+    return (
+      <div>
+        <p className="subtitle" style={{ marginBottom: '12px' }}>Period ending: {fmtDate(String(data.periodEnding ?? ''))}</p>
+        
+        {schedules.length === 0 ? (
+           <p style={{ color: 'var(--text-secondary)' }}>No subsidiary schedules found for this period.</p>
+        ) : (
+          <div>
+            {schedules.map((group, idx) => (
+              <div key={idx} style={{ marginBottom: '24px' }}>
+                <h5 style={{ fontWeight: 700, margin: '0 0 6px', fontSize: '14px', color: 'var(--text-primary)', textTransform: 'uppercase' }}>
+                  {group.glHead}
+                </h5>
+                <table className="data-table" style={{ margin: 0 }}>
+                  <tbody>
+                    {group.lines.length === 0 ? (
+                      <tr><td colSpan={2} style={{ fontFamily: "'Consolas', monospace", color: 'var(--text-secondary)' }}>(none)</td></tr>
+                    ) : group.lines.map((l: any, i: number) => (
+                      <tr key={i}>
+                        <td style={{ paddingLeft: '12px' }}>{l.description}</td>
+                        <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", width: '150px' }}>{fmt(l.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {group.lines.length > 1 && (
+                  <div style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontSize: '13px',
+                    borderTop: '1px solid var(--border)', padding: '4px 12px', fontWeight: 600 }}>
+                    TOTAL: {fmt(group.total)}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     )
   }

@@ -27,6 +27,9 @@ public sealed class AccountingDbContext : DbContext
     public DbSet<FSSysId> FSSysId { get; set; } = null!;
     public DbSet<FSEffect> FSEffects { get; set; } = null!;
     public DbSet<FSScheduleEntry> FSScheduleEntries { get; set; } = null!;
+    public DbSet<FSBank> FSBanks { get; set; } = null!;
+    public DbSet<FSSupplier> FSSuppliers { get; set; } = null!;
+    public DbSet<FSSignatory> FSSignatories { get; set; } = null!;
     
     // Payroll System Tables
     public DbSet<PayMaster> PayMaster { get; set; } = null!;
@@ -57,6 +60,9 @@ public sealed class AccountingDbContext : DbContext
         modelBuilder.Entity<FSEffect>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
         modelBuilder.Entity<FSScheduleEntry>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
         modelBuilder.Entity<FSSysId>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSBank>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSSupplier>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
+        modelBuilder.Entity<FSSignatory>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
 
         modelBuilder.Entity<PayMaster>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
         modelBuilder.Entity<PayTmcard>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
@@ -99,6 +105,15 @@ public sealed class AccountingDbContext : DbContext
 
         modelBuilder.Entity<FSScheduleEntry>()
             .HasIndex(s => new { s.CompanyCode, s.GlHead, s.AcctCode });
+
+        modelBuilder.Entity<FSBank>()
+            .HasIndex(b => new { b.CompanyCode, b.BankNo });
+
+        modelBuilder.Entity<FSSupplier>()
+            .HasIndex(s => new { s.CompanyCode, s.SupNo });
+
+        modelBuilder.Entity<FSSignatory>()
+            .HasIndex(s => new { s.CompanyCode, s.SignName });
 
         // Payroll System Indexes
         modelBuilder.Entity<PayMaster>()

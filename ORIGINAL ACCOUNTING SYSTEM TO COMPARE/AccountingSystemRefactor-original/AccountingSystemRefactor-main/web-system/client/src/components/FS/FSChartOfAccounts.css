@@ -1,0 +1,397 @@
+/* FSChartOfAccounts.css - Retro DOS Terminal Styling */
+
+.fs-chart-of-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+  background-color: #000033;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+  min-height: 100vh;
+}
+
+.fs-chart-of-accounts .fs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid #0000ff;
+  padding: 10px 15px;
+  background-color: #000055;
+}
+
+.fs-chart-of-accounts .fs-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #ffff00;
+}
+
+.fs-chart-of-accounts .fs-loading {
+  color: #00ff00;
+  font-weight: bold;
+}
+
+/* Message Boxes */
+.fs-chart-of-accounts .fs-message {
+  padding: 10px 15px;
+  border: 2px solid #0000ff;
+  background-color: #000055;
+  color: #ffff00;
+  border-radius: 2px;
+}
+
+.fs-chart-of-accounts .fs-message.error {
+  border-color: #ff0000;
+  background-color: #330000;
+  color: #ff6666;
+}
+
+.fs-chart-of-accounts .fs-message.info {
+  border-color: #00ff00;
+  color: #00ff00;
+}
+
+/* Main View */
+.fs-chart-of-accounts .fs-main-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Display Section */
+.fs-chart-of-accounts .fs-display-section {
+  border: 2px solid #0000ff;
+  padding: 15px;
+  background-color: #000055;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fs-chart-of-accounts .fs-field-group {
+  display: flex;
+  align-items: center;
+}
+
+.fs-chart-of-accounts .fs-field-group label {
+  width: 180px;
+  color: #ffff00;
+  font-weight: bold;
+  padding-right: 10px;
+  white-space: nowrap;
+}
+
+.fs-chart-of-accounts .fs-display {
+  flex: 1;
+  padding: 4px 8px;
+  background-color: #000033;
+  border: 1px solid #0000ff;
+  color: #00ff00;
+  min-width: 250px;
+}
+
+/* Fields Row */
+.fs-chart-of-accounts .fs-fields-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.fs-chart-of-accounts .fs-fields-row .fs-field-group {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.fs-chart-of-accounts .fs-fields-row .fs-field-group label {
+  width: auto;
+  font-size: 12px;
+}
+
+.fs-chart-of-accounts .fs-fields-row .fs-display {
+  width: 100%;
+  text-align: right;
+  padding-right: 5px;
+}
+
+/* Position Indicator */
+.fs-chart-of-accounts .fs-position-indicator {
+  text-align: right;
+  color: #00ff00;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-top: 1px dashed #0000ff;
+}
+
+/* No Data */
+.fs-chart-of-accounts .fs-no-data {
+  border: 2px solid #0000ff;
+  padding: 30px;
+  text-align: center;
+  background-color: #000055;
+  color: #ffff00;
+}
+
+.fs-chart-of-accounts .fs-no-data p {
+  margin: 10px 0;
+}
+
+/* Menu Buttons */
+.fs-chart-of-accounts .fs-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 15px;
+  border: 2px solid #0000ff;
+  background-color: #000055;
+  justify-content: center;
+}
+
+.fs-chart-of-accounts .fs-btn {
+  padding: 8px 20px;
+  border: 2px outset #0000ff;
+  background-color: #0000aa;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: 80px;
+  transition: all 0.2s;
+}
+
+.fs-chart-of-accounts .fs-btn:hover:not(:disabled) {
+  background-color: #0000ff;
+  border-style: inset;
+}
+
+.fs-chart-of-accounts .fs-btn:active:not(:disabled) {
+  border-style: inset;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.fs-chart-of-accounts .fs-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #000055;
+  color: #666666;
+}
+
+.fs-chart-of-accounts .fs-btn-menu {
+  min-width: 70px;
+  padding: 6px 15px;
+}
+
+/* Modal */
+.fs-chart-of-accounts .fs-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.fs-chart-of-accounts .fs-modal {
+  background-color: #000055;
+  border: 3px solid #0000ff;
+  padding: 20px;
+  min-width: 400px;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+}
+
+.fs-chart-of-accounts .fs-modal h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #ffff00;
+}
+
+.fs-chart-of-accounts .fs-modal .fs-field-group {
+  margin-bottom: 15px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.fs-chart-of-accounts .fs-modal .fs-field-group label {
+  width: auto;
+  font-size: 14px;
+}
+
+.fs-chart-of-accounts .fs-modal .fs-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #0000ff;
+  background-color: #000033;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+}
+
+.fs-chart-of-accounts .fs-modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.fs-chart-of-accounts .fs-btn-action {
+  background-color: #00aa00;
+}
+
+.fs-chart-of-accounts .fs-btn-action:hover {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+.fs-chart-of-accounts .fs-btn-cancel {
+  background-color: #aa0000;
+}
+
+.fs-chart-of-accounts .fs-btn-cancel:hover {
+  background-color: #ff0000;
+  color: #000000;
+}
+
+/* Editing View */
+.fs-chart-of-accounts .fs-editing-view {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.fs-chart-of-accounts .fs-edit-section {
+  border: 2px solid #0000ff;
+  padding: 20px;
+  background-color: #000055;
+}
+
+.fs-chart-of-accounts .fs-edit-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #ffff00;
+}
+
+.fs-chart-of-accounts .fs-form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fs-chart-of-accounts .fs-form-group label {
+  color: #ffff00;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.fs-chart-of-accounts .fs-form-group label .required {
+  color: #ff6666;
+}
+
+.fs-chart-of-accounts .fs-input {
+  padding: 8px 10px;
+  border: 1px solid #0000ff;
+  background-color: #000033;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+}
+
+.fs-chart-of-accounts .fs-input:focus {
+  outline: none;
+  border-color: #00ff00;
+  background-color: #001100;
+}
+
+.fs-chart-of-accounts .fs-input:disabled {
+  background-color: #000055;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+/* Select */
+.fs-chart-of-accounts select.fs-input {
+  cursor: pointer;
+}
+
+/* Form Group Row */
+.fs-chart-of-accounts .fs-form-group-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+/* Checkbox */
+.fs-chart-of-accounts .fs-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fs-chart-of-accounts .fs-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.fs-chart-of-accounts .fs-checkbox span {
+  color: #ffff00;
+  font-weight: bold;
+}
+
+/* Edit Buttons */
+.fs-chart-of-accounts .fs-edit-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 15px;
+  border: 2px solid #0000ff;
+  background-color: #000055;
+}
+
+.fs-chart-of-accounts .fs-btn-save {
+  background-color: #00aa00;
+}
+
+.fs-chart-of-accounts .fs-btn-save:hover:not(:disabled) {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .fs-chart-of-accounts {
+    padding: 10px;
+  }
+
+  .fs-chart-of-accounts .fs-field-group {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .fs-chart-of-accounts .fs-field-group label {
+    width: auto;
+  }
+
+  .fs-chart-of-accounts .fs-fields-row {
+    grid-template-columns: 1fr;
+  }
+
+  .fs-chart-of-accounts .fs-form-group-row {
+    grid-template-columns: 1fr;
+  }
+
+  .fs-chart-of-accounts .fs-menu {
+    flex-direction: column;
+  }
+
+  .fs-chart-of-accounts .fs-modal {
+    min-width: calc(100% - 40px);
+  }
+}

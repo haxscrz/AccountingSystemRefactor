@@ -44,16 +44,19 @@ function safeFilename(title: string, ext: string): string {
   return `${safe}_${d}.${ext}`
 }
 
-function triggerDownload(content: string, mime: string, filename: string) {
+function triggerDownload(content: BlobPart, mime: string, filename: string) {
   const blob = new Blob([content], { type: mime })
   const url  = URL.createObjectURL(blob)
   const a    = document.createElement('a')
+  a.style.display = 'none'
   a.href = url
   a.download = filename
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  
+  // Fix for Chrome/Edge bug where synchronous revokeObjectURL strips the download attribute filename
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 function drawPdfHeader(doc: jsPDF, title: string, subtitle: string) {
@@ -182,7 +185,8 @@ export function exportTableXLSX(
 
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, title.slice(0, 31))
-  XLSX.writeFile(wb, filename ?? safeFilename(title, 'xlsx'))
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+  triggerDownload(wbout, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename ?? safeFilename(title, 'xlsx'))
 }
 
 /**
@@ -222,7 +226,8 @@ export function exportFinancialXLSX(
   })
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, title.slice(0, 31))
-  XLSX.writeFile(wb, filename ?? safeFilename(title, 'xlsx'))
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+  triggerDownload(wbout, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename ?? safeFilename(title, 'xlsx'))
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -242,7 +247,7 @@ export function exportTablePDF(
   const doc = new jsPDF({
     orientation: landscape ? 'landscape' : 'portrait',
     unit: 'mm',
-    format: 'a4'
+    format: 'legal'
   })
 
   drawPdfHeader(doc, title, subtitle)
@@ -287,7 +292,7 @@ export function exportTablePDF(
     didDrawPage: (data) => { drawPdfFooter(doc, data.pageNumber) }
   })
 
-  doc.save(filename ?? safeFilename(title, 'pdf'))
+  triggerDownload(doc.output('blob'), 'application/pdf', filename ?? safeFilename(title, 'pdf'))
 }
 
 /**
@@ -301,7 +306,7 @@ export function exportFinancialPDF(
   sections: FinSection[],
   filename?: string
 ) {
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'legal' })
   drawPdfHeader(doc, title, subtitle)
 
   let currentY = 36
@@ -367,5 +372,5 @@ export function exportFinancialPDF(
     currentY = (doc as any).lastAutoTable.finalY + 6
   }
 
-  doc.save(filename ?? safeFilename(title, 'pdf'))
+  triggerDownload(doc.output('blob'), 'application/pdf', filename ?? safeFilename(title, 'pdf'))
 }
