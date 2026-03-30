@@ -166,7 +166,6 @@ export default function UserManagement() {
     }
   }
 
-  const cn = (base: string) => base // helper
 
   return (
     <div className={`font-body min-h-screen flex flex-col ${darkMode ? 'bg-[#0a0f1e] text-gray-100' : 'bg-slate-50 text-on-surface'}`}>
