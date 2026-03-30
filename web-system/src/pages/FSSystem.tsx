@@ -139,6 +139,16 @@ export default function FSSystem() {
     }
   }
 
+  const syncProfileToApi = async (photoDataUrl: string | null) => {
+    try {
+      await fetch('/api/admin/my-preferences', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profileImageUrl: photoDataUrl, preferencesJson: null })
+      })
+    } catch { /* best-effort sync */ }
+  }
+
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -148,9 +158,16 @@ export default function FSSystem() {
     }
     const reader = new FileReader()
     reader.onload = () => {
-      setProfilePhoto(reader.result as string)
+      const dataUrl = reader.result as string
+      setProfilePhoto(dataUrl)
+      syncProfileToApi(dataUrl)
     }
     reader.readAsDataURL(file)
+  }
+
+  const handleRemovePhoto = () => {
+    setProfilePhoto(null)
+    syncProfileToApi(null)
   }
 
   const shellTabs = [
@@ -408,7 +425,7 @@ export default function FSSystem() {
                       </button>
                       {profilePhoto && (
                         <button 
-                          onClick={() => setProfilePhoto(null)}
+                          onClick={() => handleRemovePhoto()}
                           className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${darkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-outline-variant/20 text-on-surface-variant hover:bg-surface-container'}`}
                         >
                           Remove

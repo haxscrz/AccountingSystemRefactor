@@ -59,36 +59,36 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex-grow flex flex-col items-center justify-center p-6 sm:p-12 z-10">
-        <div className="w-full max-w-5xl">
+        <div className="w-full max-w-7xl">
           <div className="mb-12">
             <h2 className="font-headline text-display-md text-primary tracking-tight mb-2">Select System</h2>
             <p className="font-body text-body-lg text-on-surface-variant">Choose the module you want to access</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className={`grid grid-cols-1 md:grid-cols-2 ${user?.role === 'superadmin' ? 'lg:grid-cols-3' : ''} gap-6`}>
             {/* Financial Statements Card */}
             <div 
               onClick={() => navigate('/fs')}
-              className={`group relative rounded-[20px] p-10 flex flex-col h-full shadow-[0_8px_30px_rgba(0,0,0,0.04)] border hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden ${darkMode ? 'bg-[#1e293b] border-gray-700 hover:shadow-[0_20px_40px_rgba(96,165,250,0.1)] hover:border-blue-500/30' : 'bg-white border-outline-variant/10 hover:shadow-[0_20px_40px_rgba(30,64,175,0.08)]'}`}
+              className={`group relative rounded-[20px] p-8 flex flex-col h-full shadow-[0_8px_30px_rgba(0,0,0,0.04)] border hover:-translate-y-1 transition-all duration-300 cursor-pointer overflow-hidden ${darkMode ? 'bg-[#1e293b] border-gray-700 hover:shadow-[0_20px_40px_rgba(96,165,250,0.1)] hover:border-blue-500/30' : 'bg-white border-outline-variant/10 hover:shadow-[0_20px_40px_rgba(30,64,175,0.08)]'}`}
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform duration-500"></div>
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-8 border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                <span className="material-symbols-outlined text-3xl">account_balance</span>
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                <span className="material-symbols-outlined text-2xl">account_balance</span>
               </div>
-              <h3 className="font-headline text-2xl font-bold text-on-surface mb-3">Financial Statements</h3>
-              <p className="text-on-surface-variant/80 text-sm leading-relaxed mb-8 min-h-[40px]">
+              <h3 className="font-headline text-xl font-bold text-on-surface mb-2">Financial Statements</h3>
+              <p className="text-on-surface-variant/80 text-sm leading-relaxed mb-6 min-h-[36px]">
                 Accounting, vouchers, journals, financial reports, and chart of accounts management.
               </p>
               
-              <ul className="space-y-4 mb-10 flex-grow">
+              <ul className="space-y-3 mb-8 flex-grow">
                 {[
                   'Check disbursement & receipts',
                   'Journal entries & posting',
                   'Balance sheet & income statement',
                   'Month-end processing'
                 ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-on-surface font-medium">
-                    <span className="material-symbols-outlined text-[16px] text-primary mt-0.5">play_arrow</span>
+                  <li key={i} className="flex items-start gap-2.5 text-sm text-on-surface font-medium">
+                    <span className="material-symbols-outlined text-[14px] text-primary mt-0.5">play_arrow</span>
                     {item}
                   </li>
                 ))}
@@ -108,7 +108,7 @@ export default function Dashboard() {
                 }
                 navigate('/payroll')
               }}
-              className={`group relative rounded-[20px] p-10 flex flex-col h-full border transition-all duration-300 overflow-hidden ${
+              className={`group relative rounded-[20px] p-8 flex flex-col h-full border transition-all duration-300 overflow-hidden ${
                 canPayroll 
                   ? `backdrop-blur-xl hover:-translate-y-1 cursor-pointer ${darkMode ? 'bg-[#1e293b]/60 border-gray-700 hover:bg-[#1e293b] hover:shadow-[0_20px_40px_rgba(16,185,129,0.1)] hover:border-emerald-500/30' : 'bg-surface-container-lowest/40 border-outline-variant/20 hover:bg-white hover:shadow-[0_20px_40px_rgba(16,185,129,0.08)]'}` 
                   : `${darkMode ? 'bg-[#1e293b]/30 border-gray-700' : 'bg-surface-container-high/30 border-outline-variant/10'} opacity-70 cursor-not-allowed grayscale`
@@ -116,32 +116,32 @@ export default function Dashboard() {
             >
               {canPayroll && <div className="absolute top-0 right-0 w-32 h-32 bg-tertiary/5 rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform duration-500"></div>}
               
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 border transition-colors duration-300 ${
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border transition-colors duration-300 ${
                 canPayroll 
                   ? 'bg-tertiary/10 text-tertiary border-tertiary/20 group-hover:bg-tertiary group-hover:text-white' 
                   : 'bg-outline-variant/20 text-outline-variant border-outline-variant/30'
               }`}>
-                <span className="material-symbols-outlined text-3xl">badge</span>
+                <span className="material-symbols-outlined text-2xl">badge</span>
               </div>
               
-              <h3 className="font-headline text-2xl font-bold text-on-surface mb-3 flex items-center gap-3">
+              <h3 className="font-headline text-xl font-bold text-on-surface mb-2 flex items-center gap-3">
                 Payroll System
                 {!canPayroll && <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-widest bg-error-container text-on-error-container uppercase">Restricted</span>}
               </h3>
               
-              <p className="text-on-surface-variant/80 text-sm leading-relaxed mb-8 min-h-[40px]">
+              <p className="text-on-surface-variant/80 text-sm leading-relaxed mb-6 min-h-[36px]">
                 Employee management, timecard processing, payroll computation, and government remittances.
               </p>
               
-              <ul className="space-y-4 mb-10 flex-grow opacity-80 group-hover:opacity-100 transition-opacity">
+              <ul className="space-y-3 mb-8 flex-grow opacity-80 group-hover:opacity-100 transition-opacity">
                 {[
                   'Timecard entry & computation',
                   'SSS, PHIC, Pag-ibig, tax deductions',
                   'Payslips & registers',
                   '13th month & year-end processing'
                 ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-on-surface font-medium">
-                    <span className={`material-symbols-outlined text-[16px] mt-0.5 ${canPayroll ? 'text-tertiary' : 'text-outline-variant'}`}>play_arrow</span>
+                  <li key={i} className="flex items-start gap-2.5 text-sm text-on-surface font-medium">
+                    <span className={`material-symbols-outlined text-[14px] mt-0.5 ${canPayroll ? 'text-tertiary' : 'text-outline-variant'}`}>play_arrow</span>
                     {item}
                   </li>
                 ))}
@@ -154,29 +154,42 @@ export default function Dashboard() {
                 {canPayroll && <span className="material-symbols-outlined text-[18px]">arrow_forward</span>}
               </div>
             </div>
-          </div>
 
-          {/* User Management Card (SuperAdmin only) */}
-          {user?.role === 'superadmin' && (
-            <div className="mt-8">
+            {/* User Management Card (SuperAdmin only) */}
+            {user?.role === 'superadmin' && (
               <div 
                 onClick={() => navigate('/admin/users')}
-                className={`group relative rounded-[20px] p-8 flex items-center gap-8 border transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-0.5 ${darkMode ? 'bg-[#1e293b] border-gray-700 hover:shadow-[0_20px_40px_rgba(251,191,36,0.08)] hover:border-amber-500/30' : 'bg-white border-outline-variant/10 hover:shadow-[0_20px_40px_rgba(245,158,11,0.08)]'}`}
+                className={`group relative rounded-[20px] p-8 flex flex-col h-full border transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1 ${darkMode ? 'bg-[#1e293b] border-gray-700 hover:shadow-[0_20px_40px_rgba(251,191,36,0.1)] hover:border-amber-500/30' : 'bg-white border-outline-variant/10 hover:shadow-[0_20px_40px_rgba(245,158,11,0.08)]'}`}
               >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/5 rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform duration-500"></div>
-                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300 flex-shrink-0">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-6 border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300">
                   <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-headline text-lg font-bold text-on-surface mb-1">User Management</h3>
-                  <p className="text-on-surface-variant/80 text-sm">Add, remove, and manage user accounts, roles, and module access permissions.</p>
-                </div>
-                <div className="flex items-center gap-2 text-amber-500 font-bold text-sm tracking-wide group-hover:gap-3 transition-all flex-shrink-0">
+                <h3 className="font-headline text-xl font-bold text-on-surface mb-2">User Management</h3>
+                <p className="text-on-surface-variant/80 text-sm leading-relaxed mb-6 min-h-[36px]">
+                  Add, remove, and manage user accounts, roles, and module access permissions.
+                </p>
+
+                <ul className="space-y-3 mb-8 flex-grow">
+                  {[
+                    'Create & manage user accounts',
+                    'Role & permission assignment',
+                    'Password reset & security',
+                    'Per-user data isolation'
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-on-surface font-medium">
+                      <span className="material-symbols-outlined text-[14px] text-amber-500 mt-0.5">play_arrow</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-auto flex items-center gap-2 text-amber-500 font-bold text-sm tracking-wide group-hover:gap-3 transition-all">
                   Manage Users <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Bottom Info */}
           <div className="mt-16 pt-8 border-t border-outline-variant/10 flex flex-wrap gap-8 justify-between items-center text-sm font-medium">
