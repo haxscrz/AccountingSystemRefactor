@@ -1078,8 +1078,6 @@ public sealed class FSController : ControllerBase
         }
         if (from.HasValue) query = query.Where(x => x.JDate >= from.Value.Date);
         if (to.HasValue) query = query.Where(x => x.JDate <= to.Value.Date);
-        if (includeDeleted) query = query.Where(x => x.IsDeleted);
-
         var total = await query.CountAsync();
         var rows = await query
             .AsNoTracking()
@@ -1098,11 +1096,6 @@ public sealed class FSController : ControllerBase
         IQueryable<T> query = includeDeleted
             ? source.IgnoreQueryFilters().Where(x => EF.Property<string>(x, "CompanyCode") == companyCode)
             : source;
-
-        if (includeDeleted)
-        {
-            query = query.Where(x => EF.Property<bool>(x, "IsDeleted"));
-        }
 
         if (!string.IsNullOrWhiteSpace(search))
         {

@@ -23,7 +23,7 @@ interface SystemInfo {
 }
 
 const STATUS_ROWS: { key: keyof SystemInfo; label: string }[] = [
-  { key: 'unpostedChecks',       label: 'Cash Disbursement Vouchers' },
+  { key: 'unpostedChecks',       label: 'Check Disbursement Vouchers' },
   { key: 'unpostedCashReceipts', label: 'Cash Receipts' },
   { key: 'unpostedSalesBook',    label: 'Sales Book' },
   { key: 'unpostedJournals',     label: 'Journal Vouchers' },

@@ -8,6 +8,7 @@ import CompanySelection from './pages/CompanySelection'
 import Dashboard from './pages/Dashboard'
 import FSSystem from './pages/FSSystem'
 import PayrollSystem from './pages/PayrollSystem'
+import UserManagement from './pages/UserManagement'
 
 function InactivityModal() {
   const { showInactivityModal, dismissInactivityModal } = useInactivityLogout()
@@ -63,6 +64,10 @@ function AppContent() {
         <Route 
           path="/payroll/*" 
           element={isAuthenticated ? (hasSelectedCompany ? (user?.canAccessPayroll ? <PayrollSystem /> : <Navigate to="/dashboard" />) : <Navigate to="/select-company" />) : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/admin/users" 
+          element={isAuthenticated ? (user?.role === 'superadmin' ? <UserManagement /> : <Navigate to="/dashboard" />) : <Navigate to="/login" />} 
         />
         <Route path="*" element={<Navigate to={isAuthenticated ? (hasSelectedCompany ? '/dashboard' : '/select-company') : '/login'} />} />
       </Routes>

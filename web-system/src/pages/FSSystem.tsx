@@ -175,7 +175,7 @@ export default function FSSystem() {
         title: 'Data Entry',
         items: [
           { label: 'Fiscal Narrative', icon: 'dashboard', onClick: () => navigate('/fs'), route: '/fs' },
-          { label: 'Cash Disbursement', icon: 'receipt_long', onClick: () => navigate('/fs/voucher'), route: '/fs/voucher' },
+          { label: 'Check Disbursement', icon: 'receipt_long', onClick: () => navigate('/fs/voucher'), route: '/fs/voucher' },
           { label: 'Cash Receipts', icon: 'payments', onClick: () => navigate('/fs/journal/receipt'), route: '/fs/journal/receipt' },
           { label: 'Sales Book Journals', icon: 'sell', onClick: () => navigate('/fs/journal/sales'), route: '/fs/journal/sales' },
           { label: 'Journal Vouchers', icon: 'receipt', onClick: () => navigate('/fs/journal/general'), route: '/fs/journal/general' },
@@ -186,8 +186,8 @@ export default function FSSystem() {
       {
         title: 'Quick Reports',
         items: [
-          { label: 'CD Register (Detailed)', icon: 'description', onClick: () => navigate('/fs/reports/cdv'), route: '/fs/reports/cdv' },
-          { label: 'CD Register (Summary)', icon: 'tag', onClick: () => navigate('/fs/reports/cds'), route: '/fs/reports/cds' }
+          { label: 'Check Disbursement Register (Detailed)', icon: 'description', onClick: () => navigate('/fs/reports/cdv'), route: '/fs/reports/cdv' },
+          { label: 'Check Disbursement Register (Summary)', icon: 'tag', onClick: () => navigate('/fs/reports/cds'), route: '/fs/reports/cds' }
         ]
       },
       {

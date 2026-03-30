@@ -85,7 +85,7 @@ const EMPTY_LINE_ROW: LineRowState = { acctCode: '', debit: '', credit: '' }
 
 // =============================================================================
 export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
-  const title = type === 'advance' ? 'Enter Advance CDB' : 'Cash Disbursement Voucher Entry'
+  const title = type === 'advance' ? 'Enter Advance CDB' : 'Check Disbursement Voucher Entry'
 
   // Masters list and navigation
   const [masters, setMasters] = useState<CheckMaster[]>([])

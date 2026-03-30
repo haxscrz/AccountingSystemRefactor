@@ -334,6 +334,23 @@ using (var initScope = app.Services.CreateScope())
         RunSql("CREATE INDEX IF NOT EXISTS ix_app_refresh_tokens_user_expiry ON app_refresh_tokens(user_id, expires_at_utc)");
         RunSql("CREATE INDEX IF NOT EXISTS ix_app_audit_created_at ON app_audit_logs(created_at_utc)");
 
+        // ── User data isolation: add created_by_user_id to all tenant tables ──
+        foreach (var table in tenantTables)
+        {
+            var cols = GetColumns(table);
+            if (!cols.Contains("created_by_user_id"))
+            {
+                AddColumn(table, "created_by_user_id", "INTEGER NULL");
+            }
+        }
+
+        // ── User profile fields ──
+        var userCols = GetColumns("app_users");
+        if (!userCols.Contains("profile_image_url"))
+            AddColumn("app_users", "profile_image_url", "TEXT NULL");
+        if (!userCols.Contains("preferences_json"))
+            AddColumn("app_users", "preferences_json", "TEXT NULL");
+
         var resetAllBusinessData = string.Equals(
             builder.Configuration["RESET_ALL_BUSINESS_DATA_ON_STARTUP"],
             "true",

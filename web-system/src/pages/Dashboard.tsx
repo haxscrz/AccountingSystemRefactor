@@ -82,7 +82,7 @@ export default function Dashboard() {
               
               <ul className="space-y-4 mb-10 flex-grow">
                 {[
-                  'Cash disbursement & receipts',
+                  'Check disbursement & receipts',
                   'Journal entries & posting',
                   'Balance sheet & income statement',
                   'Month-end processing'
@@ -155,6 +155,28 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+          {/* User Management Card (SuperAdmin only) */}
+          {user?.role === 'superadmin' && (
+            <div className="mt-8">
+              <div 
+                onClick={() => navigate('/admin/users')}
+                className={`group relative rounded-[20px] p-8 flex items-center gap-8 border transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-0.5 ${darkMode ? 'bg-[#1e293b] border-gray-700 hover:shadow-[0_20px_40px_rgba(251,191,36,0.08)] hover:border-amber-500/30' : 'bg-white border-outline-variant/10 hover:shadow-[0_20px_40px_rgba(245,158,11,0.08)]'}`}
+              >
+                <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/5 rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300 flex-shrink-0">
+                  <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-headline text-lg font-bold text-on-surface mb-1">User Management</h3>
+                  <p className="text-on-surface-variant/80 text-sm">Add, remove, and manage user accounts, roles, and module access permissions.</p>
+                </div>
+                <div className="flex items-center gap-2 text-amber-500 font-bold text-sm tracking-wide group-hover:gap-3 transition-all flex-shrink-0">
+                  Manage Users <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Bottom Info */}
           <div className="mt-16 pt-8 border-t border-outline-variant/10 flex flex-wrap gap-8 justify-between items-center text-sm font-medium">

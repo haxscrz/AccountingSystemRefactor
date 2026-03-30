@@ -57,6 +57,13 @@ public sealed class AppUser
 	[Column("failed_login_count")]
 	public int FailedLoginCount { get; set; }
 
+	[Column("profile_image_url")]
+	[MaxLength(1000)]
+	public string? ProfileImageUrl { get; set; }
+
+	[Column("preferences_json")]
+	public string? PreferencesJson { get; set; }
+
 	[Column("lockout_end_utc")]
 	public DateTime? LockoutEndUtc { get; set; }
 

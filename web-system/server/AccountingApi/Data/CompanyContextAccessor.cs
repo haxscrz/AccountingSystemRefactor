@@ -5,6 +5,8 @@ namespace AccountingApi.Data;
 public interface ICompanyContextAccessor
 {
     string CompanyCode { get; }
+    int? UserId { get; }
+    bool IsSuperAdmin { get; }
 }
 
 public sealed class CompanyContextAccessor : ICompanyContextAccessor
@@ -34,6 +36,32 @@ public sealed class CompanyContextAccessor : ICompanyContextAccessor
 
             var fromHeader = context.Request.Headers[CompanyCatalog.HeaderName].FirstOrDefault();
             return CompanyCatalog.NormalizeOrDefault(fromHeader);
+        }
+    }
+
+    public int? UserId
+    {
+        get
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user?.Identity?.IsAuthenticated == true)
+            {
+                var idClaim = user.FindFirst("uid");
+                if (idClaim != null && int.TryParse(idClaim.Value, out var uid))
+                {
+                    return uid;
+                }
+            }
+            return null;
+        }
+    }
+
+    public bool IsSuperAdmin
+    {
+        get
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+            return user?.IsInRole("superadmin") ?? false;
         }
     }
 }

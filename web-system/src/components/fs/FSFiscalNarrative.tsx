@@ -208,7 +208,7 @@ export default function FSFiscalNarrative() {
           </div>
         </button>
 
-        {/* Cash Disbursements */}
+        {/* Check Disbursements */}
         <button
           onClick={() => navigate('/fs/voucher')}
           className="bg-white rounded-2xl p-6 border border-outline-variant/15 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all cursor-pointer relative text-left group"
@@ -219,7 +219,7 @@ export default function FSFiscalNarrative() {
             </div>
             <span className="text-[10px] font-mono font-bold text-on-surface-variant/70 uppercase">Type: 12</span>
           </div>
-          <div className="font-headline font-semibold text-sm text-on-surface mb-2">Cash Disbursements</div>
+          <div className="font-headline font-semibold text-sm text-on-surface mb-2">Check Disbursements</div>
           <div className="flex justify-between items-end">
             {loading ? (
               <span className="w-10 h-7 bg-outline-variant/20 animate-pulse rounded" />

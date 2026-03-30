@@ -15,4 +15,7 @@ public abstract class CompanyScopedEntity : ICompanyScopedEntity
     [Column("company_code")]
     [MaxLength(32)]
     public string CompanyCode { get; set; } = CompanyCatalog.DefaultCompanyCode;
+
+    [Column("created_by_user_id")]
+    public int? CreatedByUserId { get; set; }
 }

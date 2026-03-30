@@ -49,14 +49,14 @@ public sealed class AccountingDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<FSAccount>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
-        modelBuilder.Entity<FSCheckMas>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
-        modelBuilder.Entity<FSCheckVou>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
-        modelBuilder.Entity<FSPostedJournal>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
-        modelBuilder.Entity<FSCashRcpt>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
-        modelBuilder.Entity<FSSaleBook>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
-        modelBuilder.Entity<FSPurcBook>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
-        modelBuilder.Entity<FSAdjustment>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
-        modelBuilder.Entity<FSJournal>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted);
+        modelBuilder.Entity<FSCheckMas>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted && (_companyContextAccessor.IsSuperAdmin || e.CreatedByUserId == null || e.CreatedByUserId == _companyContextAccessor.UserId));
+        modelBuilder.Entity<FSCheckVou>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted && (_companyContextAccessor.IsSuperAdmin || e.CreatedByUserId == null || e.CreatedByUserId == _companyContextAccessor.UserId));
+        modelBuilder.Entity<FSPostedJournal>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && (_companyContextAccessor.IsSuperAdmin || e.CreatedByUserId == null || e.CreatedByUserId == _companyContextAccessor.UserId));
+        modelBuilder.Entity<FSCashRcpt>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted && (_companyContextAccessor.IsSuperAdmin || e.CreatedByUserId == null || e.CreatedByUserId == _companyContextAccessor.UserId));
+        modelBuilder.Entity<FSSaleBook>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted && (_companyContextAccessor.IsSuperAdmin || e.CreatedByUserId == null || e.CreatedByUserId == _companyContextAccessor.UserId));
+        modelBuilder.Entity<FSPurcBook>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted && (_companyContextAccessor.IsSuperAdmin || e.CreatedByUserId == null || e.CreatedByUserId == _companyContextAccessor.UserId));
+        modelBuilder.Entity<FSAdjustment>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted && (_companyContextAccessor.IsSuperAdmin || e.CreatedByUserId == null || e.CreatedByUserId == _companyContextAccessor.UserId));
+        modelBuilder.Entity<FSJournal>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode && !e.IsDeleted && (_companyContextAccessor.IsSuperAdmin || e.CreatedByUserId == null || e.CreatedByUserId == _companyContextAccessor.UserId));
         modelBuilder.Entity<FSEffect>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
         modelBuilder.Entity<FSScheduleEntry>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
         modelBuilder.Entity<FSSysId>().HasQueryFilter(e => e.CompanyCode == _companyContextAccessor.CompanyCode);
@@ -184,6 +184,11 @@ public sealed class AccountingDbContext : DbContext
             if (entry.State == EntityState.Added)
             {
                 entry.Entity.CompanyCode = companyCode;
+                // Only assign CreatedByUserId if it hasn't been explicitly set
+                if (entry.Entity is CompanyScopedEntity companyScopedDb && !companyScopedDb.CreatedByUserId.HasValue && _companyContextAccessor.UserId.HasValue)
+                {
+                    companyScopedDb.CreatedByUserId = _companyContextAccessor.UserId.Value;
+                }
                 continue;
             }
 

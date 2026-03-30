@@ -19,6 +19,19 @@ interface SettingsState {
   setCompactSidebar: (v: boolean) => void
 }
 
+/** Get the current logged-in username from auth-storage to make settings per-user */
+function getPerUserStorageKey(): string {
+  try {
+    const raw = localStorage.getItem('auth-storage')
+    if (raw) {
+      const parsed = JSON.parse(raw) as { state?: { user?: { username?: string } } }
+      const username = parsed?.state?.user?.username
+      if (username) return `settings-storage-${username}`
+    }
+  } catch { /* ignore */ }
+  return 'settings-storage'
+}
+
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
@@ -38,6 +51,6 @@ export const useSettingsStore = create<SettingsState>()(
       setShowStatusBar: (v) => set({ showStatusBar: v }),
       setCompactSidebar: (v) => set({ compactSidebar: v }),
     }),
-    { name: 'settings-storage' }
+    { name: getPerUserStorageKey() }
   )
 )
