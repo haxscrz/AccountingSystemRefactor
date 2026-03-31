@@ -1127,15 +1127,15 @@ public sealed class FSController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> DebugDb(CancellationToken cancellationToken)
     {
-        var rawCheckMasCounts = await _context.FSCheckMas
+        var rawCheckMasCounts = await _db.FSCheckMas
             .IgnoreQueryFilters()
             .GroupBy(x => x.CompanyCode)
             .Select(g => new { Company = g.Key, Count = g.Count() })
             .ToListAsync(cancellationToken);
 
-        var sysIds = await _context.FSSysId.IgnoreQueryFilters().Select(x => x.CompanyCode).ToListAsync(cancellationToken);
+        var sysIds = await _db.FSSysId.IgnoreQueryFilters().Select(x => x.CompanyCode).ToListAsync(cancellationToken);
         
-        var accounts = await _context.FSAccounts.IgnoreQueryFilters()
+        var accounts = await _db.FSAccounts.IgnoreQueryFilters()
             .GroupBy(x => x.CompanyCode)
             .Select(g => new { Company = g.Key, Count = g.Count() })
             .ToListAsync(cancellationToken);
@@ -1145,7 +1145,7 @@ public sealed class FSController : ControllerBase
 
         return Ok(new
         {
-            ConnStr = _context.Database.GetDbConnection().ConnectionString,
+            ConnStr = _db.Database.GetDbConnection().ConnectionString,
             SysIds = sysIds,
             RawCheckMasCounts = rawCheckMasCounts,
             AccountsCounts = accounts,
