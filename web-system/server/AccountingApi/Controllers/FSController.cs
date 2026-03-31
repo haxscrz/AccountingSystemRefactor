@@ -1123,6 +1123,39 @@ public sealed class FSController : ControllerBase
         return new { data = rows, total, page, pageSize };
     }
 
+    [HttpGet("debug-db")]
+    [AllowAnonymous]
+    public async Task<IActionResult> DebugDb(CancellationToken cancellationToken)
+    {
+        var rawCheckMasCounts = await _context.FSCheckMas
+            .IgnoreQueryFilters()
+            .GroupBy(x => x.CompanyCode)
+            .Select(g => new { Company = g.Key, Count = g.Count() })
+            .ToListAsync(cancellationToken);
+
+        var sysIds = await _context.FSSysId.IgnoreQueryFilters().Select(x => x.CompanyCode).ToListAsync(cancellationToken);
+        
+        var accounts = await _context.FSAccounts.IgnoreQueryFilters()
+            .GroupBy(x => x.CompanyCode)
+            .Select(g => new { Company = g.Key, Count = g.Count() })
+            .ToListAsync(cancellationToken);
+
+        string dbPath1 = "accounting.db";
+        string dbPath2 = "accounting_v2.db";
+
+        return Ok(new
+        {
+            ConnStr = _context.Database.GetDbConnection().ConnectionString,
+            SysIds = sysIds,
+            RawCheckMasCounts = rawCheckMasCounts,
+            AccountsCounts = accounts,
+            Db1Exists = System.IO.File.Exists(dbPath1),
+            Db1Size = System.IO.File.Exists(dbPath1) ? new System.IO.FileInfo(dbPath1).Length : -1,
+            Db2Exists = System.IO.File.Exists(dbPath2),
+            Db2Size = System.IO.File.Exists(dbPath2) ? new System.IO.FileInfo(dbPath2).Length : -1
+        });
+    }
+
     #endregion
 
     #region System Info / Dashboard
