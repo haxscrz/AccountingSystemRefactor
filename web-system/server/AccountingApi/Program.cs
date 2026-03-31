@@ -282,6 +282,14 @@ using (var initScope = app.Services.CreateScope())
                 company_code TEXT NOT NULL DEFAULT 'CS'
             )");
 
+        // Company registry
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS app_companies (
+                code TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                created_at_utc TEXT NOT NULL DEFAULT (datetime('now'))
+            )");
+
         // Security tables
         RunSql(@"
             CREATE TABLE IF NOT EXISTS app_users (
