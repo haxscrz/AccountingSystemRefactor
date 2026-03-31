@@ -21,6 +21,12 @@ public class CompaniesController : ControllerBase
         _db = db;
     }
 
+    public class CompanyDto
+    {
+        public string code { get; set; } = string.Empty;
+        public string name { get; set; } = string.Empty;
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetCompanies()
     {
@@ -31,29 +37,30 @@ public class CompaniesController : ControllerBase
         if (user == null) return Unauthorized();
 
         using var conn = _db.Database.GetDbConnection();
-        var companies = await conn.QueryAsync("SELECT code, name FROM app_companies ORDER BY name");
+        var companies = await conn.QueryAsync<CompanyDto>("SELECT code, name FROM app_companies ORDER BY name");
+        IEnumerable<CompanyDto> result = companies;
 
         if (user.Role != "superadmin")
         {
             if (string.IsNullOrWhiteSpace(user.AssignedCompaniesJson))
             {
-                companies = Array.Empty<dynamic>();
+                result = Array.Empty<CompanyDto>();
             }
             else
             {
                 var assigned = System.Text.Json.JsonSerializer.Deserialize<string[]>(user.AssignedCompaniesJson);
                 if (assigned != null)
                 {
-                    companies = companies.Where(c => assigned.Contains((string)c.code));
+                    result = companies.Where(c => assigned.Contains(c.code));
                 }
                 else
                 {
-                    companies = Array.Empty<dynamic>();
+                    result = Array.Empty<CompanyDto>();
                 }
             }
         }
 
-        return Ok(companies);
+        return Ok(result);
     }
 
     [HttpPost]
