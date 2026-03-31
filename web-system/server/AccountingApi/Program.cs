@@ -25,8 +25,16 @@ builder.Services.AddOpenApi();
 // Database
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICompanyContextAccessor, CompanyContextAccessor>();
-builder.Services.AddDbContext<AccountingDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Resolve SQLite path relative to app root so Azure doesn't create a blank DB in the wrong directory
+var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting.db";
+if (rawConnStr.Contains("Data Source=") && !Path.IsPathRooted(rawConnStr.Replace("Data Source=", "")))
+{
+    var dbFileName = rawConnStr.Replace("Data Source=", "").Trim();
+    var absoluteDbPath = Path.Combine(builder.Environment.ContentRootPath, dbFileName);
+    rawConnStr = $"Data Source={absoluteDbPath}";
+}
+builder.Services.AddDbContext<AccountingDbContext>(options => options.UseSqlite(rawConnStr));
 
 // Services
 builder.Services.AddSingleton<LegacyDataService>();

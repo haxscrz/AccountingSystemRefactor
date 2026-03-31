@@ -50,6 +50,13 @@ jobs:
         working-directory: web-system/server/AccountingApi
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp --no-build
 
+      - name: Verify accounting.db is in publish output
+        run: |
+          echo "=== Checking for accounting.db ==="
+          ls -la ${{env.DOTNET_ROOT}}/myapp/accounting.db || echo "WARNING: accounting.db NOT FOUND in publish output!"
+          echo "=== All files in publish root ==="
+          ls -la ${{env.DOTNET_ROOT}}/myapp/*.db 2>/dev/null || echo "No .db files found"
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
