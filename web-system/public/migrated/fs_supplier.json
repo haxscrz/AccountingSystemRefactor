@@ -1,6 +1,6 @@
 {
   "tableName": "fs_supplier",
-  "sourcePath": "FS_test/Real Data/data/SUPPLIER.DBF",
+  "sourcePath": "Bing's Data/LMJAY.ZIP/SUPPLIER.DBF",
   "rowCount": 1,
   "columns": [
     "SUP_NO",

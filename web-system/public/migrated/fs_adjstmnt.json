@@ -1,6 +1,6 @@
 {
   "tableName": "fs_adjstmnt",
-  "sourcePath": "FS_test/Real Data/data/ADJSTMNT.DBF",
+  "sourcePath": "Bing's Data/LMJAY.ZIP/ADJSTMNT.DBF",
   "rowCount": 0,
   "columns": [
     "J_JV_NO",

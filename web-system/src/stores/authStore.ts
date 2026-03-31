@@ -130,7 +130,20 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         const state = useAuthStore.getState()
         
-        // 1. Immediately clear internal state and trigger UI redirect
+        // Send logout request to backend in the background
+        if (state.refreshToken) {
+          try {
+            fetch('/api/auth/logout', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refreshToken: state.refreshToken })
+            }).catch(() => {})
+          } catch {
+            // Ignore fetch errors
+          }
+        }
+
+        // Immediately clear internal state
         set({
           user: null,
           isAuthenticated: false,
@@ -139,31 +152,15 @@ export const useAuthStore = create<AuthState>()(
           accessTokenExpiresAtUtc: null,
           refreshTokenExpiresAtUtc: null
         })
+        
+        // Clear related storages
+        localStorage.removeItem('company-storage')
+        localStorage.removeItem('auth-storage')
+        localStorage.removeItem('settings-storage')
 
-        try {
-          localStorage.removeItem('company-storage')
-        } catch {
-          // ignore storage failures
-        }
-
-        // 2. Do fire-and-forget backend cleanup in parallel
-        try {
-          if (state.refreshToken) {
-            fetch('/api/auth/logout', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(state.accessToken ? { Authorization: `Bearer ${state.accessToken}` } : {})
-              },
-              body: JSON.stringify({ refreshToken: state.refreshToken })
-            }).catch(() => {})
-          }
-        } catch {
-          // best-effort logout
-        }
-
-        // 3. Immediately redirect locally without blocking
+        // Hard redirect to clear all zustand memory states and prevent shared profile photos / display names
         window.location.href = '/login'
+        window.location.reload()
       }
     }),
     {

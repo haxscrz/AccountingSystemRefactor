@@ -159,6 +159,7 @@ export default function PayrollSystem() {
 
   // ── When no type selected: show full AppShell with type selector as content ──
   return (
+    <>
     <AppShell
       moduleName="PAYROLL"
       companyCode={selectedCompanyCode}
@@ -205,8 +206,9 @@ export default function PayrollSystem() {
         <Route path="/philhealth-disk" element={<PhilhealthDiskStub />} />
         <Route path="/reports/r3-project" element={<PayrollReports />} />
       </Routes>
-      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
     </AppShell>
+    {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+    </>
   )
 }
 

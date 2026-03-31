@@ -1,12 +1,139 @@
 {
   "tableName": "fs_acheckvo",
-  "sourcePath": "FS_test/Real Data/data/Acheckvo.dbf",
-  "rowCount": 0,
+  "sourcePath": "Bing's Data/LMJAY.ZIP/ACHECKVO.DBF",
+  "rowCount": 21,
   "columns": [
     "J_CK_NO",
     "ACCT_CODE",
     "J_CK_AMT",
     "J_D_OR_C"
   ],
-  "rows": []
+  "rows": [
+    {
+      "J_CK_NO": "",
+      "ACCT_CODE": "",
+      "J_CK_AMT": null,
+      "J_D_OR_C": ""
+    },
+    {
+      "J_CK_NO": "",
+      "ACCT_CODE": "",
+      "J_CK_AMT": null,
+      "J_D_OR_C": ""
+    },
+    {
+      "J_CK_NO": "1",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 45000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "1",
+      "ACCT_CODE": "4702",
+      "J_CK_AMT": 2000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "1",
+      "ACCT_CODE": "4722",
+      "J_CK_AMT": 1000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "1",
+      "ACCT_CODE": "2113",
+      "J_CK_AMT": 48000,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "2",
+      "ACCT_CODE": "4720",
+      "J_CK_AMT": 150,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "2",
+      "ACCT_CODE": "4727",
+      "J_CK_AMT": 2000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "2",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 10050,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "2",
+      "ACCT_CODE": "4708",
+      "J_CK_AMT": 2500,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "2",
+      "ACCT_CODE": "1125",
+      "J_CK_AMT": 35924,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "2",
+      "ACCT_CODE": "2113",
+      "J_CK_AMT": 50624,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "3",
+      "ACCT_CODE": "4716",
+      "J_CK_AMT": 1327,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "3",
+      "ACCT_CODE": "4722",
+      "J_CK_AMT": 606,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "3",
+      "ACCT_CODE": "2113",
+      "J_CK_AMT": 1933,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "4",
+      "ACCT_CODE": "1125",
+      "J_CK_AMT": 7511,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "4",
+      "ACCT_CODE": "2113",
+      "J_CK_AMT": 7511,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "134800",
+      "ACCT_CODE": "2113",
+      "J_CK_AMT": 110748,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "134800",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 110748,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "5",
+      "ACCT_CODE": "4702",
+      "J_CK_AMT": 2680,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "5",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 2680,
+      "J_D_OR_C": "C"
+    }
+  ]
 }

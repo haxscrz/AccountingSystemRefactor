@@ -2,10 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { useSettingsStore } from '../stores/settingsStore'
-import { COMPANIES } from '../config/companies'
 import axios from 'axios'
 
 const API = '/api/admin'
+const PUBLIC_API = '/api'
 
 interface UserItem {
   id: number
@@ -31,15 +31,8 @@ function fmtDate(iso: string | null) {
     + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 }
 
-function getInitials(name: string) {
-  return name.slice(0, 2).toUpperCase()
-}
 
-const ROLE_COLORS: Record<string, string> = {
-  superadmin: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  accountant: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  tester: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-}
+
 
 export default function UserManagement() {
   const navigate = useNavigate()
@@ -55,14 +48,21 @@ export default function UserManagement() {
   const [modalMode, setModalMode] = useState<ModalMode>(null)
   const [editUser, setEditUser] = useState<UserItem | null>(null)
 
-  // Form fields
+  // Auth states
   const [formUsername, setFormUsername] = useState('')
   const [formPassword, setFormPassword] = useState('')
   const [formRole, setFormRole] = useState('accountant')
   const [formFs, setFormFs] = useState(true)
   const [formPayroll, setFormPayroll] = useState(false)
-  const [formAssignedCompanies, setFormAssignedCompanies] = useState<string[] | null>(null)
   const [formActive, setFormActive] = useState(true)
+  const [formAssignedCompanies, setFormAssignedCompanies] = useState<string[] | null>(null)
+
+  // Company states
+  const [companies, setCompanies] = useState<any[]>([])
+  const [manageCompaniesModal, setManageCompaniesModal] = useState(false)
+  const [newCompanyCode, setNewCompanyCode] = useState('')
+  const [newCompanyName, setNewCompanyName] = useState('')
+  const [companyLoading, setCompanyLoading] = useState(false)
   const [formSaving, setFormSaving] = useState(false)
 
   // Delete confirm
@@ -80,7 +80,47 @@ export default function UserManagement() {
     }
   }, [])
 
-  useEffect(() => { fetchUsers() }, [fetchUsers])
+  const fetchCompanies = useCallback(async () => {
+    try {
+      const res = await axios.get(`${PUBLIC_API}/companies`)
+      setCompanies(res.data)
+    } catch (e) { console.error(e) }
+  }, [])
+
+  useEffect(() => { 
+    fetchUsers() 
+    fetchCompanies()
+  }, [fetchUsers, fetchCompanies])
+
+  const handleAddCompany = async () => {
+    if (!newCompanyCode.trim() || !newCompanyName.trim()) return setError('Code and Name are required.')
+    const cleanCode = newCompanyCode.toLowerCase().replace(/[^a-z0-9_]/g, '')
+    if (cleanCode.length < 3) return setError('Code must be at least 3 alphanumeric characters.')
+    
+    setCompanyLoading(true)
+    setError('')
+    try {
+      await axios.post(`${PUBLIC_API}/companies`, { code: cleanCode, name: newCompanyName.trim() })
+      setNewCompanyCode(''); setNewCompanyName('');
+      setManageCompaniesModal(false)
+      setSuccess('Organization added successfully.')
+      fetchCompanies()
+    } catch (e: any) {
+      setError(e?.response?.data?.message || 'Failed to add organization')
+      setManageCompaniesModal(false)
+    } finally { setCompanyLoading(false) }
+  }
+
+  const handleDeleteCompany = async (code: string) => {
+    if (!window.confirm('Are you sure you want to delete this organization?')) return
+    try {
+      await axios.delete(`${PUBLIC_API}/companies/${code}`)
+      setSuccess('Organization deleted successfully.')
+      fetchCompanies()
+    } catch (e: any) {
+      setError(e?.response?.data?.message || 'Failed to delete organization')
+    }
+  }
 
   useEffect(() => {
     if (success) { const t = setTimeout(() => setSuccess(''), 3000); return () => clearTimeout(t) }
@@ -179,8 +219,8 @@ export default function UserManagement() {
           </button>
           <div className="h-5 w-px bg-outline-variant/20"></div>
           <h1 className={`font-headline font-bold text-xl tracking-tight ${darkMode ? 'text-blue-400' : 'text-primary'}`}>
-            <span className="material-symbols-outlined text-[22px] align-text-bottom mr-2">group</span>
-            User Management
+            <span className="material-symbols-outlined text-[22px] align-text-bottom mr-2">settings_applications</span>
+            Administrative Settings
           </h1>
         </div>
         <div className="flex items-center gap-3 text-sm">
@@ -207,6 +247,12 @@ export default function UserManagement() {
               <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface mb-1">System Users</h2>
               <p className="text-on-surface-variant text-sm">Manage user accounts, roles, and module access permissions.</p>
             </div>
+            {user?.role === 'superadmin' && (
+              <button onClick={() => setManageCompaniesModal(true)} className={`px-4 py-2.5 rounded-xl border flex items-center gap-2 font-bold transition-all shadow-sm text-sm ${darkMode ? 'border-gray-600 hover:border-blue-500/50 hover:bg-blue-900/20 text-blue-400' : 'border-outline-variant/30 hover:border-blue-200 hover:bg-blue-50 text-blue-600'}`}>
+                <span className="material-symbols-outlined text-[18px]">domain</span>
+                Manage Organizations
+              </button>
+            )}
             <button onClick={openAdd} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5">
               <span className="material-symbols-outlined text-[20px]">person_add</span>
               Add User
@@ -233,37 +279,20 @@ export default function UserManagement() {
                     : `bg-white border-outline-variant/15 ${!u.isActive ? 'opacity-60' : ''} hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)]`
                 }`}>
                   {/* Top gradient strip */}
-                  <div className={`h-1 w-full ${u.role === 'superadmin' ? 'bg-gradient-to-r from-amber-400 to-orange-500' : u.role === 'accountant' ? 'bg-gradient-to-r from-blue-400 to-cyan-500' : 'bg-gradient-to-r from-gray-400 to-gray-500'}`}></div>
+                  <div className={`h-1 w-full ${u.role === 'superadmin' ? 'bg-gradient-to-r from-amber-400 to-orange-500' : u.role === 'tester' ? 'bg-gradient-to-r from-purple-400 to-pink-500' : 'bg-gradient-to-r from-blue-400 to-cyan-500'}`}></div>
 
                   <div className="p-5">
                     {/* Avatar + Name row */}
                     <div className="flex items-start gap-4 mb-4">
-                      <div className={`relative w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden font-bold text-lg ${
-                        u.profileImageUrl
-                          ? ''
-                          : u.role === 'superadmin' ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white' : 'bg-gradient-to-br from-blue-400 to-cyan-500 text-white'
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-inner flex-shrink-0 ${
+                        u.role === 'superadmin' ? 'bg-amber-100 text-amber-700' : u.role === 'tester' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
                       }`}>
-                        {u.profileImageUrl ? (
-                          <img src={u.profileImageUrl} alt={u.username} className="w-full h-full object-cover" />
-                        ) : (
-                          getInitials(u.username)
-                        )}
-                        {/* Online dot */}
-                        <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 ${darkMode ? 'border-[#1e293b]' : 'border-white'} ${u.isActive ? 'bg-emerald-400' : 'bg-gray-400'}`}></div>
+                        {u.username.charAt(0).toUpperCase()}
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-headline font-bold text-base text-on-surface truncate">{u.username}</h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${ROLE_COLORS[u.role] || ROLE_COLORS.tester}`}>
-                            {u.role}
-                          </span>
-                          {!u.isActive && (
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30">
-                              Disabled
-                            </span>
-                          )}
-                        </div>
+                        <div className="font-bold text-[15px] truncate">{u.username}</div>
+                        <div className="text-xs text-on-surface-variant/70 uppercase tracking-widest truncate">{u.role === 'superadmin' ? 'Admin' : u.role === 'tester' ? 'Tester' : 'Accountant'}</div>
                       </div>
                     </div>
 
@@ -330,7 +359,7 @@ export default function UserManagement() {
       {/* ═══ Modal ═══ */}
       {modalMode && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6" onClick={() => { setModalMode(null); setError('') }}>
-          <div className={`w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden ${darkMode ? 'bg-[#1e293b]' : 'bg-white'}`} onClick={e => e.stopPropagation()}>
+          <div className={`w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden ${darkMode ? 'bg-[#1e293b]' : 'bg-white'}`} onClick={e => e.stopPropagation()}>
             {/* Modal header */}
             <div className={`px-6 py-4 border-b flex items-center justify-between ${darkMode ? 'border-gray-700 bg-[#0f172a]' : 'border-outline-variant/10 bg-slate-50'}`}>
               <h3 className="font-headline font-bold text-lg text-on-surface flex items-center gap-2">
@@ -381,11 +410,13 @@ export default function UserManagement() {
                   </div>
                   <div>
                     <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${darkMode ? 'text-gray-300' : 'text-on-surface-variant'}`}>Role</label>
-                    <select className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all ${darkMode ? 'bg-[#0f172a] border-gray-600 text-white' : 'bg-white border-outline-variant/30 text-on-surface'}`}
-                      value={formRole} onChange={e => setFormRole(e.target.value)}>
+                    <select 
+                      value={formRole} onChange={e => setFormRole(e.target.value)}
+                      className={`w-full px-3 py-2.5 rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary/30 transition-all border-none ${darkMode ? 'bg-gray-700 text-gray-100' : 'bg-surface-container-low'}`}
+                    >
                       <option value="accountant">Accountant</option>
-                      <option value="superadmin">Super Admin</option>
                       <option value="tester">Tester</option>
+                      <option value="superadmin">Admin</option>
                     </select>
                   </div>
 
@@ -415,8 +446,8 @@ export default function UserManagement() {
                           </label>
                         </div>
                         {formAssignedCompanies !== null && (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-48 overflow-auto custom-scrollbar px-1">
-                            {COMPANIES.map(c => (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-auto custom-scrollbar px-1">
+                            {companies.map((c: any) => (
                               <label key={c.code} className="flex items-center gap-2 cursor-pointer">
                                 <input type="checkbox" className="w-4 h-4 rounded text-primary flex-shrink-0"
                                   checked={formAssignedCompanies.includes(c.code)}
@@ -462,6 +493,62 @@ export default function UserManagement() {
                 {formSaving && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>}
                 {modalMode === 'add' ? 'Create User' : modalMode === 'edit' ? 'Save Changes' : 'Reset Password'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {manageCompaniesModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-6" onClick={() => setManageCompaniesModal(false)}>
+          <div className={`relative w-full max-w-xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden ${darkMode ? 'bg-[#1e293b]' : 'bg-white'}`} onClick={e => e.stopPropagation()}>
+            <div className={`px-6 py-5 border-b flex justify-between items-center ${darkMode ? 'border-gray-700 bg-[#0f172a]' : 'border-outline-variant/10 bg-slate-50'}`}>
+              <h2 className={`font-headline font-bold text-xl ${darkMode ? 'text-blue-400' : 'text-primary'}`}>Manage Organizations</h2>
+              <button onClick={() => setManageCompaniesModal(false)} className={`flex p-2 rounded-full transition-colors ${darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-500 hover:text-black hover:bg-slate-200'}`}>
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-auto p-6 flex flex-col gap-6 custom-scrollbar">
+              <div className={`p-5 rounded-xl border flex flex-col gap-4 ${darkMode ? 'border-gray-700 bg-[#0f172a]/50' : 'border-outline-variant/30 bg-gray-50'}`}>
+                <h3 className={`font-bold text-sm flex items-center gap-2 ${darkMode ? 'text-gray-200' : 'text-slate-800'}`}>
+                  <span className="material-symbols-outlined text-[18px]">add_business</span> Add New Organization
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="col-span-1">
+                    <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1.5 ${darkMode ? 'text-gray-400' : 'text-slate-500'}`}>Machine Code</label>
+                    <input className={`w-full px-3 py-2.5 rounded-lg border outline-none text-sm transition-colors focus:ring-2 focus:ring-primary/30 ${darkMode ? 'bg-[#1e293b] border-gray-600 text-white' : 'bg-white border-outline-variant/30 text-on-surface'}`}
+                      value={newCompanyCode} onChange={e => setNewCompanyCode(e.target.value)} placeholder="e.g. lmjay" />
+                  </div>
+                  <div className="col-span-1 sm:col-span-2">
+                    <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1.5 ${darkMode ? 'text-gray-400' : 'text-slate-500'}`}>Display Name</label>
+                    <input className={`w-full px-3 py-2.5 rounded-lg border outline-none text-sm transition-colors focus:ring-2 focus:ring-primary/30 ${darkMode ? 'bg-[#1e293b] border-gray-600 text-white' : 'bg-white border-outline-variant/30 text-on-surface'}`}
+                      value={newCompanyName} onChange={e => setNewCompanyName(e.target.value)} placeholder="e.g. Lmjay Inc." />
+                  </div>
+                </div>
+                <button onClick={handleAddCompany} disabled={companyLoading} className="self-end px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-colors flex items-center gap-2 disabled:opacity-50">
+                   {companyLoading && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>}
+                   {companyLoading ? 'Adding...' : 'Save Organization'}
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <h3 className={`font-bold text-sm mb-2 px-1 ${darkMode ? 'text-gray-300' : 'text-slate-700'}`}>Existing Organizations ({companies.length})</h3>
+                {companies.map((c: any) => (
+                  <div key={c.code} className={`flex justify-between items-center p-3.5 rounded-xl border transition-colors ${darkMode ? 'border-gray-700 bg-[#1e293b]' : 'border-outline-variant/20 bg-white'}`}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center font-bold text-primary">
+                        {c.code.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-on-surface">{c.name}</span>
+                        <span className="font-mono text-[10px] text-on-surface-variant font-medium">{c.code}</span>
+                      </div>
+                    </div>
+                    <button onClick={() => handleDeleteCompany(c.code)} className="text-red-500 hover:text-white p-2 text-sm rounded-lg hover:bg-red-500 transition-colors" title="Delete Organization">
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

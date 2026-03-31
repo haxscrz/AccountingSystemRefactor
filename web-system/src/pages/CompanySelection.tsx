@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { COMPANIES } from '../config/companies'
 import { useAuthStore } from '../stores/authStore'
 import { useCompanyStore } from '../stores/companyStore'
 import { useSettingsStore } from '../stores/settingsStore'
+import axios from 'axios'
+
+const PUBLIC_API = '/api'
 
 function SpotlightCard({ 
   children, 
@@ -71,9 +73,29 @@ export default function CompanySelection() {
   const { user, logout } = useAuthStore()
   const { setSelectedCompany } = useCompanyStore()
   const darkMode = useSettingsStore((state) => state.darkMode)
+  const [companies, setCompanies] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const handleSelectCompany = (companyCode: (typeof COMPANIES)[number]['code']) => {
-    setSelectedCompany(companyCode)
+  const fetchCompanies = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await axios.get(`${PUBLIC_API}/companies`)
+      setCompanies(res.data)
+    } catch {
+      setError('Failed to load organizations. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchCompanies()
+  }, [fetchCompanies])
+
+  const handleSelectCompany = (companyCode: string) => {
+    setSelectedCompany(companyCode as any)
     navigate('/dashboard')
   }
 
@@ -116,35 +138,47 @@ export default function CompanySelection() {
           </div>
 
           {/* Company Cards Grid */}
+          {error && (
+            <div className="mb-6 p-4 rounded-lg bg-error/10 text-error border border-error/20 flex items-center gap-3">
+              <span className="material-symbols-outlined">error</span>
+              <p className="font-semibold text-sm">{error}</p>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {COMPANIES.filter(c => user?.role === 'superadmin' || !user?.assignedCompanies || user.assignedCompanies.includes(c.code)).map((company) => (
-              <SpotlightCard 
-                key={company.code} 
-                onClick={() => handleSelectCompany(company.code)}
-              >
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-14 h-14 border border-outline-variant/20 rounded-lg bg-surface-container-low flex items-center justify-center p-2 text-primary font-bold text-xl">
-                    {company.code.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="font-mono text-[10px] tracking-widest uppercase bg-surface-container-high px-2 py-1 rounded text-on-surface-variant">{company.code}</span>
-                </div>
-                <div className="mt-auto relative z-20">
-                  <h3 className="font-headline text-headline-sm text-primary mb-1">{company.name}</h3>
-                  <p className="font-body text-label-sm text-on-surface-variant/70 mb-4">Master Ledger • Operations</p>
-                  <div className="flex items-center gap-4 py-4 border-t border-outline-variant/10">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase font-bold text-on-surface-variant/50 tracking-tighter">Status</span>
-                      <span className="font-mono text-xs font-semibold text-emerald-600">Active</span>
+            {loading ? (
+              <div className="flex items-center justify-center p-12 col-span-full">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+              </div>
+            ) : (
+              companies.filter(c => user?.role === 'superadmin' || !user?.assignedCompanies || user.assignedCompanies.includes(c.code)).map((company) => (
+                <SpotlightCard 
+                  key={company.code} 
+                  onClick={() => handleSelectCompany(company.code as any)}
+                >
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="w-14 h-14 border border-outline-variant/20 rounded-lg bg-surface-container-low flex items-center justify-center p-2 text-primary font-bold text-xl">
+                      {company.code.charAt(0).toUpperCase()}
                     </div>
-                    <div className="ml-auto">
-                      <span className="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+                    <span className="font-mono text-[10px] tracking-widest uppercase bg-surface-container-high px-2 py-1 rounded text-on-surface-variant">{company.code}</span>
+                  </div>
+                  <div className="mt-auto relative z-20">
+                    <h3 className="font-headline text-headline-sm text-primary mb-1">{company.name}</h3>
+                    <p className="font-body text-label-sm text-on-surface-variant/70 mb-4">Master Ledger • Operations</p>
+                    <div className="flex items-center gap-4 py-4 border-t border-outline-variant/10">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-bold text-on-surface-variant/50 tracking-tighter">Status</span>
+                        <span className="font-mono text-xs font-semibold text-emerald-600">Active</span>
+                      </div>
+                      <div className="ml-auto">
+                        <span className="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform" data-icon="arrow_forward">arrow_forward</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </SpotlightCard>
-            ))}
+                </SpotlightCard>
+              ))
+            )}
 
-            {COMPANIES.length < 3 && (
+            {!loading && companies.length < 3 && (
               <div className="group border-2 border-dashed border-outline-variant/30 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:border-primary/40 transition-colors cursor-pointer bg-surface-container-low/30">
                 <div className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center mb-4 text-on-surface-variant group-hover:bg-primary group-hover:text-white transition-all">
                   <span className="material-symbols-outlined" data-icon="add">add</span>

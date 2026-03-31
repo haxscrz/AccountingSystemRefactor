@@ -1,12 +1,25 @@
 {
   "tableName": "fs_banks",
-  "sourcePath": "FS_test/Real Data/data/BANKS.DBF",
-  "rowCount": 0,
+  "sourcePath": "Bing's Data/LMJAY.ZIP/BANKS.DBF",
+  "rowCount": 2,
   "columns": [
     "BANK_NO",
     "BANK_NAME",
     "BANK_ADDR",
     "BANK_ACCT"
   ],
-  "rows": []
+  "rows": [
+    {
+      "BANK_NO": 1,
+      "BANK_NAME": "",
+      "BANK_ADDR": "",
+      "BANK_ACCT": ""
+    },
+    {
+      "BANK_NO": 2,
+      "BANK_NAME": "",
+      "BANK_ADDR": "",
+      "BANK_ACCT": ""
+    }
+  ]
 }

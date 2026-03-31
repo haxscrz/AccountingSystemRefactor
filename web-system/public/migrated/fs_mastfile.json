@@ -1,6 +1,6 @@
 {
   "tableName": "fs_mastfile",
-  "sourcePath": "FS/CTSI/DATA/MASTFILE.DBF",
+  "sourcePath": "Bing's Data/LMJAY.ZIP/MASTFILE.DBF",
   "rowCount": 0,
   "columns": [
     "ID_NO",

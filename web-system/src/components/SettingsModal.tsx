@@ -180,7 +180,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                   </div>
                   <div className="flex justify-between">
                     <span className={darkMode ? 'text-gray-400' : 'text-on-surface-variant'}>Role</span>
-                    <span className="font-semibold">{user?.role === 'superadmin' ? 'Super Admin' : 'Senior Accountant'}</span>
+                    <span className="font-semibold">{user?.role === 'superadmin' ? 'Super Admin' : user?.role === 'tester' ? 'Tester' : 'Accountant'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className={darkMode ? 'text-gray-400' : 'text-on-surface-variant'}>FS Access</span>
