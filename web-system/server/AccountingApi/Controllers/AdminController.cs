@@ -146,7 +146,7 @@ public sealed class AdminController : ControllerBase
             user.Id, user.Username, user.Role,
             user.CanAccessFs, user.CanAccessPayroll,
             user.IsActive, user.ProfileImageUrl,
-            string.IsNullOrWhiteSpace(user.AssignedCompaniesJson) ? null : System.Text.Json.JsonSerializer.Deserialize<string[]>(user.AssignedCompaniesJson, (System.Text.Json.JsonSerializerOptions?)null),
+            string.IsNullOrWhiteSpace(user.AssignedCompaniesJson) ? null : System.Text.Json.JsonSerializer.Deserialize<string[]>(user.AssignedCompaniesJson, (System.Text.Json.JsonSerializerOptions)null),
             user.LastLoginUtc, user.CreatedAtUtc));
     }
 

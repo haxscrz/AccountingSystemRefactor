@@ -298,27 +298,16 @@ using (var initScope = app.Services.CreateScope())
                 created_at_utc TEXT NOT NULL DEFAULT (datetime('now'))
             )");
 
-        RunSql(@"
-            INSERT INTO app_companies (code, name)
-            SELECT 'CS', 'CyberFridge Systems'
-            WHERE NOT EXISTS (SELECT 1 FROM app_companies WHERE code = 'CS');
-            
-            INSERT INTO app_companies (code, name)
-            SELECT '3jcrt', '3JCRT Accounting'
-            WHERE NOT EXISTS (SELECT 1 FROM app_companies WHERE code = '3jcrt');
-            
-            INSERT INTO app_companies (code, name)
-            SELECT 'gian', 'GIAN GENERAL SERVICES INC'
-            WHERE NOT EXISTS (SELECT 1 FROM app_companies WHERE code = 'gian');
-            
-            INSERT INTO app_companies (code, name)
-            SELECT 'jimi', 'JIMI HOLDINGS INC'
-            WHERE NOT EXISTS (SELECT 1 FROM app_companies WHERE code = 'jimi');
-            
-            INSERT INTO app_companies (code, name)
-            SELECT 'lmjay', 'LMJAY ENTERPRISES'
-            WHERE NOT EXISTS (SELECT 1 FROM app_companies WHERE code = 'lmjay');
-        ");
+        RunSql("INSERT OR IGNORE INTO app_companies (code, name) VALUES ('cyberfridge', 'CYBERFRIDGE GENERAL SERVICES INC')");
+        RunSql("INSERT OR IGNORE INTO app_companies (code, name) VALUES ('johntrix', 'JOHNTRIX TECHNICAL SERVICES INC.')");
+        RunSql("INSERT OR IGNORE INTO app_companies (code, name) VALUES ('thermalex', 'THERMALEX GENERAL SERVICES INC')");
+        RunSql("INSERT OR IGNORE INTO app_companies (code, name) VALUES ('gmixteam', 'GMIXTEAM GENERAL SERVICES INC')");
+        RunSql("INSERT OR IGNORE INTO app_companies (code, name) VALUES ('dynamiq', 'DYNAMIQ CIRQUE GENERAL SERVICES INC')");
+        RunSql("INSERT OR IGNORE INTO app_companies (code, name) VALUES ('metaleon', 'METALEON GENERAL SERVICES INC')");
+        RunSql("INSERT OR IGNORE INTO app_companies (code, name) VALUES ('3jcrt', '3JCRT GENERAL SERVICES INC')");
+        RunSql("INSERT OR IGNORE INTO app_companies (code, name) VALUES ('gian', 'GIAN GENERAL SERVICES INC')");
+        RunSql("INSERT OR IGNORE INTO app_companies (code, name) VALUES ('jimi', 'JIMI GENERAL SERVICES INC')");
+        RunSql("INSERT OR IGNORE INTO app_companies (code, name) VALUES ('lmjay', 'LMJAY GENERAL SERVICES INC')");
 
         // Security tables
         RunSql(@"
@@ -416,28 +405,27 @@ using (var initScope = app.Services.CreateScope())
         conn.Close();
     }
 
-    var superadminPassword = builder.Configuration["SUPERADMIN_PASSWORD"];
-    var testerPassword = builder.Configuration["TESTER_PASSWORD"];
+    var superadminPassword = builder.Configuration["SUPERADMIN_PASSWORD"] ?? "SUPERadmin!234";
+    var bingPassword = builder.Configuration["BING_PASSWORD"] ?? "Bing123";
+    var ellenPassword = builder.Configuration["ELLEN_PASSWORD"] ?? "Ellen456";
     var resetBootstrapUsers = string.Equals(
         builder.Configuration["RESET_BOOTSTRAP_USERS"],
         "true",
         StringComparison.OrdinalIgnoreCase);
 
-    // Ensure auth users exist (passwords via env vars).
+    var allCompaniesJson = System.Text.Json.JsonSerializer.Serialize(new[]
+    {
+        "cyberfridge", "johntrix", "thermalex", "gmixteam", "dynamiq",
+        "metaleon", "3jcrt", "gian", "jimi", "lmjay"
+    });
+
+    // Ensure auth users exist (passwords via env vars with fallbacks).
     if (!db.AppUsers.Any())
     {
         var hasher = initScope.ServiceProvider.GetRequiredService<PasswordHashService>();
         var now = DateTime.UtcNow;
 
-        if (string.IsNullOrWhiteSpace(superadminPassword) || string.IsNullOrWhiteSpace(testerPassword))
-        {
-            throw new InvalidOperationException(
-                "No users exist yet. Set SUPERADMIN_PASSWORD and TESTER_PASSWORD environment variables to bootstrap secure accounts.");
-        }
-
         var superadminHash = hasher.HashPassword(superadminPassword);
-        var testerHash = hasher.HashPassword(testerPassword);
-
         db.AppUsers.Add(new AccountingApi.Models.AppUser
         {
             Username = "superadmin",
@@ -452,37 +440,56 @@ using (var initScope = app.Services.CreateScope())
             UpdatedAtUtc = now
         });
 
+        var bingHash = hasher.HashPassword(bingPassword);
         db.AppUsers.Add(new AccountingApi.Models.AppUser
         {
-            Username = "tester",
-            Role = "tester",
+            Username = "Bing",
+            Role = "accountant",
             CanAccessFs = true,
-            CanAccessPayroll = false,
+            CanAccessPayroll = true,
             IsActive = true,
-            PasswordHash = testerHash.Hash,
-            PasswordSalt = testerHash.Salt,
-            HashIterations = testerHash.Iterations,
+            AssignedCompaniesJson = allCompaniesJson,
+            PasswordHash = bingHash.Hash,
+            PasswordSalt = bingHash.Salt,
+            HashIterations = bingHash.Iterations,
+            CreatedAtUtc = now,
+            UpdatedAtUtc = now
+        });
+
+        var ellenHash = hasher.HashPassword(ellenPassword);
+        db.AppUsers.Add(new AccountingApi.Models.AppUser
+        {
+            Username = "Ellen",
+            Role = "accountant",
+            CanAccessFs = true,
+            CanAccessPayroll = true,
+            IsActive = true,
+            AssignedCompaniesJson = allCompaniesJson,
+            PasswordHash = ellenHash.Hash,
+            PasswordSalt = ellenHash.Salt,
+            HashIterations = ellenHash.Iterations,
             CreatedAtUtc = now,
             UpdatedAtUtc = now
         });
 
         db.SaveChanges();
+        Console.WriteLine("[startup] Bootstrapped 3 users: superadmin, Bing, Ellen");
     }
 
     // Optional emergency reset for known bootstrap users.
     // Enable only when credentials need to be recovered after deployment.
     if (resetBootstrapUsers)
     {
-        if (string.IsNullOrWhiteSpace(superadminPassword) || string.IsNullOrWhiteSpace(testerPassword))
+        if (string.IsNullOrWhiteSpace(superadminPassword))
         {
             throw new InvalidOperationException(
-                "RESET_BOOTSTRAP_USERS=true requires SUPERADMIN_PASSWORD and TESTER_PASSWORD.");
+                "RESET_BOOTSTRAP_USERS=true requires env vars to be set.");
         }
 
         var hasher = initScope.ServiceProvider.GetRequiredService<PasswordHashService>();
         var now = DateTime.UtcNow;
 
-        void UpsertBootstrapUser(string username, string role, bool canFs, bool canPayroll, string password)
+        void UpsertBootstrapUser(string username, string role, bool canFs, bool canPayroll, string password, string? assignedCompaniesJson)
         {
             var existing = db.AppUsers.FirstOrDefault(u => u.Username == username);
             var hash = hasher.HashPassword(password);
@@ -498,6 +505,7 @@ using (var initScope = app.Services.CreateScope())
                     IsActive = true,
                     FailedLoginCount = 0,
                     LockoutEndUtc = null,
+                    AssignedCompaniesJson = assignedCompaniesJson,
                     PasswordHash = hash.Hash,
                     PasswordSalt = hash.Salt,
                     HashIterations = hash.Iterations,
@@ -513,16 +521,19 @@ using (var initScope = app.Services.CreateScope())
             existing.IsActive = true;
             existing.FailedLoginCount = 0;
             existing.LockoutEndUtc = null;
+            existing.AssignedCompaniesJson = assignedCompaniesJson;
             existing.PasswordHash = hash.Hash;
             existing.PasswordSalt = hash.Salt;
             existing.HashIterations = hash.Iterations;
             existing.UpdatedAtUtc = now;
         }
 
-        UpsertBootstrapUser("superadmin", "superadmin", true, true, superadminPassword!);
-        UpsertBootstrapUser("tester", "tester", true, false, testerPassword!);
+        UpsertBootstrapUser("superadmin", "superadmin", true, true, superadminPassword, null);
+        UpsertBootstrapUser("Bing", "accountant", true, true, bingPassword, allCompaniesJson);
+        UpsertBootstrapUser("Ellen", "accountant", true, true, ellenPassword, allCompaniesJson);
+        
         db.SaveChanges();
-        Console.WriteLine("[startup] RESET_BOOTSTRAP_USERS enabled: bootstrap account credentials were updated.");
+        Console.WriteLine("[startup] RESET_BOOTSTRAP_USERS enabled: 3 account credentials were updated.");
     }
 
     var legacyAutoSeedOnEmpty = string.Equals(
