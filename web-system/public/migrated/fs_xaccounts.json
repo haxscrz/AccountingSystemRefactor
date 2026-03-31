@@ -1,6 +1,6 @@
 {
   "tableName": "fs_xaccounts",
-  "sourcePath": "FS_test/Real Data/data/xaccounts.dbf",
+  "sourcePath": "Ellen's Data/Ellen/data/xaccounts.dbf",
   "rowCount": 114,
   "columns": [
     "ACCT_CODE",

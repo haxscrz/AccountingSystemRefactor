@@ -1,6 +1,6 @@
 {
   "tableName": "fs_adjstmnt",
-  "sourcePath": "Bing's Data/LMJAY.ZIP/ADJSTMNT.DBF",
+  "sourcePath": "Ellen's Data/Ellen/data/ADJSTMNT.DBF",
   "rowCount": 0,
   "columns": [
     "J_JV_NO",

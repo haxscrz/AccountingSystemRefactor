@@ -1,7 +1,7 @@
 {
   "tableName": "fs_schedule",
-  "sourcePath": "Bing's Data/LMJAY.ZIP/SCHEDULE.DBF",
-  "rowCount": 30,
+  "sourcePath": "Ellen's Data/Ellen/data/SCHEDULE.DBF",
+  "rowCount": 29,
   "columns": [
     "GL_HEAD",
     "ACCT_CODE",
@@ -9,154 +9,149 @@
   ],
   "rows": [
     {
-      "GL_HEAD": "A. CASH IN BANK & ON HAND",
+      "GL_HEAD": "A CASH IN BANK & ON HAND",
       "ACCT_CODE": "1111",
       "ACCT_DESC": "PETTY CASH FUND"
     },
     {
-      "GL_HEAD": "A. CASH IN BANK & ON HAND",
+      "GL_HEAD": "A CASH IN BANK & ON HAND",
       "ACCT_CODE": "1112",
-      "ACCT_DESC": "CASH IN BANK - LABOR"
+      "ACCT_DESC": "CASH IN BANK /DL-3161-0500-31"
     },
     {
-      "GL_HEAD": "A. CASH IN BANK & ON HAND",
+      "GL_HEAD": "A CASH IN BANK & ON HAND",
       "ACCT_CODE": "1113",
-      "ACCT_DESC": "CASH IN BANK - METROBANK"
+      "ACCT_DESC": "CASH IN BANK -OTHERS"
     },
     {
-      "GL_HEAD": "B.RECEIVABLES",
+      "GL_HEAD": "B RECEIVABLES",
       "ACCT_CODE": "1121",
       "ACCT_DESC": "SUBSCRIPTION RECEIVABLE"
     },
     {
-      "GL_HEAD": "B.RECEIVABLES",
+      "GL_HEAD": "B RECEIVABLES",
       "ACCT_CODE": "1122",
       "ACCT_DESC": "NOTES RECEIVABLE"
     },
     {
-      "GL_HEAD": "B.RECEIVABLES",
+      "GL_HEAD": "B RECEIVABLES",
       "ACCT_CODE": "1123",
       "ACCT_DESC": "ACCTS. RECEIVABLE - TRADE"
     },
     {
-      "GL_HEAD": "B.RECEIVABLES",
+      "GL_HEAD": "B RECEIVABLES",
       "ACCT_CODE": "1124",
       "ACCT_DESC": "ACCTS. RECEIVABLE - N/T"
     },
     {
-      "GL_HEAD": "B.RECEIVABLES",
+      "GL_HEAD": "B RECEIVABLES",
       "ACCT_CODE": "1125",
       "ACCT_DESC": "ACCTS. RECEIVABLE - OTHERS"
     },
     {
-      "GL_HEAD": "B.RECEIVABLES",
+      "GL_HEAD": "B RECEIVABLES",
       "ACCT_CODE": "1126",
-      "ACCT_DESC": "ANVANCES TO MGR.-SP. PROJ"
+      "ACCT_DESC": "ACCRUED INTEREST RECEIVABLE"
     },
     {
-      "GL_HEAD": "B.RECEIVABLES",
+      "GL_HEAD": "B RECEIVABLES",
       "ACCT_CODE": "1127",
       "ACCT_DESC": "ADVANCES TO EMPLOYEES"
     },
     {
-      "GL_HEAD": "B.RECEIVABLES",
+      "GL_HEAD": "B RECEIVABLES",
       "ACCT_CODE": "1128",
       "ACCT_DESC": "EXPANDED W/ TAX RECEIVABLE"
     },
     {
-      "GL_HEAD": "B.RECEIVABLES",
+      "GL_HEAD": "B RECEIVABLES",
       "ACCT_CODE": "1129",
       "ACCT_DESC": "VAT RECEIVABLE"
     },
     {
-      "GL_HEAD": "C.INVENTORIES",
+      "GL_HEAD": "C INVENTORIES",
       "ACCT_CODE": "1161",
       "ACCT_DESC": "MATERIAL INVENTORY"
     },
     {
-      "GL_HEAD": "C.INVENTORIES",
+      "GL_HEAD": "C INVENTORIES",
       "ACCT_CODE": "1162",
       "ACCT_DESC": "FINISHED GOODS"
     },
     {
-      "GL_HEAD": "C.INVENTORIES",
+      "GL_HEAD": "C INVENTORIES",
       "ACCT_CODE": "1163",
       "ACCT_DESC": "WORK IN PROCESS"
     },
     {
-      "GL_HEAD": "D.INVESTMENT",
+      "GL_HEAD": "C.INVESTMENT",
       "ACCT_CODE": "1171",
       "ACCT_DESC": "PURCHASE IN TRANSIT"
     },
     {
-      "GL_HEAD": "E.PAYABLES",
+      "GL_HEAD": "D PAYABLES",
       "ACCT_CODE": "2111",
       "ACCT_DESC": "NOTES PAYABLE"
     },
     {
-      "GL_HEAD": "E.PAYABLES",
+      "GL_HEAD": "D PAYABLES",
       "ACCT_CODE": "2112",
-      "ACCT_DESC": "ACCOUNTS PAYABLE-TRADE"
+      "ACCT_DESC": "ACCOUNTS PAYABLE - TRADE"
     },
     {
-      "GL_HEAD": "E.PAYABLES",
+      "GL_HEAD": "D PAYABLES",
       "ACCT_CODE": "2113",
       "ACCT_DESC": "ACCOUNTS PAYABLE - NT"
     },
     {
-      "GL_HEAD": "E.PAYABLES",
+      "GL_HEAD": "D PAYABLES",
       "ACCT_CODE": "2114",
-      "ACCT_DESC": "ACCEPTANCE PAYABLE"
+      "ACCT_DESC": "ACCOUNTS PAYABLE OTHERS"
     },
     {
-      "GL_HEAD": "F.OTHER PAYABLES",
+      "GL_HEAD": "E OTHER PAYABLES",
       "ACCT_CODE": "2161",
       "ACCT_DESC": "SSS LOANS PAYABLE"
     },
     {
-      "GL_HEAD": "F.OTHER PAYABLES",
+      "GL_HEAD": "E OTHER PAYABLES",
       "ACCT_CODE": "2163",
       "ACCT_DESC": "SSS MEDICARE PAYABLE"
     },
     {
-      "GL_HEAD": "F.OTHER PAYABLES",
+      "GL_HEAD": "E OTHER PAYABLES",
       "ACCT_CODE": "2164",
       "ACCT_DESC": "PAG-IBIG FUND PAYABLE"
     },
     {
-      "GL_HEAD": "F.OTHER PAYABLES",
+      "GL_HEAD": "E OTHER PAYABLES",
       "ACCT_CODE": "2165",
       "ACCT_DESC": "WITHHOLDING TAX PAYABLE"
     },
     {
-      "GL_HEAD": "F.OTHER PAYABLES",
+      "GL_HEAD": "E OTHER PAYABLES",
       "ACCT_CODE": "2166",
-      "ACCT_DESC": "EXPANDED W/HOLDING TAX PAYABLE"
+      "ACCT_DESC": "EXPANDED W/TAX PAYABLE"
     },
     {
-      "GL_HEAD": "F.OTHER PAYABLES",
-      "ACCT_CODE": "2191",
-      "ACCT_DESC": "DIVIDENDS PAYABLE"
+      "GL_HEAD": "B.PREPAID EXPENSES",
+      "ACCT_CODE": "1150",
+      "ACCT_DESC": "PREPAID TAXES & LICENSES"
     },
     {
-      "GL_HEAD": "A. CASH IN BANK & ON HAND",
-      "ACCT_CODE": "1114",
-      "ACCT_DESC": "CASH IN BANK - OPEN SHARE"
+      "GL_HEAD": "B.PREPAID EXPENSES",
+      "ACCT_CODE": "1151",
+      "ACCT_DESC": "PREPAID INSURANCE"
     },
     {
-      "GL_HEAD": "F.OTHER PAYABLES",
+      "GL_HEAD": "A CASH IN BANK & ON HAND",
+      "ACCT_CODE": "1110",
+      "ACCT_DESC": "CASH IN BANK / M-3161-0517-12"
+    },
+    {
+      "GL_HEAD": "E OTHER PAYABLES",
       "ACCT_CODE": "2190",
       "ACCT_DESC": "INCOME TAX PAYABLE"
-    },
-    {
-      "GL_HEAD": "A. CASH IN BANK & ON HAND",
-      "ACCT_CODE": "1110",
-      "ACCT_DESC": "CASH IN BANK - MAXI SAVINGS"
-    },
-    {
-      "GL_HEAD": "A. CASH IN BANK & ON HAND",
-      "ACCT_CODE": "1100",
-      "ACCT_DESC": "CASH IN BANK - ALFM"
     }
   ]
 }

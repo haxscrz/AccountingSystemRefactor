@@ -1,6 +1,6 @@
 {
   "tableName": "fs_purcbook",
-  "sourcePath": "Bing's Data/LMJAY.ZIP/PURCBOOK.DBF",
+  "sourcePath": "Ellen's Data/Ellen/data/PURCBOOK.DBF",
   "rowCount": 3,
   "columns": [
     "J_JV_NO",
@@ -11,24 +11,24 @@
   ],
   "rows": [
     {
-      "J_JV_NO": "PURCHASE",
+      "J_JV_NO": "PB#02",
       "J_DATE": "2026-03-12",
-      "ACCT_CODE": "1125",
-      "J_CK_AMT": 219671.7,
+      "ACCT_CODE": "4706",
+      "J_CK_AMT": 20535.71,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "PURCHASE",
+      "J_JV_NO": "PB#02",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "1142",
-      "J_CK_AMT": 28526.67,
+      "J_CK_AMT": 2464.29,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "PURCHASE",
+      "J_JV_NO": "PB#02",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "2112",
-      "J_CK_AMT": 248198.37,
+      "J_CK_AMT": 23000,
       "J_D_OR_C": "C"
     }
   ]

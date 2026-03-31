@@ -1,25 +1,12 @@
 {
   "tableName": "fs_banks",
-  "sourcePath": "Bing's Data/LMJAY.ZIP/BANKS.DBF",
-  "rowCount": 2,
+  "sourcePath": "Ellen's Data/Ellen/data/BANKS.DBF",
+  "rowCount": 0,
   "columns": [
     "BANK_NO",
     "BANK_NAME",
     "BANK_ADDR",
     "BANK_ACCT"
   ],
-  "rows": [
-    {
-      "BANK_NO": 1,
-      "BANK_NAME": "",
-      "BANK_ADDR": "",
-      "BANK_ACCT": ""
-    },
-    {
-      "BANK_NO": 2,
-      "BANK_NAME": "",
-      "BANK_ADDR": "",
-      "BANK_ACCT": ""
-    }
-  ]
+  "rows": []
 }

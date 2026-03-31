@@ -1,6 +1,6 @@
 {
   "tableName": "fs_old_accounts",
-  "sourcePath": "FS_test/Real Data/data/OLD ACCOUNTS.DBF",
+  "sourcePath": "Ellen's Data/Ellen/data/OLD ACCOUNTS.DBF",
   "rowCount": 114,
   "columns": [
     "ACCT_CODE",

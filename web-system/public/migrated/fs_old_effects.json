@@ -1,6 +1,6 @@
 {
   "tableName": "fs_old_effects",
-  "sourcePath": "FS_test/Real Data/data/OLD EFFECTS.DBF",
+  "sourcePath": "Ellen's Data/Ellen/data/OLD EFFECTS.DBF",
   "rowCount": 26,
   "columns": [
     "GL_REPORT",

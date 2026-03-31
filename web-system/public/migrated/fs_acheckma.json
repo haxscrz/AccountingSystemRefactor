@@ -1,7 +1,7 @@
 {
   "tableName": "fs_acheckma",
-  "sourcePath": "Bing's Data/LMJAY.ZIP/ACHECKMA.DBF",
-  "rowCount": 6,
+  "sourcePath": "Ellen's Data/Ellen/data/Acheckma.dbf",
+  "rowCount": 0,
   "columns": [
     "J_JV_NO",
     "J_DATE",
@@ -12,66 +12,5 @@
     "BANK_NO",
     "SUP_NO"
   ],
-  "rows": [
-    {
-      "J_JV_NO": "1",
-      "J_DATE": "2026-03-23",
-      "J_CK_NO": "1",
-      "J_PAY_TO": "Y. ALGABRE",
-      "J_CK_AMT": 48000,
-      "J_DESC": "PS & ALLO FOR THE MONTH OF FEBRUARY 2026.",
-      "BANK_NO": 0,
-      "SUP_NO": 0
-    },
-    {
-      "J_JV_NO": "2",
-      "J_DATE": "2026-03-23",
-      "J_CK_NO": "2",
-      "J_PAY_TO": "BING",
-      "J_CK_AMT": 50624,
-      "J_DESC": "PS & REPLENISH PETTY CASH FUND.",
-      "BANK_NO": 0,
-      "SUP_NO": 0
-    },
-    {
-      "J_JV_NO": "3",
-      "J_DATE": "2026-03-23",
-      "J_CK_NO": "3",
-      "J_PAY_TO": "Y. ALGABRE",
-      "J_CK_AMT": 1933,
-      "J_DESC": "TO REPLENISH PETTY CASH FUND.",
-      "BANK_NO": 0,
-      "SUP_NO": 0
-    },
-    {
-      "J_JV_NO": "4",
-      "J_DATE": "2026-03-23",
-      "J_CK_NO": "4",
-      "J_PAY_TO": "P. OCAMPO",
-      "J_CK_AMT": 7511,
-      "J_DESC": "ALLO & REPLENISH PEYY CASH FUND.",
-      "BANK_NO": 0,
-      "SUP_NO": 0
-    },
-    {
-      "J_JV_NO": "134800",
-      "J_DATE": "2026-03-23",
-      "J_CK_NO": "134800",
-      "J_PAY_TO": "BING",
-      "J_CK_AMT": 110748,
-      "J_DESC": "PAYMENT OF VARIOUS ACCOUNTS AS PER ATTACHED.",
-      "BANK_NO": 0,
-      "SUP_NO": 0
-    },
-    {
-      "J_JV_NO": "5",
-      "J_DATE": "2026-03-23",
-      "J_CK_NO": "5",
-      "J_PAY_TO": "Y. ALGABRE",
-      "J_CK_AMT": 2680,
-      "J_DESC": "GASOLINE & TOLL FEE ALLOWANCE FO MONTH OF MARCH.",
-      "BANK_NO": 0,
-      "SUP_NO": 0
-    }
-  ]
+  "rows": []
 }

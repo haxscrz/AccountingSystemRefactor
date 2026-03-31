@@ -50,10 +50,10 @@ jobs:
         working-directory: web-system/server/AccountingApi
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp --no-build
 
-      - name: Verify accounting.db is in publish output
+      - name: Verify accounting_v2.db is in publish output
         run: |
-          echo "=== Checking for accounting.db ==="
-          ls -la ${{env.DOTNET_ROOT}}/myapp/accounting.db || echo "WARNING: accounting.db NOT FOUND in publish output!"
+          echo "=== Checking for accounting_v2.db ==="
+          ls -la ${{env.DOTNET_ROOT}}/myapp/accounting_v2.db || echo "WARNING: accounting_v2.db NOT FOUND in publish output!"
           echo "=== All files in publish root ==="
           ls -la ${{env.DOTNET_ROOT}}/myapp/*.db 2>/dev/null || echo "No .db files found"
 

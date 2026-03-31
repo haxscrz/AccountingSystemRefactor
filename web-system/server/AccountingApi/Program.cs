@@ -546,15 +546,24 @@ using (var initScope = app.Services.CreateScope())
     // Optional explicit seed target (used for one-time controlled imports, e.g. THERMALEX only).
     if (!string.IsNullOrWhiteSpace(seedLegacyToCompany) && CompanyCatalog.IsValid(seedLegacyToCompany))
     {
-        var seeder = initScope.ServiceProvider.GetRequiredService<LegacySeedingService>();
         var normalizedCompany = CompanyCatalog.NormalizeOrDefault(seedLegacyToCompany);
-        var result = seeder.SeedAsync(companyCodeOverride: normalizedCompany).GetAwaiter().GetResult();
-        var total = result.Values.Sum();
+        var hasExistingData = db.FSAccounts.IgnoreQueryFilters().Any(a => a.CompanyCode == normalizedCompany);
+        
+        if (!hasExistingData)
+        {
+            var seeder = initScope.ServiceProvider.GetRequiredService<LegacySeedingService>();
+            var result = seeder.SeedAsync(companyCodeOverride: normalizedCompany).GetAwaiter().GetResult();
+            var total = result.Values.Sum();
 
-        if (total > 0)
-            Console.WriteLine($"[startup] Seeded {total} legacy records into company '{normalizedCompany}' across {result.Count} tables.");
+            if (total > 0)
+                Console.WriteLine($"[startup] Seeded {total} legacy records into company '{normalizedCompany}' across {result.Count} tables.");
+            else
+                Console.WriteLine($"[startup] No legacy JSON files found for SEED_LEGACY_TO_COMPANY_ON_STARTUP={normalizedCompany}.");
+        }
         else
-            Console.WriteLine($"[startup] No legacy JSON files found for SEED_LEGACY_TO_COMPANY_ON_STARTUP={normalizedCompany}.");
+        {
+            Console.WriteLine($"[startup] Skipped seeding: Company '{normalizedCompany}' already contains data.");
+        }
     }
     else if (legacyAutoSeedOnEmpty && !db.FSAccounts.IgnoreQueryFilters().Any())
     {

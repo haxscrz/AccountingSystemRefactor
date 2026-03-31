@@ -1,6 +1,6 @@
 {
   "tableName": "fs_cashrcpt",
-  "sourcePath": "Bing's Data/LMJAY.ZIP/CASHRCPT.DBF",
+  "sourcePath": "Ellen's Data/Ellen/data/CASHRCPT.DBF",
   "rowCount": 3,
   "columns": [
     "J_JV_NO",
@@ -11,24 +11,24 @@
   ],
   "rows": [
     {
-      "J_JV_NO": "RECEIPTS",
+      "J_JV_NO": "CRB#02",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "1112",
-      "J_CK_AMT": 1288984.61,
+      "J_CK_AMT": 1533830.86,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "RECEIPTS",
+      "J_JV_NO": "CRB#02",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "1128",
-      "J_CK_AMT": 23436.09,
+      "J_CK_AMT": 27878.88,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "RECEIPTS",
+      "J_JV_NO": "CRB#02",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "1123",
-      "J_CK_AMT": 1312420.7,
+      "J_CK_AMT": 1561709.74,
       "J_D_OR_C": "C"
     }
   ]
