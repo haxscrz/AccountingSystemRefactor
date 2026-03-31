@@ -290,6 +290,28 @@ using (var initScope = app.Services.CreateScope())
                 created_at_utc TEXT NOT NULL DEFAULT (datetime('now'))
             )");
 
+        RunSql(@"
+            INSERT INTO app_companies (code, name)
+            SELECT 'CS', 'CyberFridge Systems'
+            WHERE NOT EXISTS (SELECT 1 FROM app_companies WHERE code = 'CS');
+            
+            INSERT INTO app_companies (code, name)
+            SELECT '3jcrt', '3JCRT Accounting'
+            WHERE NOT EXISTS (SELECT 1 FROM app_companies WHERE code = '3jcrt');
+            
+            INSERT INTO app_companies (code, name)
+            SELECT 'gian', 'GIAN GENERAL SERVICES INC'
+            WHERE NOT EXISTS (SELECT 1 FROM app_companies WHERE code = 'gian');
+            
+            INSERT INTO app_companies (code, name)
+            SELECT 'jimi', 'JIMI HOLDINGS INC'
+            WHERE NOT EXISTS (SELECT 1 FROM app_companies WHERE code = 'jimi');
+            
+            INSERT INTO app_companies (code, name)
+            SELECT 'lmjay', 'LMJAY ENTERPRISES'
+            WHERE NOT EXISTS (SELECT 1 FROM app_companies WHERE code = 'lmjay');
+        ");
+
         // Security tables
         RunSql(@"
             CREATE TABLE IF NOT EXISTS app_users (
