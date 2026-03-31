@@ -96,6 +96,7 @@ export default function UserManagement() {
 
   const openEdit = (u: UserItem) => {
     setEditUser(u)
+    setFormUsername(u.username)
     setFormRole(u.role); setFormFs(u.canAccessFs); setFormPayroll(u.canAccessPayroll); setFormActive(u.isActive)
     setFormAssignedCompanies(u.assignedCompanies || null)
     setModalMode('edit')
@@ -131,11 +132,11 @@ export default function UserManagement() {
     setFormSaving(true); setError('')
     try {
       await axios.put(`${API}/users/${editUser.id}`, {
-        role: formRole, canAccessFs: formFs, canAccessPayroll: formPayroll, isActive: formActive,
+        username: formUsername, role: formRole, canAccessFs: formFs, canAccessPayroll: formPayroll, isActive: formActive,
         assignedCompanies: formRole === 'superadmin' ? null : formAssignedCompanies
       })
       setModalMode(null)
-      setSuccess(`User "${editUser.username}" updated.`)
+      setSuccess(`User "${formUsername}" updated.`)
       fetchUsers()
     } catch (e: any) {
       setError(e?.response?.data?.message || 'Failed to update user.')
@@ -354,18 +355,11 @@ export default function UserManagement() {
 
               {/* ADD mode */}
               {modalMode === 'add' && (
-                <>
-                  <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${darkMode ? 'text-gray-300' : 'text-on-surface-variant'}`}>Username *</label>
-                    <input className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all ${darkMode ? 'bg-[#0f172a] border-gray-600 text-white' : 'bg-white border-outline-variant/30 text-on-surface'}`}
-                      value={formUsername} onChange={e => setFormUsername(e.target.value)} placeholder="e.g. accountant1" />
-                  </div>
-                  <div>
-                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${darkMode ? 'text-gray-300' : 'text-on-surface-variant'}`}>Password *</label>
-                    <input type="password" className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all ${darkMode ? 'bg-[#0f172a] border-gray-600 text-white' : 'bg-white border-outline-variant/30 text-on-surface'}`}
-                      value={formPassword} onChange={e => setFormPassword(e.target.value)} placeholder="Min 6 characters" />
-                  </div>
-                </>
+                <div>
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${darkMode ? 'text-gray-300' : 'text-on-surface-variant'}`}>Password *</label>
+                  <input type="password" className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all ${darkMode ? 'bg-[#0f172a] border-gray-600 text-white' : 'bg-white border-outline-variant/30 text-on-surface'}`}
+                    value={formPassword} onChange={e => setFormPassword(e.target.value)} placeholder="Min 6 characters" />
+                </div>
               )}
 
               {/* PASSWORD mode */}
@@ -380,6 +374,11 @@ export default function UserManagement() {
               {/* ADD + EDIT shared fields */}
               {(modalMode === 'add' || modalMode === 'edit') && (
                 <>
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${darkMode ? 'text-gray-300' : 'text-on-surface-variant'}`}>Username *</label>
+                    <input className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all ${darkMode ? 'bg-[#0f172a] border-gray-600 text-white' : 'bg-white border-outline-variant/30 text-on-surface'}`}
+                      value={formUsername} onChange={e => setFormUsername(e.target.value)} placeholder="e.g. accountant1" />
+                  </div>
                   <div>
                     <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${darkMode ? 'text-gray-300' : 'text-on-surface-variant'}`}>Role</label>
                     <select className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all ${darkMode ? 'bg-[#0f172a] border-gray-600 text-white' : 'bg-white border-outline-variant/30 text-on-surface'}`}

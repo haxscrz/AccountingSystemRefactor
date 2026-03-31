@@ -106,7 +106,7 @@ public sealed class AdminController : ControllerBase
         bool CanAccessFs, bool CanAccessPayroll, string[]? AssignedCompanies);
 
     public sealed record UpdateUserRequest(
-        string? Role, bool? CanAccessFs, bool? CanAccessPayroll,
+        string? Username, string? Role, bool? CanAccessFs, bool? CanAccessPayroll,
         bool? IsActive, string? ProfileImageUrl, string? PreferencesJson,
         string[]? AssignedCompanies);
 
@@ -204,6 +204,13 @@ public sealed class AdminController : ControllerBase
     {
         var user = await _db.AppUsers.FirstOrDefaultAsync(u => u.Id == id, ct);
         if (user is null) return NotFound(new { message = "User not found" });
+
+        if (!string.IsNullOrWhiteSpace(request.Username) && !string.Equals(user.Username, request.Username, StringComparison.OrdinalIgnoreCase))
+        {
+            var exists = await _db.AppUsers.AnyAsync(u => u.Username.ToLower() == request.Username.ToLower(), ct);
+            if (exists) return BadRequest(new { message = "Username already taken." });
+            user.Username = request.Username;
+        }
 
         if (request.Role is not null)
         {
