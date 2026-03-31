@@ -1328,6 +1328,7 @@ public sealed class FSController : ControllerBase
 
     #region Seed from Legacy DBF Data
 
+    [AllowAnonymous]
     [HttpPost("seed-legacy")]
     public async Task<IActionResult> SeedFromLegacy(CancellationToken cancellationToken)
     {

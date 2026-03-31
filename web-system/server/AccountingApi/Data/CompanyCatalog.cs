@@ -12,7 +12,11 @@ public static class CompanyCatalog
         "thermalex",
         "gmixteam",
         "dynamiq",
-        "metaleon"
+        "metaleon",
+        "lmjay",
+        "3jcrt",
+        "gian",
+        "jimi"    
     };
 
     public static IReadOnlyCollection<string> AllCodes => ValidCodes;
