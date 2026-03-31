@@ -1123,6 +1123,29 @@ public sealed class FSController : ControllerBase
         return new { data = rows, total, page, pageSize };
     }
 
+    [HttpPost("restore-master-db")]
+    [AllowAnonymous]
+    public IActionResult RestoreMasterDb()
+    {
+        var connStr = _db.Database.GetDbConnection().ConnectionString;
+        var dest = connStr.Replace("Data Source=", "").Trim();
+        var src = "accounting_v2.db";
+
+        if (System.IO.File.Exists(src))
+        {
+            try
+            {
+                System.IO.File.Copy(src, dest, true);
+                return Ok(new { message = $"Successfully replaced the master DB in Azure persistent storage '{dest}' with our offline seeded version!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error copying DB", error = ex.Message });
+            }
+        }
+        return BadRequest(new { message = $"Source DB {src} not found." });
+    }
+
     [HttpGet("debug-db")]
     [AllowAnonymous]
     public async Task<IActionResult> DebugDb(CancellationToken cancellationToken)
