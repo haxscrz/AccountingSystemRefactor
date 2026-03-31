@@ -284,10 +284,14 @@ export default function UserManagement() {
                   <div className="p-5">
                     {/* Avatar + Name row */}
                     <div className="flex items-start gap-4 mb-4">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-inner flex-shrink-0 ${
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg shadow-inner flex-shrink-0 overflow-hidden ${
                         u.role === 'superadmin' ? 'bg-amber-100 text-amber-700' : u.role === 'tester' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
                       }`}>
-                        {u.username.charAt(0).toUpperCase()}
+                        {u.profileImageUrl ? (
+                          <img src={u.profileImageUrl} alt={u.username} className="w-full h-full object-cover" />
+                        ) : (
+                          u.username.charAt(0).toUpperCase()
+                        )}
                       </div>
 
                       <div className="flex-1 min-w-0">

@@ -70,18 +70,20 @@ function SpotlightCard({
 
 export default function CompanySelection() {
   const navigate = useNavigate()
-  const { user, logout } = useAuthStore()
+  const { user, logout, accessToken } = useAuthStore()
   const { setSelectedCompany } = useCompanyStore()
   const darkMode = useSettingsStore((state) => state.darkMode)
   const [companies, setCompanies] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const fetchCompanies = useCallback(async () => {
+  const fetchCompanies = useCallback(async (token: string | null) => {
     setLoading(true)
     setError('')
     try {
-      const res = await axios.get(`${PUBLIC_API}/companies`)
+      const res = await axios.get(`${PUBLIC_API}/companies`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined
+      })
       setCompanies(res.data)
     } catch {
       setError('Failed to load organizations. Please try again.')
@@ -91,8 +93,8 @@ export default function CompanySelection() {
   }, [])
 
   useEffect(() => {
-    fetchCompanies()
-  }, [fetchCompanies])
+    fetchCompanies(accessToken)
+  }, [fetchCompanies, accessToken])
 
   const handleSelectCompany = (companyCode: string) => {
     setSelectedCompany(companyCode as any)

@@ -5,6 +5,10 @@ export type CompanyCode =
   | 'gmixteam'
   | 'dynamiq'
   | 'metaleon'
+  | '3jcrt'
+  | 'gian'
+  | 'jimi'
+  | 'lmjay'
 
 export interface Company {
   code: CompanyCode
@@ -17,7 +21,11 @@ export const COMPANIES: Company[] = [
   { code: 'thermalex', name: 'THERMALEX GENERAL SERVICES INC' },
   { code: 'gmixteam', name: 'GMIXTEAM GENERAL SERVICES INC' },
   { code: 'dynamiq', name: 'DYNAMIQ CIRQUE GENERAL SERVICES INC' },
-  { code: 'metaleon', name: 'METALEON GENERAL SERVICES INC' }
+  { code: 'metaleon', name: 'METALEON GENERAL SERVICES INC' },
+  { code: '3jcrt', name: '3JCRT GENERAL SERVICES INC' },
+  { code: 'gian', name: 'GIAN GENERAL SERVICES INC' },
+  { code: 'jimi', name: 'JIMI GENERAL SERVICES INC' },
+  { code: 'lmjay', name: 'LMJAY GENERAL SERVICES INC' }
 ]
 
 export const COMPANY_HEADER_NAME = 'X-Company-Code'

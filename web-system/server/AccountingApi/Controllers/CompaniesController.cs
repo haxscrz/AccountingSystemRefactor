@@ -24,7 +24,7 @@ public class CompaniesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetCompanies()
     {
-        var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var userIdStr = User.FindFirst("uid")?.Value;
         if (!int.TryParse(userIdStr, out var userId)) return Unauthorized();
 
         var user = await _db.AppUsers.FindAsync(userId);

@@ -127,13 +127,13 @@ function ExportBar({ onCSV, onXLSX, onPDF }: {
     <div style={{ marginBottom: '20px' }}>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
         <span className="form-label" style={{ margin: 0, alignSelf: 'center', fontSize: '11px', fontWeight: 700, color: 'var(--text-secondary)' }}>EXPORT AS:</span>
-        <button className="btn btn-secondary" style={{ padding: '4px 12px', background: '#f8fafc', borderColor: '#cbd5e1', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} onClick={wrap(onCSV)}>
+        <button className="btn btn-secondary" style={{ padding: '4px 12px' }} onClick={wrap(onCSV)}>
           <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>download</span> CSV
         </button>
-        <button className="btn btn-secondary" style={{ padding: '4px 12px', background: '#f8fafc', borderColor: '#cbd5e1', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} onClick={wrap(onXLSX)}>
+        <button className="btn btn-secondary" style={{ padding: '4px 12px' }} onClick={wrap(onXLSX)}>
           <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>download</span> XLSX
         </button>
-        <button className="btn btn-secondary" style={{ padding: '4px 12px', background: '#f8fafc', borderColor: '#cbd5e1', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} onClick={wrap(onPDF)}>
+        <button className="btn btn-secondary" style={{ padding: '4px 12px' }} onClick={wrap(onPDF)}>
           <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>print</span> PDF
         </button>
       </div>
