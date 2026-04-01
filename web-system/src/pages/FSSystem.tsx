@@ -10,7 +10,6 @@ import FSVoucherEntry from '../components/fs/FSVoucherEntry'
 import FSJournalEntry from '../components/fs/FSJournalEntry'
 import FSTransferAdvanceCDB from '../components/fs/FSTransferAdvanceCDB'
 import FSChartOfAccounts from '../components/fs/FSChartOfAccounts'
-import SettingsModal from '../components/SettingsModal'
 import FSReports from '../components/fs/FSReports'
 import FSPosting from '../components/fs/FSPosting'
 import FSMonthEnd from '../components/fs/FSMonthEnd'
@@ -33,7 +32,6 @@ export default function FSSystem() {
   const [backingUp, setBackingUp] = useState(false)
   const [backupProgress, setBackupProgress] = useState(-1)
   const [backupStatus, setBackupStatus] = useState('')
-  const [showSettings, setShowSettings] = useState(false)
 
   const isSuperAdmin = user?.role === 'superadmin'
 
@@ -237,6 +235,10 @@ export default function FSSystem() {
     <>
       <AppShell 
         moduleName="FINANCIAL STATEMENTS"
+        breadcrumbSegments={[
+          { label: selectedCompanyCode || 'Company', path: '/select-company', icon: 'domain' },
+          { label: 'Financial Statements' }
+        ]}
         companyCode={selectedCompanyCode}
         statusPeriod={statusPeriod}
         tabs={shellTabs}
@@ -245,7 +247,7 @@ export default function FSSystem() {
         onTabChange={setActiveTab}
         onNewEntry={() => navigate('/fs/voucher')}
         newEntryLabel="New Voucher"
-        onOpenSettings={() => setShowSettings(true)}
+        onOpenSettings={() => navigate('/admin-settings')}
       >
         <Routes>
           <Route path="/" element={<FSFiscalNarrative />} />
@@ -289,8 +291,6 @@ export default function FSSystem() {
           </div>
         )}
       </AppShell>
-
-      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
     </>
   )
 }

@@ -17,6 +17,7 @@ interface SettingsState {
   setNumberFormat: (fmt: 'en-US' | 'en-PH') => void
   setShowStatusBar: (v: boolean) => void
   setCompactSidebar: (v: boolean) => void
+  syncStorageForUser: (username: string) => Promise<void>
 }
 
 /** Get the current logged-in username from auth-storage to make settings per-user */
@@ -50,6 +51,10 @@ export const useSettingsStore = create<SettingsState>()(
       setNumberFormat: (fmt) => set({ numberFormat: fmt }),
       setShowStatusBar: (v) => set({ showStatusBar: v }),
       setCompactSidebar: (v) => set({ compactSidebar: v }),
+      syncStorageForUser: async (username: string) => {
+        useSettingsStore.persist.setOptions({ name: `settings-storage-${username}` })
+        await useSettingsStore.persist.rehydrate()
+      },
     }),
     { name: getPerUserStorageKey() }
   )

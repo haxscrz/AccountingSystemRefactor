@@ -1,50 +1,106 @@
 import { useEffect, useRef, useCallback, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 
-const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000 // 5 minutes
+const WARNING_AT_MS = 4 * 60 * 1000       // Show warning at 4 minutes
+const LOGOUT_AT_MS = 5 * 60 * 1000        // Logout at 5 minutes
+const COUNTDOWN_SECONDS = Math.floor((LOGOUT_AT_MS - WARNING_AT_MS) / 1000) // 60 seconds
 
 export function useInactivityLogout() {
-  const navigate = useNavigate()
   const logout = useAuthStore((s) => s.logout)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [showModal, setShowModal] = useState(false)
+  
+  const warningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const lastActivityRef = useRef(Date.now())
+  
+  const [showWarningToast, setShowWarningToast] = useState(false)
+  const [secondsRemaining, setSecondsRemaining] = useState(COUNTDOWN_SECONDS)
+  const [showWelcomeBack, setShowWelcomeBack] = useState(false)
 
-  const handleLogout = useCallback(() => {
-    setShowModal(true)
-    logout()
-  }, [logout])
+  // Clean up all timers
+  const clearAllTimers = useCallback(() => {
+    if (warningTimerRef.current) { clearTimeout(warningTimerRef.current); warningTimerRef.current = null }
+    if (countdownRef.current) { clearInterval(countdownRef.current); countdownRef.current = null }
+  }, [])
 
+  // Start the countdown interval
+  const startCountdown = useCallback(() => {
+    setShowWarningToast(true)
+    setSecondsRemaining(COUNTDOWN_SECONDS)
+    
+    countdownRef.current = setInterval(() => {
+      setSecondsRemaining(prev => {
+        if (prev <= 1) {
+          // Time's up — logout
+          clearAllTimers()
+          setShowWarningToast(false)
+          logout()
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }, [clearAllTimers, logout])
+
+  // Set the initial warning timer
   const resetTimer = useCallback(() => {
-    if (timerRef.current) clearTimeout(timerRef.current)
+    clearAllTimers()
+    setShowWarningToast(false)
+    setSecondsRemaining(COUNTDOWN_SECONDS)
+    lastActivityRef.current = Date.now()
+
     if (isAuthenticated) {
-      timerRef.current = setTimeout(handleLogout, INACTIVITY_TIMEOUT_MS)
+      warningTimerRef.current = setTimeout(() => {
+        startCountdown()
+      }, WARNING_AT_MS)
     }
-  }, [isAuthenticated, handleLogout])
+  }, [isAuthenticated, clearAllTimers, startCountdown])
 
-  const dismissModal = useCallback(() => {
-    setShowModal(false)
-    navigate('/login')
-  }, [navigate])
+  // User explicitly dismisses the warning
+  const dismissWarning = useCallback(() => {
+    clearAllTimers()
+    setShowWarningToast(false)
+    setSecondsRemaining(COUNTDOWN_SECONDS)
+    
+    // Show welcome back toast briefly
+    setShowWelcomeBack(true)
+    setTimeout(() => setShowWelcomeBack(false), 3000)
+    
+    // Restart the inactivity timer
+    resetTimer()
+  }, [clearAllTimers, resetTimer])
 
+  // Activity detection
   useEffect(() => {
     if (!isAuthenticated) {
-      if (timerRef.current) clearTimeout(timerRef.current)
+      clearAllTimers()
+      setShowWarningToast(false)
+      setShowWelcomeBack(false)
       return
     }
 
-    const events = ['mousedown', 'keydown', 'mousemove', 'scroll', 'touchstart', 'click']
-    const onActivity = () => resetTimer()
+    const onActivity = () => {
+      // Only reset if the warning toast is NOT showing
+      // (so user must click "I'm still here" to dismiss)
+      if (!showWarningToast) {
+        resetTimer()
+      }
+    }
 
-    events.forEach((e) => window.addEventListener(e, onActivity, { passive: true }))
+    const events = ['mousedown', 'keydown', 'mousemove', 'scroll', 'touchstart', 'click']
+    events.forEach(e => window.addEventListener(e, onActivity, { passive: true }))
     resetTimer()
 
     return () => {
-      events.forEach((e) => window.removeEventListener(e, onActivity))
-      if (timerRef.current) clearTimeout(timerRef.current)
+      events.forEach(e => window.removeEventListener(e, onActivity))
+      clearAllTimers()
     }
-  }, [isAuthenticated, resetTimer])
+  }, [isAuthenticated, resetTimer, clearAllTimers, showWarningToast])
 
-  return { showInactivityModal: showModal, dismissInactivityModal: dismissModal }
+  return { 
+    showWarningToast, 
+    secondsRemaining, 
+    showWelcomeBack, 
+    dismissWarning 
+  }
 }

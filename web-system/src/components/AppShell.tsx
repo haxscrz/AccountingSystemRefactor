@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/authStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import { useNotificationStore } from '../stores/notificationStore'
 import { getCompanyNameByCode } from '../config/companies'
+import Breadcrumbs, { BreadcrumbSegment } from './Breadcrumbs'
 
 interface ShellTab {
   id: string
@@ -33,6 +34,7 @@ interface AppShellProps {
   newEntryLabel?: string
   children: ReactNode
   onOpenSettings?: () => void
+  breadcrumbSegments?: BreadcrumbSegment[]
 }
 
 export default function AppShell({ 
@@ -46,6 +48,7 @@ export default function AppShell({
   onNewEntry,
   newEntryLabel = 'New Entry',
   onOpenSettings,
+  breadcrumbSegments,
   children 
 }: AppShellProps) {
   const navigate = useNavigate()
@@ -189,7 +192,12 @@ export default function AppShell({
         {/* Top Navbar */}
         <header className={`h-[64px] border-b flex items-center justify-between px-8 flex-shrink-0 ${darkMode ? 'bg-[#16213e] border-gray-700' : 'bg-surface border-outline-variant/20'}`}>
           
-          <div className="flex items-center gap-8 h-full">
+          <div className="flex items-center gap-6 h-full">
+            {/* Breadcrumbs */}
+            {breadcrumbSegments && (
+              <Breadcrumbs segments={breadcrumbSegments} />
+            )}
+            <div className="h-5 w-px bg-outline-variant/20" />
             <div className="font-headline text-[1.15rem] font-extrabold text-primary tracking-tight cursor-pointer" onClick={() => navigate('/dashboard')}>
               AWM
             </div>

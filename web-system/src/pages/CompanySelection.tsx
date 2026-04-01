@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { useCompanyStore } from '../stores/companyStore'
 import { useSettingsStore } from '../stores/settingsStore'
+import Breadcrumbs from '../components/Breadcrumbs'
 import axios from 'axios'
 
 const PUBLIC_API = '/api'
@@ -131,6 +132,8 @@ export default function CompanySelection() {
         <div className={`absolute top-[30%] left-[40%] w-[20%] h-[30%] rounded-full blur-[80px] -z-10 animate-pulse ${darkMode ? 'bg-indigo-900/15' : 'bg-indigo-400/15 mix-blend-screen'}`} style={{ animationDuration: '12s' }}></div>
 
         <div className="w-full max-w-5xl">
+          {/* Breadcrumbs */}
+          <Breadcrumbs segments={[{ label: 'Select Company' }]} className="mb-6" />
           {/* Header */}
           <div className="mb-12 text-center md:text-left">
             <h1 className="font-headline text-display-md text-primary tracking-tight mb-2">Select Organization</h1>

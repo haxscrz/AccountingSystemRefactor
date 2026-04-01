@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { useNotificationStore } from '../stores/notificationStore'
 import { useSettingsStore } from '../stores/settingsStore'
@@ -97,6 +98,7 @@ General inquiries: support@isupplytech.com
 `.trim()
 
 export default function Login() {
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -120,8 +122,8 @@ export default function Login() {
     try {
       const result = await login(username, password)
       if (result.success) {
-        // Hard reload application to clear settings memory for different user accounts
-        window.location.href = '/select-company'
+        await useSettingsStore.getState().syncStorageForUser(username)
+        navigate('/system-options')
       } else {
         setError(result.message || 'Invalid username or password')
       }

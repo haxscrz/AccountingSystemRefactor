@@ -1,6 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../stores/authStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import axios from 'axios'
 
@@ -35,8 +33,6 @@ function fmtDate(iso: string | null) {
 
 
 export default function UserManagement() {
-  const navigate = useNavigate()
-  const { user } = useAuthStore()
   const darkMode = useSettingsStore(s => s.darkMode)
 
   const [users, setUsers] = useState<UserItem[]>([])
@@ -209,28 +205,7 @@ export default function UserManagement() {
 
 
   return (
-    <div className={`font-body min-h-screen flex flex-col ${darkMode ? 'bg-[#0a0f1e] text-gray-100' : 'bg-slate-50 text-on-surface'}`}>
-      {/* Header */}
-      <header className={`px-8 py-4 flex justify-between items-center border-b backdrop-blur-md z-10 ${darkMode ? 'bg-[#0f172a]/90 border-gray-700' : 'bg-white/80 border-outline-variant/10'}`}>
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/dashboard')} className="flex items-center gap-2 text-sm text-on-surface-variant hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-            Back to Dashboard
-          </button>
-          <div className="h-5 w-px bg-outline-variant/20"></div>
-          <h1 className={`font-headline font-bold text-xl tracking-tight ${darkMode ? 'text-blue-400' : 'text-primary'}`}>
-            <span className="material-symbols-outlined text-[22px] align-text-bottom mr-2">settings_applications</span>
-            Administrative Settings
-          </h1>
-        </div>
-        <div className="flex items-center gap-3 text-sm">
-          <span className={`px-3 py-1 rounded-lg border font-mono text-xs ${darkMode ? 'bg-amber-900/20 text-amber-400 border-amber-700/30' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
-            Super Admin
-          </span>
-          <span className="text-on-surface-variant font-medium">{user?.username}</span>
-        </div>
-      </header>
-
+    <div className={`w-full relative animate-fade-in ${darkMode ? 'text-gray-100' : 'text-on-surface'}`}>
       {/* Success Toast */}
       {success && (
         <div className="fixed top-6 right-6 z-50 animate-[slideIn_0.3s_ease] bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-sm font-medium">
@@ -239,20 +214,13 @@ export default function UserManagement() {
         </div>
       )}
 
-      <main className="flex-grow p-6 sm:p-10">
-        <div className="max-w-6xl mx-auto">
+      <div className="w-full">
           {/* Title area */}
           <div className="flex justify-between items-end mb-8">
             <div>
               <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface mb-1">System Users</h2>
-              <p className="text-on-surface-variant text-sm">Manage user accounts, roles, and module access permissions.</p>
+              <p className="text-on-surface-variant text-sm border-b border-transparent pb-1">Manage user accounts, roles, and module access permissions.</p>
             </div>
-            {user?.role === 'superadmin' && (
-              <button onClick={() => setManageCompaniesModal(true)} className={`px-4 py-2.5 rounded-xl border flex items-center gap-2 font-bold transition-all shadow-sm text-sm ${darkMode ? 'border-gray-600 hover:border-blue-500/50 hover:bg-blue-900/20 text-blue-400' : 'border-outline-variant/30 hover:border-blue-200 hover:bg-blue-50 text-blue-600'}`}>
-                <span className="material-symbols-outlined text-[18px]">domain</span>
-                Manage Organizations
-              </button>
-            )}
             <button onClick={openAdd} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5">
               <span className="material-symbols-outlined text-[20px]">person_add</span>
               Add User
@@ -352,13 +320,8 @@ export default function UserManagement() {
             </div>
           )}
         </div>
-      </main>
 
-      {/* Status Bar */}
-      <div className={`px-6 py-1.5 flex justify-between text-[11px] font-mono font-medium border-t ${darkMode ? 'bg-[#0f172a] border-gray-700 text-gray-500' : 'bg-surface-container-highest border-outline-variant/10 text-on-surface-variant/60'}`}>
-        <span>AWM V 3.3.0-UI — User Management</span>
-        <span>{users.length} registered user(s)</span>
-      </div>
+
 
       {/* ═══ Modal ═══ */}
       {modalMode && (

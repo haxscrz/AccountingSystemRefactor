@@ -4,6 +4,8 @@ import { useCompanyStore } from '../stores/companyStore'
 import { useFsUnsavedStore } from '../stores/fsUnsavedStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import { getCompanyNameByCode } from '../config/companies'
+import Breadcrumbs from '../components/Breadcrumbs'
+import { useSystemHealth } from '../hooks/useSystemHealth'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -15,6 +17,8 @@ export default function Dashboard() {
   const hasUnsavedChanges = useFsUnsavedStore((state) => state.hasUnsavedChanges)
   const selectedCompanyName = getCompanyNameByCode(selectedCompanyCode)
   const darkMode = useSettingsStore((state) => state.darkMode)
+  const { health, latencyMs } = useSystemHealth()
+  const isSuperAdmin = user?.role === 'superadmin'
 
   const handleLogout = () => {
     logout()
@@ -61,12 +65,16 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-grow flex flex-col items-center justify-center p-6 sm:p-12 z-10">
         <div className="w-full max-w-7xl">
+          <Breadcrumbs segments={[
+            { label: selectedCompanyName || 'Company', path: '/select-company', icon: 'domain' },
+            { label: 'Dashboard' }
+          ]} className="mb-6" />
           <div className="mb-12">
             <h2 className="font-headline text-display-md text-primary tracking-tight mb-2">Select System</h2>
             <p className="font-body text-body-lg text-on-surface-variant">Choose the module you want to access</p>
           </div>
 
-          <div className={`grid grid-cols-1 md:grid-cols-2 ${user?.role === 'superadmin' ? 'lg:grid-cols-3' : ''} gap-6`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Financial Statements Card */}
             <div 
               onClick={() => {
@@ -176,40 +184,40 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* User Management Card (SuperAdmin only) */}
-            {user?.role === 'superadmin' && (
+
+            {/* Smart Importer Card (Available to all users) */}
               <div 
-                onClick={() => navigate('/admin/users')}
-                className={`group relative rounded-[20px] p-8 flex flex-col h-full border transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1 ${darkMode ? 'bg-[#1e293b] border-gray-700 hover:shadow-[0_20px_40px_rgba(251,191,36,0.1)] hover:border-amber-500/30' : 'bg-white border-outline-variant/10 hover:shadow-[0_20px_40px_rgba(245,158,11,0.08)]'}`}
+                onClick={() => navigate('/admin/import')}
+                className={`group relative rounded-[20px] p-8 flex flex-col h-full border transition-all duration-300 cursor-pointer overflow-hidden hover:-translate-y-1 ${darkMode ? 'bg-[#1e293b] border-gray-700 hover:shadow-[0_20px_40px_rgba(168,85,247,0.1)] hover:border-purple-500/30' : 'bg-white border-outline-variant/10 hover:shadow-[0_20px_40px_rgba(168,85,247,0.08)]'}`}
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform duration-500"></div>
-                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-6 border border-amber-500/20 group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300">
-                  <span className="material-symbols-outlined text-2xl">admin_panel_settings</span>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-bl-[100px] -z-10 group-hover:scale-110 transition-transform duration-500"></div>
+                <div className="w-14 h-14 rounded-2xl bg-purple-500/10 text-purple-500 flex items-center justify-center mb-6 border border-purple-500/20 group-hover:bg-purple-500 group-hover:text-white transition-colors duration-300">
+                  <span className="material-symbols-outlined text-2xl">cloud_upload</span>
                 </div>
-                <h3 className="font-headline text-xl font-bold text-on-surface mb-2">User Management</h3>
+                <h3 className="font-headline text-xl font-bold text-on-surface mb-2">Data Import</h3>
                 <p className="text-on-surface-variant/80 text-sm leading-relaxed mb-6 min-h-[36px]">
-                  Add, remove, and manage user accounts, roles, and module access permissions.
+                  Smart Uploader to drag-and-drop legacy dBASE III data archives into the system.
                 </p>
 
                 <ul className="space-y-3 mb-8 flex-grow">
                   {[
-                    'Create & manage user accounts',
-                    'Role & permission assignment',
-                    'Password reset & security',
-                    'Per-user data isolation'
+                    'Bulk file ingestion via UI',
+                    'Automatic DBF schema mapping',
+                    'Live streaming progress',
+                    'Real-time error handling'
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-2.5 text-sm text-on-surface font-medium">
-                      <span className="material-symbols-outlined text-[14px] text-amber-500 mt-0.5">play_arrow</span>
+                      <span className="material-symbols-outlined text-[14px] text-purple-500 mt-0.5">play_arrow</span>
                       {item}
                     </li>
                   ))}
                 </ul>
 
-                <div className="mt-auto flex items-center gap-2 text-amber-500 font-bold text-sm tracking-wide group-hover:gap-3 transition-all">
-                  Manage Users <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                <div className="mt-auto flex items-center gap-2 text-purple-500 font-bold text-sm tracking-wide group-hover:gap-3 transition-all">
+                  Launch Importer <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </div>
               </div>
-            )}
+
           </div>
 
           {/* Bottom Info */}
@@ -219,12 +227,25 @@ export default function Dashboard() {
               {selectedCompanyName}
             </div>
             <div className="text-on-surface-variant flex gap-8">
-              <div className="flex items-center gap-3">
+              <button 
+                onClick={() => isSuperAdmin ? navigate('/admin-settings?tab=health') : null}
+                className={`flex items-center gap-3 transition-all ${isSuperAdmin ? 'cursor-pointer hover:scale-[1.02]' : 'cursor-default'}`}
+              >
                 <span className="font-bold text-on-surface tracking-wide uppercase text-xs">System Status</span>
-                <span className={`px-2.5 py-1 border rounded font-bold text-[10px] tracking-widest uppercase shadow-sm ${darkMode ? 'bg-emerald-900/30 text-emerald-400 border-emerald-700' : 'bg-emerald-100/50 text-emerald-800 border-emerald-200'}`}>
-                  Operational
+                <span className={`px-2.5 py-1 border rounded font-bold text-[10px] tracking-widest uppercase shadow-sm flex items-center gap-1.5 ${
+                  health?.status === 'healthy'
+                    ? (darkMode ? 'bg-emerald-900/30 text-emerald-400 border-emerald-700' : 'bg-emerald-100/50 text-emerald-800 border-emerald-200')
+                    : health?.status === 'degraded'
+                      ? (darkMode ? 'bg-amber-900/30 text-amber-400 border-amber-700' : 'bg-amber-100/50 text-amber-800 border-amber-200')
+                      : (darkMode ? 'bg-red-900/30 text-red-400 border-red-700' : 'bg-red-100/50 text-red-800 border-red-200')
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${
+                    health?.status === 'healthy' ? 'bg-emerald-500 animate-pulse' : health?.status === 'degraded' ? 'bg-amber-500' : 'bg-red-500'
+                  }`} />
+                  {health?.status ?? 'Checking...'}
+                  {latencyMs > 0 && <span className="opacity-60">({latencyMs}ms)</span>}
                 </span>
-              </div>
+              </button>
             </div>
           </div>
         </div>

@@ -23,7 +23,6 @@ import InitializeNewYear from '../components/payroll/InitializeNewYear'
 import BackupDatabases from '../components/payroll/BackupDatabases'
 import EditEmployeeNumber from '../components/payroll/EditEmployeeNumber'
 import TimecardQuery from '../components/payroll/TimecardQuery'
-import SettingsModal from '../components/SettingsModal'
 
 export default function PayrollSystem() {
   const navigate = useNavigate()
@@ -31,7 +30,6 @@ export default function PayrollSystem() {
   const [activeTab, setActiveTab] = useState('main')
   const [payrollType, setPayrollType] = useState<'regular' | 'casual' | null>(null)
   const [statusPeriod, setStatusPeriod] = useState('Oct 2023')
-  const [showSettings, setShowSettings] = useState(false)
 
   // Fetch active period from system ID
   useEffect(() => {
@@ -162,13 +160,17 @@ export default function PayrollSystem() {
     <>
     <AppShell
       moduleName="PAYROLL"
+      breadcrumbSegments={[
+        { label: selectedCompanyCode || 'Company', path: '/select-company', icon: 'domain' },
+        { label: 'Payroll' }
+      ]}
       companyCode={selectedCompanyCode}
       statusPeriod={statusPeriod}
       tabs={shellTabs}
       groups={shellGroups}
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      onOpenSettings={() => setShowSettings(true)}
+      onOpenSettings={() => navigate('/admin-settings')}
     >
       <Routes>
         <Route
@@ -207,7 +209,6 @@ export default function PayrollSystem() {
         <Route path="/reports/r3-project" element={<PayrollReports />} />
       </Routes>
     </AppShell>
-    {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
     </>
   )
 }
