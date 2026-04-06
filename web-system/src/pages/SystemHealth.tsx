@@ -73,15 +73,16 @@ function friendlyResource(resource: string): string {
   return r.split('/')[0] || 'the system'
 }
 
-function getTimeAgo(utcStr: string): string {
-  const diff = Date.now() - new Date(utcStr).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
-  const days = Math.floor(hours / 24)
-  return `${days}d ago`
+function formatAuditTime(utcStr: string): string {
+  // SQLite dates might lack 'Z'. Append it to ensure it's parsed as UTC.
+  const safeStr = utcStr.endsWith('Z') ? utcStr : `${utcStr}Z`
+  const date = new Date(safeStr)
+  
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+    hour: 'numeric', minute: '2-digit', second: '2-digit',
+    timeZoneName: 'short'
+  }).format(date)
 }
 
 function AnimatedNumber({ value, suffix = '', decimals = 0 }: { value: number; suffix?: string; decimals?: number }) {
@@ -445,7 +446,7 @@ export default function SystemHealth() {
           </div>
 
           {/* Recent Audit Log Feed */}
-          {telemetry?.recentLogs && telemetry.recentLogs.length > 0 && (
+                {telemetry?.recentLogs && telemetry.recentLogs.length > 0 && (
             <div className={card}>
               <div className="flex items-center gap-3 mb-4">
                 <span className="material-symbols-outlined text-blue-500 text-[20px]">history</span>
@@ -454,7 +455,7 @@ export default function SystemHealth() {
               <div className="space-y-1 max-h-[320px] overflow-y-auto">
                 {telemetry.recentLogs.map(log => {
                   const humanDetail = humanizeAudit(log.eventType, log.resource, log.success, log.details, log.username)
-                  const timeAgo = getTimeAgo(log.createdAtUtc)
+                  const formattedTime = formatAuditTime(log.createdAtUtc)
                   return (
                     <div key={log.id} className={`flex items-start gap-3 px-3 py-2.5 rounded-xl transition-colors ${
                       darkMode ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50'
@@ -465,7 +466,7 @@ export default function SystemHealth() {
                           {humanDetail}
                         </div>
                         <div className={`text-[10px] mt-0.5 ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>
-                          {timeAgo} · {log.ipAddress ?? 'unknown IP'}
+                          {formattedTime} · {log.ipAddress ?? 'unknown IP'}
                         </div>
                       </div>
                     </div>
