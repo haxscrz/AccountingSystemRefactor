@@ -1,0 +1,60 @@
+﻿data: {"type":"start","payload":{"company":"cyberfridge","totalFiles":7,"message":"Starting import for company \u0027cyberfridge\u0027..."}}
+
+data: {"type":"reading","payload":{"fileName":"ACCOUNTS.DBF","displayName":"Chart of Accounts","targetTable":"fs_accounts"}}
+
+data: {"type":"parsed","payload":{"fileName":"ACCOUNTS.DBF","recordCount":114,"columns":["ACCT_CODE","ACCT_DESC","OPEN_BAL","CUR_DEBIT","CUR_CREDIT","END_BAL","GL_EFFECT","GL_REPORT","FORMULA"]}}
+
+data: {"type":"seeding","payload":{"fileName":"ACCOUNTS.DBF","targetTable":"fs_accounts","recordCount":114}}
+
+data: {"type":"file_done","payload":{"fileName":"ACCOUNTS.DBF","targetTable":"fs_accounts","displayName":"Chart of Accounts","recordCount":114}}
+
+data: {"type":"reading","payload":{"fileName":"CHECKMAS.DBF","displayName":"Check Master","targetTable":"fs_checkmas"}}
+
+data: {"type":"parsed","payload":{"fileName":"CHECKMAS.DBF","recordCount":26,"columns":["J_JV_NO","J_DATE","J_CK_NO","J_PAY_TO","J_CK_AMT","J_DESC","BANK_NO","SUP_NO"]}}
+
+data: {"type":"seeding","payload":{"fileName":"CHECKMAS.DBF","targetTable":"fs_checkmas","recordCount":26}}
+
+data: {"type":"file_done","payload":{"fileName":"CHECKMAS.DBF","targetTable":"fs_checkmas","displayName":"Check Master","recordCount":26}}
+
+data: {"type":"reading","payload":{"fileName":"CHECKVOU.DBF","displayName":"Check Vouchers","targetTable":"fs_checkvou"}}
+
+data: {"type":"parsed","payload":{"fileName":"CHECKVOU.DBF","recordCount":82,"columns":["J_CK_NO","ACCT_CODE","J_CK_AMT","J_D_OR_C"]}}
+
+data: {"type":"seeding","payload":{"fileName":"CHECKVOU.DBF","targetTable":"fs_checkvou","recordCount":82}}
+
+data: {"type":"file_done","payload":{"fileName":"CHECKVOU.DBF","targetTable":"fs_checkvou","displayName":"Check Vouchers","recordCount":82}}
+
+data: {"type":"reading","payload":{"fileName":"EFFECTS.DBF","displayName":"GL Effects","targetTable":"fs_effects"}}
+
+data: {"type":"parsed","payload":{"fileName":"EFFECTS.DBF","recordCount":27,"columns":["GL_REPORT","GL_EFFECT","GL_HEAD","GL_AMT"]}}
+
+data: {"type":"seeding","payload":{"fileName":"EFFECTS.DBF","targetTable":"fs_effects","recordCount":27}}
+
+data: {"type":"file_done","payload":{"fileName":"EFFECTS.DBF","targetTable":"fs_effects","displayName":"GL Effects","recordCount":27}}
+
+data: {"type":"reading","payload":{"fileName":"SCHEDULE.DBF","displayName":"GL Schedule","targetTable":"fs_schedule"}}
+
+data: {"type":"parsed","payload":{"fileName":"SCHEDULE.DBF","recordCount":30,"columns":["GL_HEAD","ACCT_CODE","ACCT_DESC"]}}
+
+data: {"type":"seeding","payload":{"fileName":"SCHEDULE.DBF","targetTable":"fs_schedule","recordCount":30}}
+
+data: {"type":"file_done","payload":{"fileName":"SCHEDULE.DBF","targetTable":"fs_schedule","displayName":"GL Schedule","recordCount":30}}
+
+data: {"type":"reading","payload":{"fileName":"BANKS.DBF","displayName":"Banks","targetTable":"fs_banks"}}
+
+data: {"type":"parsed","payload":{"fileName":"BANKS.DBF","recordCount":2,"columns":["BANK_NO?\u002B","BANK_NAME\u002B","BANK_ADDR\u002B","BANK_ACCT\u002B"]}}
+
+data: {"type":"seeding","payload":{"fileName":"BANKS.DBF","targetTable":"fs_banks","recordCount":2}}
+
+data: {"type":"file_done","payload":{"fileName":"BANKS.DBF","targetTable":"fs_banks","displayName":"Banks","recordCount":0}}
+
+data: {"type":"reading","payload":{"fileName":"SUPPLIER.DBF","displayName":"Suppliers","targetTable":"fs_supplier"}}
+
+data: {"type":"parsed","payload":{"fileName":"SUPPLIER.DBF","recordCount":1,"columns":["SUP_NO(,","SUP_NAME,","SUP_ADDR,","SUP_PHONE,","SUP_FAXE,","SUP_CONTAK"]}}
+
+data: {"type":"seeding","payload":{"fileName":"SUPPLIER.DBF","targetTable":"fs_supplier","recordCount":1}}
+
+data: {"type":"file_done","payload":{"fileName":"SUPPLIER.DBF","targetTable":"fs_supplier","displayName":"Suppliers","recordCount":0}}
+
+data: {"type":"complete","payload":{"company":"cyberfridge","totalFilesProcessed":7,"totalRecordsImported":279,"tables":{"fs_accounts":114,"fs_checkmas":26,"fs_checkvou":82,"fs_effects":27,"fs_schedule":30,"fs_banks":0,"fs_supplier":0},"message":"Successfully imported 279 records across 7 files!"}}
+

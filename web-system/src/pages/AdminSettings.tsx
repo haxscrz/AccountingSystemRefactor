@@ -114,7 +114,7 @@ export default function AdminSettings() {
         </nav>
 
         <div className="p-6 border-t border-inherit text-xs uppercase tracking-widest font-mono text-center">
-          <span className={darkMode ? 'text-gray-600' : 'text-slate-400'}>AWM V 3.3.0</span>
+          <span className={darkMode ? 'text-gray-600' : 'text-slate-400'}>AWM V 3.8.0-Feature Fixes</span>
         </div>
       </aside>
 

@@ -364,9 +364,32 @@ export default function SystemHealth() {
           </div>
 
           {/* Audit & Table Row Counts */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Audit Trail — Hourly Bar Chart */}
-            <div className={`${card} lg:col-span-2`}>
+          <div className="grid grid-cols-1 gap-4">
+            {/* Table Row Counts */}
+            <div className={card}>
+              <div className="flex items-center gap-3 mb-4">
+                <span className={`material-symbols-outlined text-[20px] ${darkMode ? 'text-gray-400' : 'text-slate-500'}`}>table_chart</span>
+                <div className={label}>DB TABLE ROWS</div>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-8 gap-2">
+                {Object.entries(telemetry.tableRowCounts).map(([table, count]) => {
+                  const shortName = table.replace('fs_', '').replace('pay_', 'P:')
+                  return (
+                    <div key={table} className={`px-2.5 py-2 rounded-xl border ${darkMode ? 'bg-gray-800/40 border-gray-700/50' : 'bg-slate-50 border-slate-200/50'}`}>
+                      <div className={`text-[8px] font-bold uppercase tracking-widest truncate ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>
+                        {shortName}
+                      </div>
+                      <div className={`text-base font-black font-mono mt-0.5 ${darkMode ? 'text-gray-200' : 'text-slate-700'}`}>
+                        {count < 0 ? '—' : count.toLocaleString()}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Audit Trail — Hourly Area Chart */}
+            <div className={card}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-amber-500 text-[20px]">security</span>
@@ -419,33 +442,10 @@ export default function SystemHealth() {
                 <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>23:00</span>
               </div>
             </div>
-
-            {/* Table Row Counts */}
-            <div className={card}>
-              <div className="flex items-center gap-3 mb-4">
-                <span className={`material-symbols-outlined text-[20px] ${darkMode ? 'text-gray-400' : 'text-slate-500'}`}>table_chart</span>
-                <div className={label}>DB TABLE ROWS</div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {Object.entries(telemetry.tableRowCounts).map(([table, count]) => {
-                  const shortName = table.replace('fs_', '').replace('pay_', 'P:')
-                  return (
-                    <div key={table} className={`px-2.5 py-2 rounded-xl ${darkMode ? 'bg-gray-800/60' : 'bg-slate-50'}`}>
-                      <div className={`text-[8px] font-bold uppercase tracking-widest truncate ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>
-                        {shortName}
-                      </div>
-                      <div className={`text-base font-black font-mono ${darkMode ? 'text-gray-200' : 'text-slate-700'}`}>
-                        {count < 0 ? '—' : count.toLocaleString()}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
           </div>
 
           {/* Recent Audit Log Feed */}
-          {telemetry.recentLogs && telemetry.recentLogs.length > 0 && (
+          {telemetry?.recentLogs && telemetry.recentLogs.length > 0 && (
             <div className={card}>
               <div className="flex items-center gap-3 mb-4">
                 <span className="material-symbols-outlined text-blue-500 text-[20px]">history</span>

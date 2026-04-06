@@ -14,6 +14,8 @@ export function useInactivityLogout() {
   const lastActivityRef = useRef(Date.now())
   
   const [showWarningToast, setShowWarningToast] = useState(false)
+  const showWarningToastRef = useRef(showWarningToast)
+  useEffect(() => { showWarningToastRef.current = showWarningToast }, [showWarningToast])
   const [secondsRemaining, setSecondsRemaining] = useState(COUNTDOWN_SECONDS)
   const [showWelcomeBack, setShowWelcomeBack] = useState(false)
 
@@ -34,6 +36,7 @@ export function useInactivityLogout() {
           // Time's up — logout
           clearAllTimers()
           setShowWarningToast(false)
+          alert('You have been automatically logged out due to inactivity.')
           logout()
           return 0
         }
@@ -82,7 +85,7 @@ export function useInactivityLogout() {
     const onActivity = () => {
       // Only reset if the warning toast is NOT showing
       // (so user must click "I'm still here" to dismiss)
-      if (!showWarningToast) {
+      if (!showWarningToastRef.current) {
         resetTimer()
       }
     }
@@ -93,9 +96,8 @@ export function useInactivityLogout() {
 
     return () => {
       events.forEach(e => window.removeEventListener(e, onActivity))
-      clearAllTimers()
     }
-  }, [isAuthenticated, resetTimer, clearAllTimers, showWarningToast])
+  }, [isAuthenticated, resetTimer, clearAllTimers])
 
   return { 
     showWarningToast, 

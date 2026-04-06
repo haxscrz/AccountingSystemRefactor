@@ -340,7 +340,7 @@ export default function AppShell({
               <span>ROLE: {user?.role === 'superadmin' ? 'SUPER ADMIN' : 'SENIOR ACCOUNTANT'}</span>
             </div>
             <div className="flex items-center gap-6">
-              <span>V 3.3.0-UI</span>
+              <span>V 3.8.0-Feature Fixes</span>
               <span className="opacity-50">|</span>
               <span>© 2026 iSUPPLYTECH CO. LTD.</span>
             </div>

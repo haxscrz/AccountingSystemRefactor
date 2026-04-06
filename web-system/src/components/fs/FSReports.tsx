@@ -6,8 +6,10 @@ import {
   exportTableCSV,    exportFinancialCSV,
   exportTableXLSX,   exportFinancialXLSX,
   exportTablePDF,    exportFinancialPDF,
+  exportVouchersPDF,
   type ExportCol,    type FinSection,
 } from '../../utils/exportUtils'
+import { readSelectedCompanyName } from '../../utils/companyContext'
 
 const API_BASE = '/api/fs'
 
@@ -115,8 +117,8 @@ function filterByDate<T extends { jDate: string }>(rows: T[], from: string, to: 
 }
 
 // --- Inline ExportBar -------------------------------------------------------
-function ExportBar({ onCSV, onXLSX, onPDF }: {
-  onCSV: () => void; onXLSX: () => void; onPDF: () => void
+function ExportBar({ onCSV, onXLSX, onPDF, onPrintForms }: {
+  onCSV: () => void; onXLSX: () => void; onPDF: () => void; onPrintForms?: () => void
 }) {
   const [error, setError] = useState('')
   const wrap = (fn: () => void) => () => {
@@ -136,6 +138,14 @@ function ExportBar({ onCSV, onXLSX, onPDF }: {
         <button className="btn btn-secondary" style={{ padding: '4px 12px' }} onClick={wrap(onPDF)}>
           <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>print</span> PDF
         </button>
+        {onPrintForms && (
+          <>
+            <div style={{ width: '1px', height: '16px', background: 'var(--border)', margin: '0 4px' }} />
+            <button className="btn btn-primary" style={{ padding: '4px 12px' }} onClick={wrap(onPrintForms)}>
+              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>receipt_long</span> Print Vouchers
+            </button>
+          </>
+        )}
       </div>
       {error && <div style={{ marginTop: '8px', color: '#dc2626', fontSize: '12px', fontWeight: 500 }}>Export Error: {error}</div>}
     </div>
@@ -174,8 +184,8 @@ export default function FSReports() {
   const [filterCdvNo, setFilterCdvNo] = useState('')
   const [filterPayee, setFilterPayee] = useState('')
   const [filterAcctCode, setFilterAcctCode] = useState('')
-  const [pickMode, setPickMode] = useState(false)
-  const [selectedVoucherIds, setSelectedVoucherIds] = useState<Set<number>>(new Set())
+  const [printBuilderEnabled, setPrintBuilderEnabled] = useState(false)
+  const [printBuilderPages, setPrintBuilderPages] = useState<(number|string)[]>([])
   // Journal filters
   const [filterRefNo, setFilterRefNo] = useState('')
   const [filterJournalAcct, setFilterJournalAcct] = useState('')
@@ -187,7 +197,7 @@ export default function FSReports() {
 
   const clearAllFilters = () => {
     setFilterCkNo(''); setFilterCdvNo(''); setFilterPayee(''); setFilterAcctCode('')
-    setPickMode(false); setSelectedVoucherIds(new Set())
+    setPrintBuilderEnabled(false); setPrintBuilderPages([])
     setFilterRefNo(''); setFilterJournalAcct(''); setFilterMinAmt(''); setFilterMaxAmt('')
     setFilterDC('all'); setJournalPickMode(false); setSelectedJournalIds(new Set())
   }
@@ -280,7 +290,6 @@ export default function FSReports() {
 
   // --- Apply CDV filters ---
   const filteredMasters = voucherMasters.filter(m => {
-    if (pickMode && selectedVoucherIds.size > 0 && !selectedVoucherIds.has(m.id)) return false
     if (filterCkNo && !m.jCkNo.toLowerCase().includes(filterCkNo.toLowerCase())) return false
     if (filterCdvNo && !m.jJvNo.toLowerCase().includes(filterCdvNo.toLowerCase())) return false
     if (filterPayee && !(m.jPayTo ?? '').toLowerCase().includes(filterPayee.toLowerCase())) return false
@@ -304,7 +313,6 @@ export default function FSReports() {
 
   const activeFilterCount = (
     (filterCkNo ? 1 : 0) + (filterCdvNo ? 1 : 0) + (filterPayee ? 1 : 0) + (filterAcctCode ? 1 : 0) +
-    (pickMode && selectedVoucherIds.size > 0 ? 1 : 0) +
     (filterRefNo ? 1 : 0) + (filterJournalAcct ? 1 : 0) + (filterMinAmt ? 1 : 0) + (filterMaxAmt ? 1 : 0) +
     (filterDC !== 'all' ? 1 : 0) + (journalPickMode && selectedJournalIds.size > 0 ? 1 : 0)
   )
@@ -697,15 +705,112 @@ export default function FSReports() {
                     <label className="form-label">Account Code</label>
                     <input type="text" className="form-input" placeholder="e.g. 1010" value={filterAcctCode} onChange={e => setFilterAcctCode(e.target.value)} />
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', paddingBottom: '2px' }}>
-                    <input type="checkbox" id="pickModeVoucher" checked={pickMode} onChange={e => { setPickMode(e.target.checked); if (!e.target.checked) setSelectedVoucherIds(new Set()) }} />
-                    <label htmlFor="pickModeVoucher" style={{ fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Manual Pick</label>
-                  </div>
                   {activeFilterCount > 0 && (
                     <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '11px' }} onClick={clearAllFilters}>
                       <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span> Clear All
                     </button>
                   )}
+                </div>
+              )}
+
+              {/* Custom Print Builder */}
+              {type === 'cdv' && (
+                <div style={{ marginTop: '16px', padding: '12px', background: 'var(--surface-default)', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: printBuilderEnabled ? '12px' : 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input type="checkbox" id="enableBuilder" checked={printBuilderEnabled} onChange={e => {
+                        setPrintBuilderEnabled(e.target.checked)
+                        if (e.target.checked && printBuilderPages.length === 0) setPrintBuilderPages([voucherMasters[0]?.id || ''])
+                      }} />
+                      <label htmlFor="enableBuilder" style={{ fontSize: '13px', fontWeight: 600, cursor: 'pointer', color: 'var(--text-primary)' }}>Generate Custom Multi-Page Document</label>
+                    </div>
+                  </div>
+                  
+                  {printBuilderEnabled && (() => {
+                    const formatCDVLabel = (m: VoucherMaster) => `${m.jJvNo} — ${m.jPayTo} (Check: ${m.jCkNo})`
+                    return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                        Stack CDVs directly to construct a customized PDF layout. Type Payee or CDV# to search, or use the dropdown.
+                      </div>
+                      
+                      <datalist id="cdv-options">
+                        {voucherMasters.map(m => (
+                          <option key={m.id} value={formatCDVLabel(m)} />
+                        ))}
+                      </datalist>
+
+                      {printBuilderPages.map((pageMasterId, idx) => {
+                        const mMatch = typeof pageMasterId === 'number' ? voucherMasters.find(m => m.id === pageMasterId) : null
+                        const displayVal = mMatch ? formatCDVLabel(mMatch) : String(pageMasterId)
+                        return (
+                        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--background)', padding: '8px', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)', width: '60px' }}>Page {idx + 1}</span>
+                          <input 
+                            className="form-input" 
+                            style={{ flex: 1, padding: '4px 8px', fontSize: '13px', height: 'auto' }}
+                            list="cdv-options"
+                            placeholder="Type to search Payee, CDV, or Check No..."
+                            value={displayVal}
+                            onChange={e => {
+                              const newPages = [...printBuilderPages]
+                              const match = voucherMasters.find(m => formatCDVLabel(m) === e.target.value)
+                              newPages[idx] = match ? match.id : e.target.value
+                              setPrintBuilderPages(newPages)
+                            }}
+                          />
+                          <button 
+                            style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                            onClick={() => {
+                              const newPages = [...printBuilderPages]
+                              newPages.splice(idx, 1)
+                              setPrintBuilderPages(newPages)
+                            }}
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
+                          </button>
+                        </div>
+                        )
+                      })}
+                      <div style={{ marginTop: '4px' }}>
+                        <button 
+                          className="btn btn-secondary" 
+                          style={{ padding: '6px 12px', fontSize: '12px' }}
+                          onClick={() => setPrintBuilderPages([...printBuilderPages, voucherMasters[0]?.id || ''])}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>add</span> Add Next Page
+                        </button>
+                      </div>
+                    </div>
+                    )
+                  })()}
+
+                  {/* Contextual Print Actions */}
+                  <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-start' }}>
+                    <button 
+                      className="btn btn-primary"
+                      style={{ padding: '8px 20px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', opacity: (printBuilderEnabled && printBuilderPages.length === 0) || (!printBuilderEnabled && filteredMasters.length === 0) ? 0.6 : 1 }}
+                      disabled={(printBuilderEnabled && printBuilderPages.length === 0) || (!printBuilderEnabled && filteredMasters.length === 0)}
+                      onClick={() => {
+                        let mastersToPrint: any[] = []
+                        if (printBuilderEnabled) {
+                          mastersToPrint = printBuilderPages
+                            .map(v => typeof v === 'number' ? voucherMasters.find(m => m.id === v) : null)
+                            .filter(Boolean)
+                        } else {
+                          mastersToPrint = filteredMasters
+                        }
+                        if (mastersToPrint.length > 0) {
+                          exportVouchersPDF(mastersToPrint, voucherLines, readSelectedCompanyName(), acctDescMap)
+                        }
+                      }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>print</span>
+                      {printBuilderEnabled 
+                        ? `Print Custom Document (${printBuilderPages.length} pages)` 
+                        : `Print Filtered Vouchers (${filteredMasters.length} vouchers)`}
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -856,12 +961,6 @@ export default function FSReports() {
           <table className="data-table">
             <thead>
               <tr>
-                {pickMode && <th style={{ width: '32px' }}>
-                  <input type="checkbox" checked={filteredMasters.length > 0 && filteredMasters.every(m => selectedVoucherIds.has(m.id))} onChange={e => {
-                    if (e.target.checked) setSelectedVoucherIds(new Set(filteredMasters.map(m => m.id)))
-                    else setSelectedVoucherIds(new Set())
-                  }} />
-                </th>}
                 <th>Date</th>
                 <th>CDV No.</th>
                 <th>Payee</th>
@@ -872,7 +971,7 @@ export default function FSReports() {
             </thead>
             <tbody>
               {filteredMasters.length === 0 ? (
-                <tr><td colSpan={pickMode ? 7 : 6} style={{ fontFamily: "'Consolas', monospace" }}>No records matching filters...</td></tr>
+                <tr><td colSpan={6} style={{ fontFamily: "'Consolas', monospace" }}>No records matching filters...</td></tr>
               ) : filteredMasters.map(master => {
                 const lines = voucherLines.filter(l => l.jCkNo === master.jCkNo)
                 const linDebit  = lines.filter(l => l.jDOrC.toUpperCase() === 'D').reduce((s, l) => s + l.jCkAmt, 0)
@@ -880,16 +979,7 @@ export default function FSReports() {
                 return (
                   <Fragment key={master.id}>
                     {/* Master Header Row */}
-                    <tr style={{ borderTop: '2px solid var(--border)', ...(pickMode && selectedVoucherIds.has(master.id) ? { background: 'rgba(59,130,246,0.08)' } : {}) }}>
-                      {pickMode && (
-                        <td style={{ textAlign: 'center' }}>
-                          <input type="checkbox" checked={selectedVoucherIds.has(master.id)} onChange={e => {
-                            const next = new Set(selectedVoucherIds)
-                            if (e.target.checked) next.add(master.id); else next.delete(master.id)
-                            setSelectedVoucherIds(next)
-                          }} />
-                        </td>
-                      )}
+                    <tr style={{ borderTop: '2px solid var(--border)' }}>
                       <td>{fmtDate(master.jDate)}</td>
                       <td style={{ fontFamily: "'Consolas', monospace", fontWeight: 600 }}>{master.jJvNo}</td>
                       <td style={{ fontWeight: 600 }}>{master.jPayTo}</td>
@@ -945,7 +1035,7 @@ export default function FSReports() {
             {filteredMasters.length > 0 && (
               <tfoot>
                 <tr>
-                  <td colSpan={pickMode ? 5 : 4} style={{ fontWeight: 700, fontSize: '14px', paddingTop: '16px' }}>GRAND TOTAL &rarr;</td>
+                  <td colSpan={4} style={{ fontWeight: 700, fontSize: '14px', paddingTop: '16px' }}>GRAND TOTAL &rarr;</td>
                   <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 700, fontSize: '14px', paddingTop: '16px' }}>
                     {fmt(voucherMasters.reduce((s, m) => {
                       const lines = voucherLines.filter(l => l.jCkNo === m.jCkNo);

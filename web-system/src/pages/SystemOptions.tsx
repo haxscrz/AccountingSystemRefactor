@@ -100,7 +100,7 @@ export default function SystemOptions() {
       </div>
 
       <footer className="absolute bottom-6 text-xs text-on-surface-variant/60 font-mono tracking-widest uppercase z-10">
-        iSupplyTech Co. Ltd. • AWM System v3.3.0
+        iSupplyTech Co. Ltd. • AWM System v3.8.0-Feature Fixes
       </footer>
     </div>
   )

@@ -381,3 +381,161 @@ export function exportFinancialPDF(
 
   triggerDownload(doc.output('blob'), 'application/pdf', filename ?? safeFilename(title, 'pdf'))
 }
+
+// ─────────────────────────────────────────────────────────────
+// ████ Voucher PDF (1 CDV per page)
+// ─────────────────────────────────────────────────────────────
+
+export function exportVouchersPDF(
+  masters: any[],
+  lines: any[],
+  companyName: string,
+  acctDescMap: Record<string, string>
+) {
+  const doc = new jsPDF({ orientation: 'portrait', format: 'letter', unit: 'mm' })
+  const pageWidth = doc.internal.pageSize.getWidth()
+  const margin = 14
+  const usableW = pageWidth - margin * 2
+
+  const fmt = (n: any) => (!n || isNaN(Number(n)) || Number(n) === 0) ? '' : Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  masters.forEach((master, index) => {
+    if (index > 0) doc.addPage()
+
+    // Header Content
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text(companyName, margin, margin)
+    
+    doc.setFontSize(14)
+    doc.text("Check Disbursement Voucher", margin, margin + 8)
+
+    // CDV Details block
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'bold')
+    doc.text("CDV No.", margin, margin + 18)
+    doc.text("Date", margin + 30, margin + 18)
+    doc.text("Sup#", margin + 60, margin + 18)
+    doc.text("Payee", margin + 75, margin + 18)
+    doc.text("Bank#", pageWidth - margin - 40, margin + 18)
+    doc.text("Check No.", pageWidth - margin - 20, margin + 18)
+
+    doc.setFont('helvetica', 'normal')
+    doc.text(master.jJvNo || '', margin, margin + 23)
+    const dateStr = master.jDate ? new Date(master.jDate).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : ''
+    doc.text(dateStr, margin + 30, margin + 23)
+    doc.text(String(master.jSupNo || 0), margin + 60, margin + 23)
+    doc.text(master.jPayTo || '', margin + 75, margin + 23)
+    doc.text(String(master.jBankNo || 0), pageWidth - margin - 40, margin + 23)
+    doc.text(master.jCkNo || '', pageWidth - margin - 20, margin + 23)
+
+    // Draw lines
+    doc.setDrawColor(200)
+    doc.setLineWidth(0.5)
+    doc.line(margin, margin + 26, pageWidth - margin, margin + 26)
+
+    // Filter lines for this master
+    const voucherLines = lines.filter((l: any) => l.jCkNo === master.jCkNo)
+    let totalDebit = 0
+    let totalCredit = 0
+
+    const body = voucherLines.map((l: any) => {
+      const isDebit = l.jDOrC?.toUpperCase() === 'D'
+      const isCredit = l.jDOrC?.toUpperCase() === 'C'
+      const amt = Number(l.jCkAmt) || 0
+      
+      if (isDebit) totalDebit += amt
+      if (isCredit) totalCredit += amt
+
+      return [
+        l.acctCode || '',
+        acctDescMap[l.acctCode] || '',
+        isDebit ? fmt(amt) : '',
+        isCredit ? fmt(amt) : ''
+      ]
+    })
+
+    // Totals row
+    body.push([
+      '',
+      'Totals ->',
+      fmt(totalDebit),
+      fmt(totalCredit)
+    ])
+
+    autoTable(doc, {
+      startY: margin + 28,
+      head: [['Acct#', 'Account Description', 'Debit', 'Credit']],
+      body,
+      styles: {
+        font: 'helvetica',
+        fontSize: 8,
+        cellPadding: { top: 1.5, bottom: 1.5, left: 3, right: 3 }
+      },
+      headStyles: {
+        fillColor: [60, 75, 115] as [number, number, number],
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 7.5
+      },
+      alternateRowStyles: { fillColor: PDF_STRIPE_COLOR },
+      columnStyles: {
+        0: { cellWidth: 25 },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 30, halign: 'right' },
+        3: { cellWidth: 30, halign: 'right' }
+      },
+      willDrawCell: (data) => {
+        if (data.section === 'body' && data.row.index === body.length - 1) {
+          doc.setFillColor(PDF_TOTAL_COLOR[0], PDF_TOTAL_COLOR[1], PDF_TOTAL_COLOR[2])
+          doc.setFont('helvetica', 'bold')
+        }
+      }
+    })
+
+    // @ts-ignore
+    let currentY = doc.lastAutoTable.finalY + 10
+
+    // Remarks
+    doc.setFont('helvetica', 'bold')
+    doc.text("EXPLANATION/Remarks:", margin, currentY)
+    doc.setFont('helvetica', 'normal')
+    const remarksStr = (master.jDesc || '').toUpperCase()
+    const remarks = doc.splitTextToSize(remarksStr, usableW - 45)
+    doc.text(remarks, margin + 45, currentY)
+    
+    currentY += remarks.length * 5 + 15
+
+    // Check if we need a new page for the footer box
+    const footerHeight = 25
+    if (currentY + footerHeight > doc.internal.pageSize.getHeight() - margin) {
+      doc.addPage()
+      currentY = margin + 10
+    }
+
+    // Signature Footer
+    doc.setDrawColor(150)
+    doc.setLineWidth(0.5)
+    // Draw outer box
+    doc.rect(margin, currentY, usableW, footerHeight)
+    
+    // Draw vertical dashed lines to split into 5 boxes
+    // jsPDF has setLineDashPattern
+    const boxW = usableW / 5
+    for (let i = 1; i < 5; i++) {
+        doc.setLineDashPattern([1, 1], 0)
+        doc.line(margin + boxW * i, currentY, margin + boxW * i, currentY + footerHeight)
+    }
+    doc.setLineDashPattern([], 0) // reset
+
+    doc.setFontSize(8)
+    doc.text("PREPARED BY:", margin + 2, currentY + 4)
+    doc.text("APPROVED BY:", margin + boxW + 2, currentY + 4)
+    doc.text("PAYMENT RECEIVED BY:", margin + boxW * 2 + 2, currentY + 4)
+    doc.text("DATE RELEASED:", margin + boxW * 3 + 2, currentY + 4)
+    doc.text("PAYEE'S O/R-NO.:", margin + boxW * 4 + 2, currentY + 4)
+
+  })
+
+  triggerDownload(doc.output('blob'), 'application/pdf', `CDVs_Printout_${Date.now()}.pdf`)
+}

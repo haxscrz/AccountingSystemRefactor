@@ -19,7 +19,6 @@ import FSBanks from '../components/fs/FSBanks'
 import FSSuppliers from '../components/fs/FSSuppliers'
 import FSSignatories from '../components/fs/FSSignatories'
 import FSQueryBrowser from '../components/fs/FSQueryBrowser'
-import FSAuditLogs from '../components/fs/FSAuditLogs'
 
 export default function FSSystem() {
   const navigate = useNavigate()
@@ -144,7 +143,7 @@ export default function FSSystem() {
     { label: 'Month-End Processing', icon: 'event', onClick: () => navigate('/fs/month-end'), route: '/fs/month-end' },
   ]
   if (isSuperAdmin) {
-    adminItems.push({ label: 'Audit Logs', icon: 'history', onClick: () => navigate('/fs/audit-logs'), route: '/fs/audit-logs' })
+    // Audit logs moved to administrative settings
   }
   adminItems.push({ label: backingUp ? 'Backing up…' : 'Backup Database', icon: 'save', onClick: () => handleBackup(), disabled: backingUp })
 
@@ -265,7 +264,7 @@ export default function FSSystem() {
           <Route path="/month-end" element={<FSMonthEnd />} />
           <Route path="/reports/:reportType" element={<FSReports />} />
           <Route path="/query/:queryType" element={<FSQueryBrowser />} />
-          {isSuperAdmin && <Route path="/audit-logs" element={<FSAuditLogs />} />}
+          {/* Audit logs moved to Admin Hub */}
         </Routes>
 
         {backupProgress >= 0 && (
