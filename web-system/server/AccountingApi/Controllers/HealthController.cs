@@ -160,8 +160,9 @@ public class HealthController : ControllerBase
         foreach (var h in auditHourly)
             auditByHour[h.Hour] = h.Count;
 
-        // Recent audit log entries (last 20) with humanized details
+        // Recent audit log entries (last 20, exclude noisy middleware 'api_write' entries)
         var recentLogs = await _db.AppAuditLogs
+            .Where(l => l.EventType != "api_write")
             .OrderByDescending(l => l.CreatedAtUtc)
             .Take(20)
             .Select(l => new

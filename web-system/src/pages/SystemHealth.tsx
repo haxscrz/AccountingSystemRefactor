@@ -6,15 +6,20 @@ function humanizeAudit(
   eventType: string, resource: string, success: boolean,
   details: string | null, username: string | null
 ): string {
-  const user = username ?? 'Unknown user'
+  const user = username || 'System'
   const evt = eventType.toLowerCase()
+
+  // Skip noisy api_write middleware entries
+  if (evt === 'api_write') {
+    return `${user} made an API call to ${friendlyResource(resource)}`
+  }
 
   // Login / logout / refresh
   if (evt === 'login' && success) return `${user} signed in successfully`
   if (evt === 'login' && !success) {
     if (details?.includes('Locked out')) return `${user} was locked out after too many attempts`
     if (details?.includes('Invalid password')) return `${user} entered an incorrect password`
-    if (details?.includes('Unknown')) return `Sign-in attempt with unknown username "${username ?? ''}"`
+    if (details?.includes('Unknown')) return `Sign-in attempt with unknown username`
     return `${user} failed to sign in`
   }
   if (evt === 'logout') return `${user} signed out`
@@ -35,8 +40,8 @@ function humanizeAudit(
     return `${user} performed a ${evt} operation on ${friendlyResource(resource)}`
   }
 
-  // Generic
-  const plainDetails = details && details.length < 80 && !details.includes('SELECT') ? ` — ${details}` : ''
+  // Generic — only show clean details
+  const plainDetails = details && details.length < 80 && !details.includes('SELECT') && !details.includes('method=') ? ` — ${details}` : ''
   return `${user} performed "${evt}" on ${friendlyResource(resource)}${plainDetails}`
 }
 
@@ -371,45 +376,46 @@ export default function SystemHealth() {
                   <AnimatedNumber value={telemetry.recentAuditEvents} />
                 </span>
               </div>
-              {/* Hourly bar chart */}
+              {/* Smooth area line graph */}
               {telemetry.auditByHour && telemetry.auditByHour.length > 0 ? (() => {
                 const data = telemetry.auditByHour
-                const maxVal = Math.max(...data, 1)
+                const max = Math.max(...data, 1)
+                const min = 0
+                const range = max - min || 1
+                const h = 72
+                const w = 500
+                const points = data.map((v, i) => {
+                  const x = (i / (data.length - 1)) * w
+                  const y = h - ((v - min) / range) * (h - 8) - 4
+                  return `${x},${y}`
+                }).join(' ')
+                const areaPoints = `0,${h} ${points} ${w},${h}`
                 const nowHour = new Date().getHours()
+                const nowX = (nowHour / (data.length - 1)) * w
+                const nowY = h - ((data[nowHour] - min) / range) * (h - 8) - 4
                 return (
-                  <div className="flex items-end gap-[3px]" style={{ height: '80px' }}>
-                    {data.map((count, hour) => {
-                      const pct = (count / maxVal) * 100
-                      const isCurrent = hour === nowHour
-                      return (
-                        <div
-                          key={hour}
-                          className="flex-1 rounded-t-sm transition-all relative group cursor-pointer"
-                          style={{
-                            height: `${Math.max(pct, 2)}%`,
-                            background: isCurrent
-                              ? 'linear-gradient(to top, #f59e0b, #fbbf24)'
-                              : darkMode ? 'rgba(251,191,36,0.25)' : 'rgba(245,158,11,0.2)',
-                            minWidth: '4px'
-                          }}
-                          title={`${String(hour).padStart(2,'0')}:00 — ${count} event${count !== 1 ? 's' : ''}`}
-                        >
-                          {isCurrent && (
-                            <div className={`absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-bold ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>
-                              {count}
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
+                  <div>
+                    <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ height: '72px' }} preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="audit-grad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.3" />
+                          <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <polygon points={areaPoints} fill="url(#audit-grad)" />
+                      <polyline points={points} fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx={nowX} cy={nowY} r="4" fill="#fbbf24" stroke="#f59e0b" strokeWidth="1.5" />
+                    </svg>
                   </div>
                 )
               })() : (
                 <div className={`text-sm ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>No audit data available</div>
               )}
-              <div className="flex justify-between mt-1.5">
+              <div className="flex justify-between mt-1">
                 <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>00:00</span>
+                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>06:00</span>
                 <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>12:00</span>
+                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>18:00</span>
                 <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>23:00</span>
               </div>
             </div>
