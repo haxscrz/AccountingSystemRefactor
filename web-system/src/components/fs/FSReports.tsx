@@ -167,6 +167,31 @@ export default function FSReports() {
   const [financialData,  setFinancialData]  = useState<Record<string, unknown> | null>(null)
   const [acctDescMap,    setAcctDescMap]    = useState<Record<string, string>>({})
 
+  // --- Customize Report filters ---
+  const [showFilters, setShowFilters] = useState(false)
+  // CDV filters
+  const [filterCkNo, setFilterCkNo] = useState('')
+  const [filterCdvNo, setFilterCdvNo] = useState('')
+  const [filterPayee, setFilterPayee] = useState('')
+  const [filterAcctCode, setFilterAcctCode] = useState('')
+  const [pickMode, setPickMode] = useState(false)
+  const [selectedVoucherIds, setSelectedVoucherIds] = useState<Set<number>>(new Set())
+  // Journal filters
+  const [filterRefNo, setFilterRefNo] = useState('')
+  const [filterJournalAcct, setFilterJournalAcct] = useState('')
+  const [filterMinAmt, setFilterMinAmt] = useState('')
+  const [filterMaxAmt, setFilterMaxAmt] = useState('')
+  const [filterDC, setFilterDC] = useState<'all'|'D'|'C'>('all')
+  const [journalPickMode, setJournalPickMode] = useState(false)
+  const [selectedJournalIds, setSelectedJournalIds] = useState<Set<number>>(new Set())
+
+  const clearAllFilters = () => {
+    setFilterCkNo(''); setFilterCdvNo(''); setFilterPayee(''); setFilterAcctCode('')
+    setPickMode(false); setSelectedVoucherIds(new Set())
+    setFilterRefNo(''); setFilterJournalAcct(''); setFilterMinAmt(''); setFilterMaxAmt('')
+    setFilterDC('all'); setJournalPickMode(false); setSelectedJournalIds(new Set())
+  }
+
   // -------------------------------------------------------------------------
   // Fetch
   // -------------------------------------------------------------------------
@@ -251,10 +276,42 @@ export default function FSReports() {
   const isFinancial     = ['trial-balance','trial-balance-detail','income-statement','balance-sheet','subsidiary-schedule'].includes(type)
   const isCodeFile      = ['coa','groups','schedules'].includes(type)
   const showDateFilter  = isTransactional || isVoucher || isFinancial
+  const showCustomize   = isTransactional || isVoucher
 
-  const voucherTotal = voucherMasters.reduce((s, r) => s + r.jCkAmt, 0)
+  // --- Apply CDV filters ---
+  const filteredMasters = voucherMasters.filter(m => {
+    if (pickMode && selectedVoucherIds.size > 0 && !selectedVoucherIds.has(m.id)) return false
+    if (filterCkNo && !m.jCkNo.toLowerCase().includes(filterCkNo.toLowerCase())) return false
+    if (filterCdvNo && !m.jJvNo.toLowerCase().includes(filterCdvNo.toLowerCase())) return false
+    if (filterPayee && !(m.jPayTo ?? '').toLowerCase().includes(filterPayee.toLowerCase())) return false
+    if (filterAcctCode) {
+      const hasAcct = voucherLines.some(l => l.jCkNo === m.jCkNo && l.acctCode.toLowerCase().includes(filterAcctCode.toLowerCase()))
+      if (!hasAcct) return false
+    }
+    return true
+  })
 
-  const validCheckNos = new Set(voucherMasters.map(m => m.jCkNo))
+  // --- Apply Journal filters ---
+  const filteredJournalRows = journalRows.filter(r => {
+    if (journalPickMode && selectedJournalIds.size > 0 && !selectedJournalIds.has(r.id)) return false
+    if (filterRefNo && !r.jJvNo.toLowerCase().includes(filterRefNo.toLowerCase())) return false
+    if (filterJournalAcct && !r.acctCode.toLowerCase().includes(filterJournalAcct.toLowerCase())) return false
+    if (filterMinAmt && r.jCkAmt < parseFloat(filterMinAmt)) return false
+    if (filterMaxAmt && r.jCkAmt > parseFloat(filterMaxAmt)) return false
+    if (filterDC !== 'all' && r.jDOrC.toUpperCase() !== filterDC) return false
+    return true
+  })
+
+  const activeFilterCount = (
+    (filterCkNo ? 1 : 0) + (filterCdvNo ? 1 : 0) + (filterPayee ? 1 : 0) + (filterAcctCode ? 1 : 0) +
+    (pickMode && selectedVoucherIds.size > 0 ? 1 : 0) +
+    (filterRefNo ? 1 : 0) + (filterJournalAcct ? 1 : 0) + (filterMinAmt ? 1 : 0) + (filterMaxAmt ? 1 : 0) +
+    (filterDC !== 'all' ? 1 : 0) + (journalPickMode && selectedJournalIds.size > 0 ? 1 : 0)
+  )
+
+  const voucherTotal = filteredMasters.reduce((s, r) => s + r.jCkAmt, 0)
+
+  const validCheckNos = new Set(filteredMasters.map(m => m.jCkNo))
   interface CodeGroup { acctCode: string; description: string; count: number; debit: number; credit: number }
   const byCode: Record<string, CodeGroup> = {}
   if (type === 'cds') {
@@ -274,8 +331,8 @@ export default function FSReports() {
   }
   const cdsCodeRows = Object.values(byCode).sort((a, b) => a.acctCode.localeCompare(b.acctCode))
 
-  const totalDebit  = journalRows.reduce((s, r) => s + (r.jDOrC.toUpperCase() === 'D' ? r.jCkAmt : 0), 0)
-  const totalCredit = journalRows.reduce((s, r) => s + (r.jDOrC.toUpperCase() === 'C' ? r.jCkAmt : 0), 0)
+  const totalDebit  = filteredJournalRows.reduce((s, r) => s + (r.jDOrC.toUpperCase() === 'D' ? r.jCkAmt : 0), 0)
+  const totalCredit = filteredJournalRows.reduce((s, r) => s + (r.jDOrC.toUpperCase() === 'C' ? r.jCkAmt : 0), 0)
 
   const periodLabel = showDateFilter
     ? `Period: ${fmtDate(dateFrom)} \u2013 ${fmtDate(dateTo)}`
@@ -297,7 +354,7 @@ export default function FSReports() {
         { header: 'Debit',       key: 'debitStr',  width: 16, numeric: true },
         { header: 'Credit',      key: 'creditStr', width: 16, numeric: true },
       ]
-      const rows = journalRows.map((r, idx) => ({
+      const rows = filteredJournalRows.map((r, idx) => ({
         lnStr: String(idx + 1), jDateStr: fmtDate(r.jDate), jJvNo: r.jJvNo,
         acctDesc: acctDescMap[r.acctCode] ?? '', acctCode: r.acctCode,
         debitStr:  r.jDOrC.toUpperCase() === 'D' ? fmt(r.jCkAmt) : '',
@@ -322,7 +379,7 @@ export default function FSReports() {
       ]
       
       const rows: any[] = []
-      voucherMasters.forEach(master => {
+      filteredMasters.forEach(master => {
         const lines = voucherLines.filter(l => l.jCkNo === master.jCkNo)
         const linDebit  = lines.filter(l => l.jDOrC.toUpperCase() === 'D').reduce((s, l) => s + l.jCkAmt, 0)
         const linCredit = lines.filter(l => l.jDOrC.toUpperCase() === 'C').reduce((s, l) => s + l.jCkAmt, 0)
@@ -559,7 +616,7 @@ export default function FSReports() {
   ])
 
   const hasData = !loading && (
-    journalRows.length > 0 || voucherMasters.length > 0 ||
+    filteredJournalRows.length > 0 || filteredMasters.length > 0 ||
     accountRows.length > 0 || groupRows.length > 0 || schedRows.length > 0 ||
     financialData !== null
   )
@@ -595,6 +652,114 @@ export default function FSReports() {
         </div>
       )}
 
+      {/* Customize Report Panel */}
+      {showCustomize && (
+        <div style={{ background: 'var(--background)', borderRadius: '8px', marginBottom: '20px', border: '1px solid var(--border)' }}>
+          <button
+            onClick={() => setShowFilters(prev => !prev)}
+            style={{
+              width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '12px 16px', background: 'transparent', border: 'none', cursor: 'pointer',
+              fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)', fontFamily: 'inherit'
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>tune</span>
+              Customize Report
+              {activeFilterCount > 0 && (
+                <span style={{
+                  background: '#3b82f6', color: '#fff', fontSize: '10px', fontWeight: 800,
+                  borderRadius: '10px', padding: '1px 7px', minWidth: '18px', textAlign: 'center'
+                }}>{activeFilterCount}</span>
+              )}
+            </span>
+            <span className="material-symbols-outlined" style={{ fontSize: '18px', transition: 'transform 0.2s', transform: showFilters ? 'rotate(180deg)' : 'rotate(0)' }}>expand_more</span>
+          </button>
+
+          {showFilters && (
+            <div style={{ padding: '0 16px 16px', borderTop: '1px solid var(--border)' }}>
+              {/* CDV Filters */}
+              {isVoucher && (
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'flex-end', paddingTop: '12px' }}>
+                  <div className="form-group" style={{ margin: 0, minWidth: '140px' }}>
+                    <label className="form-label">Check No.</label>
+                    <input type="text" className="form-input" placeholder="e.g. 001234" value={filterCkNo} onChange={e => setFilterCkNo(e.target.value)} />
+                  </div>
+                  <div className="form-group" style={{ margin: 0, minWidth: '140px' }}>
+                    <label className="form-label">CDV No.</label>
+                    <input type="text" className="form-input" placeholder="e.g. CDV-001" value={filterCdvNo} onChange={e => setFilterCdvNo(e.target.value)} />
+                  </div>
+                  <div className="form-group" style={{ margin: 0, minWidth: '180px' }}>
+                    <label className="form-label">Payee</label>
+                    <input type="text" className="form-input" placeholder="Search payee..." value={filterPayee} onChange={e => setFilterPayee(e.target.value)} />
+                  </div>
+                  <div className="form-group" style={{ margin: 0, minWidth: '140px' }}>
+                    <label className="form-label">Account Code</label>
+                    <input type="text" className="form-input" placeholder="e.g. 1010" value={filterAcctCode} onChange={e => setFilterAcctCode(e.target.value)} />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', paddingBottom: '2px' }}>
+                    <input type="checkbox" id="pickModeVoucher" checked={pickMode} onChange={e => { setPickMode(e.target.checked); if (!e.target.checked) setSelectedVoucherIds(new Set()) }} />
+                    <label htmlFor="pickModeVoucher" style={{ fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Manual Pick</label>
+                  </div>
+                  {activeFilterCount > 0 && (
+                    <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '11px' }} onClick={clearAllFilters}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span> Clear All
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Journal Filters */}
+              {isTransactional && (
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'flex-end', paddingTop: '12px' }}>
+                  <div className="form-group" style={{ margin: 0, minWidth: '140px' }}>
+                    <label className="form-label">Reference No.</label>
+                    <input type="text" className="form-input" placeholder="e.g. JV-001" value={filterRefNo} onChange={e => setFilterRefNo(e.target.value)} />
+                  </div>
+                  <div className="form-group" style={{ margin: 0, minWidth: '140px' }}>
+                    <label className="form-label">Account Code</label>
+                    <input type="text" className="form-input" placeholder="e.g. 1010" value={filterJournalAcct} onChange={e => setFilterJournalAcct(e.target.value)} />
+                  </div>
+                  <div className="form-group" style={{ margin: 0, minWidth: '110px' }}>
+                    <label className="form-label">Min Amount</label>
+                    <input type="number" className="form-input" placeholder="0.00" value={filterMinAmt} onChange={e => setFilterMinAmt(e.target.value)} />
+                  </div>
+                  <div className="form-group" style={{ margin: 0, minWidth: '110px' }}>
+                    <label className="form-label">Max Amount</label>
+                    <input type="number" className="form-input" placeholder="999999" value={filterMaxAmt} onChange={e => setFilterMaxAmt(e.target.value)} />
+                  </div>
+                  <div className="form-group" style={{ margin: 0, minWidth: '100px' }}>
+                    <label className="form-label">Type</label>
+                    <select className="form-input" value={filterDC} onChange={e => setFilterDC(e.target.value as 'all'|'D'|'C')}>
+                      <option value="all">All</option>
+                      <option value="D">Debit Only</option>
+                      <option value="C">Credit Only</option>
+                    </select>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', paddingBottom: '2px' }}>
+                    <input type="checkbox" id="pickModeJournal" checked={journalPickMode} onChange={e => { setJournalPickMode(e.target.checked); if (!e.target.checked) setSelectedJournalIds(new Set()) }} />
+                    <label htmlFor="pickModeJournal" style={{ fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Manual Pick</label>
+                  </div>
+                  {activeFilterCount > 0 && (
+                    <button className="btn btn-secondary" style={{ padding: '4px 12px', fontSize: '11px' }} onClick={clearAllFilters}>
+                      <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span> Clear All
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Filter summary */}
+              {activeFilterCount > 0 && (
+                <div style={{ marginTop: '10px', fontSize: '11px', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px', verticalAlign: 'middle', marginRight: '4px' }}>filter_list</span>
+                  Showing {isVoucher ? `${filteredMasters.length} of ${voucherMasters.length} voucher(s)` : `${filteredJournalRows.length} of ${journalRows.length} record(s)`} matching your filters.
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {error && (
         <div style={{ padding: '10px', background: '#fee2e2', color: '#991b1b', borderRadius: '4px', marginBottom: '16px', fontSize: '13px' }}>
           {error}
@@ -615,11 +780,17 @@ export default function FSReports() {
       {!loading && isTransactional && (
         <div style={{ overflowX: 'auto' }}>
           <p className="subtitle" style={{ marginBottom: '8px' }}>
-            {journalRows.length} record(s) | {periodLabel}
+            {filteredJournalRows.length} record(s){filteredJournalRows.length !== journalRows.length ? ` (filtered from ${journalRows.length})` : ''} | {periodLabel}
           </p>
           <table className="data-table">
             <thead>
               <tr>
+                {journalPickMode && <th style={{ width: '32px' }}>
+                  <input type="checkbox" checked={filteredJournalRows.length > 0 && filteredJournalRows.every(r => selectedJournalIds.has(r.id))} onChange={e => {
+                    if (e.target.checked) setSelectedJournalIds(new Set(filteredJournalRows.map(r => r.id)))
+                    else setSelectedJournalIds(new Set())
+                  }} />
+                </th>}
                 <th style={{ width: '44px' }}>Ln</th>
                 <th>Date</th><th>Reference</th><th>Description</th>
                 <th>Acct#</th>
@@ -628,10 +799,19 @@ export default function FSReports() {
               </tr>
             </thead>
             <tbody>
-              {journalRows.length === 0 ? (
-                <tr><td colSpan={7} style={{ fontFamily: "'Consolas', monospace", padding: '8px 12px' }}>No records to print...</td></tr>
-              ) : journalRows.map((r, idx) => (
-                <tr key={r.id}>
+              {filteredJournalRows.length === 0 ? (
+                <tr><td colSpan={journalPickMode ? 8 : 7} style={{ fontFamily: "'Consolas', monospace", padding: '8px 12px' }}>No records to print...</td></tr>
+              ) : filteredJournalRows.map((r, idx) => (
+                <tr key={r.id} style={journalPickMode && selectedJournalIds.has(r.id) ? { background: 'rgba(59,130,246,0.08)' } : undefined}>
+                  {journalPickMode && (
+                    <td style={{ width: '32px', textAlign: 'center' }}>
+                      <input type="checkbox" checked={selectedJournalIds.has(r.id)} onChange={e => {
+                        const next = new Set(selectedJournalIds)
+                        if (e.target.checked) next.add(r.id); else next.delete(r.id)
+                        setSelectedJournalIds(next)
+                      }} />
+                    </td>
+                  )}
                   <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace" }}>{idx + 1}</td>
                   <td>{fmtDate(r.jDate)}</td>
                   <td style={{ fontFamily: "'Consolas', monospace" }}>{r.jJvNo}</td>
@@ -646,7 +826,7 @@ export default function FSReports() {
                 </tr>
               ))}
             </tbody>
-            {journalRows.length > 0 && (
+            {filteredJournalRows.length > 0 && (
               <tfoot>
                 <tr>
                   <td colSpan={5} style={{ fontWeight: 700 }}>Totals</td>
@@ -671,11 +851,17 @@ export default function FSReports() {
       {!loading && type === 'cdv' && (
         <div style={{ overflowX: 'auto' }}>
           <p className="subtitle" style={{ marginBottom: '12px' }}>
-            {voucherMasters.length} voucher(s) | {periodLabel}
+            {filteredMasters.length} voucher(s){filteredMasters.length !== voucherMasters.length ? ` (filtered from ${voucherMasters.length})` : ''} | {periodLabel}
           </p>
           <table className="data-table">
             <thead>
               <tr>
+                {pickMode && <th style={{ width: '32px' }}>
+                  <input type="checkbox" checked={filteredMasters.length > 0 && filteredMasters.every(m => selectedVoucherIds.has(m.id))} onChange={e => {
+                    if (e.target.checked) setSelectedVoucherIds(new Set(filteredMasters.map(m => m.id)))
+                    else setSelectedVoucherIds(new Set())
+                  }} />
+                </th>}
                 <th>Date</th>
                 <th>CDV No.</th>
                 <th>Payee</th>
@@ -685,16 +871,25 @@ export default function FSReports() {
               </tr>
             </thead>
             <tbody>
-              {voucherMasters.length === 0 ? (
-                <tr><td colSpan={6} style={{ fontFamily: "'Consolas', monospace" }}>No records to print...</td></tr>
-              ) : voucherMasters.map(master => {
+              {filteredMasters.length === 0 ? (
+                <tr><td colSpan={pickMode ? 7 : 6} style={{ fontFamily: "'Consolas', monospace" }}>No records matching filters...</td></tr>
+              ) : filteredMasters.map(master => {
                 const lines = voucherLines.filter(l => l.jCkNo === master.jCkNo)
                 const linDebit  = lines.filter(l => l.jDOrC.toUpperCase() === 'D').reduce((s, l) => s + l.jCkAmt, 0)
                 const linCredit = lines.filter(l => l.jDOrC.toUpperCase() === 'C').reduce((s, l) => s + l.jCkAmt, 0)
                 return (
                   <Fragment key={master.id}>
                     {/* Master Header Row */}
-                    <tr style={{ borderTop: '2px solid var(--border)'  }}>
+                    <tr style={{ borderTop: '2px solid var(--border)', ...(pickMode && selectedVoucherIds.has(master.id) ? { background: 'rgba(59,130,246,0.08)' } : {}) }}>
+                      {pickMode && (
+                        <td style={{ textAlign: 'center' }}>
+                          <input type="checkbox" checked={selectedVoucherIds.has(master.id)} onChange={e => {
+                            const next = new Set(selectedVoucherIds)
+                            if (e.target.checked) next.add(master.id); else next.delete(master.id)
+                            setSelectedVoucherIds(next)
+                          }} />
+                        </td>
+                      )}
                       <td>{fmtDate(master.jDate)}</td>
                       <td style={{ fontFamily: "'Consolas', monospace", fontWeight: 600 }}>{master.jJvNo}</td>
                       <td style={{ fontWeight: 600 }}>{master.jPayTo}</td>
@@ -747,10 +942,10 @@ export default function FSReports() {
                 )
               })}
             </tbody>
-            {voucherMasters.length > 0 && (
+            {filteredMasters.length > 0 && (
               <tfoot>
                 <tr>
-                  <td colSpan={4} style={{ fontWeight: 700, fontSize: '14px', paddingTop: '16px' }}>GRAND TOTAL &rarr;</td>
+                  <td colSpan={pickMode ? 5 : 4} style={{ fontWeight: 700, fontSize: '14px', paddingTop: '16px' }}>GRAND TOTAL &rarr;</td>
                   <td style={{ textAlign: 'right', fontFamily: "'Consolas', monospace", fontWeight: 700, fontSize: '14px', paddingTop: '16px' }}>
                     {fmt(voucherMasters.reduce((s, m) => {
                       const lines = voucherLines.filter(l => l.jCkNo === m.jCkNo);
