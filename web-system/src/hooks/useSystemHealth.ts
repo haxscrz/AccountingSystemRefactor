@@ -17,6 +17,17 @@ export interface TelemetryData {
   totalCompanies: number
   tableRowCounts: Record<string, number>
   recentAuditEvents: number
+  auditByHour: number[]
+  recentLogs: {
+    id: number
+    username: string | null
+    eventType: string
+    resource: string
+    success: boolean
+    ipAddress: string | null
+    details: string | null
+    createdAtUtc: string
+  }[]
 }
 
 export function useSystemHealth(pollIntervalMs = 30000) {

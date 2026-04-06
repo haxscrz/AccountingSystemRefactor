@@ -2,6 +2,83 @@ import { useState, useEffect } from 'react'
 import { useSettingsStore } from '../stores/settingsStore'
 import { useSystemHealth, useSystemTelemetry } from '../hooks/useSystemHealth'
 
+function humanizeAudit(
+  eventType: string, resource: string, success: boolean,
+  details: string | null, username: string | null
+): string {
+  const user = username ?? 'Unknown user'
+  const evt = eventType.toLowerCase()
+
+  // Login / logout / refresh
+  if (evt === 'login' && success) return `${user} signed in successfully`
+  if (evt === 'login' && !success) {
+    if (details?.includes('Locked out')) return `${user} was locked out after too many attempts`
+    if (details?.includes('Invalid password')) return `${user} entered an incorrect password`
+    if (details?.includes('Unknown')) return `Sign-in attempt with unknown username "${username ?? ''}"`
+    return `${user} failed to sign in`
+  }
+  if (evt === 'logout') return `${user} signed out`
+  if (evt === 'refresh') return `${user}'s session was refreshed`
+
+  // Data operations
+  if (evt === 'create') return `${user} created a new record in ${friendlyResource(resource)}`
+  if (evt === 'update') return `${user} updated a record in ${friendlyResource(resource)}`
+  if (evt === 'delete') return `${user} deleted a record from ${friendlyResource(resource)}`
+  if (evt === 'post') return `${user} posted transactions in ${friendlyResource(resource)}`
+  if (evt === 'import') return `${user} imported data into ${friendlyResource(resource)}`
+  if (evt === 'export') return `${user} exported data from ${friendlyResource(resource)}`
+  if (evt === 'backup') return `${user} created a database backup`
+  if (evt === 'month-end') return `${user} ran month-end processing`
+
+  // Fallback — strip SQL/technical content
+  if (details && (details.includes('SELECT') || details.includes('INSERT') || details.includes('UPDATE') || details.includes('DELETE'))) {
+    return `${user} performed a ${evt} operation on ${friendlyResource(resource)}`
+  }
+
+  // Generic
+  const plainDetails = details && details.length < 80 && !details.includes('SELECT') ? ` — ${details}` : ''
+  return `${user} performed "${evt}" on ${friendlyResource(resource)}${plainDetails}`
+}
+
+function friendlyResource(resource: string): string {
+  if (!resource) return 'the system'
+  // Strip API prefix
+  const r = resource.replace(/^\/api\/(fs|admin|auth|health|payroll)\//, '')
+  const map: Record<string, string> = {
+    'login': 'authentication',
+    'logout': 'session',
+    'refresh': 'session',
+    'checkmas': 'Check Disbursement',
+    'checkvou': 'Check Vouchers',
+    'cashrcpt': 'Cash Receipts',
+    'salebook': 'Sales Book',
+    'purcbook': 'Purchase Book',
+    'journals': 'Journal Vouchers',
+    'adjstmnt': 'Adjustments',
+    'accounts': 'Chart of Accounts',
+    'posting': 'Transaction Posting',
+    'month-end': 'Month-End Processing',
+    'audit-logs': 'Audit Logs',
+    'users': 'User Management',
+    'backup': 'Database Backup',
+  }
+  for (const [key, label] of Object.entries(map)) {
+    if (r.includes(key)) return label
+  }
+  return r.split('/')[0] || 'the system'
+}
+
+function getTimeAgo(utcStr: string): string {
+  const diff = Date.now() - new Date(utcStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
+}
+
 function AnimatedNumber({ value, suffix = '', decimals = 0 }: { value: number; suffix?: string; decimals?: number }) {
   const [display, setDisplay] = useState(0)
   useEffect(() => {
@@ -283,32 +360,75 @@ export default function SystemHealth() {
 
           {/* Audit & Table Row Counts */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Audit Trail */}
-            <div className={card}>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="material-symbols-outlined text-amber-500 text-[20px]">security</span>
-                <div className={label}>AUDIT EVENTS (24H)</div>
+            {/* Audit Trail — Hourly Bar Chart */}
+            <div className={`${card} lg:col-span-2`}>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-amber-500 text-[20px]">security</span>
+                  <div className={label}>AUDIT EVENTS (24H)</div>
+                </div>
+                <span className={`text-2xl font-black font-mono ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>
+                  <AnimatedNumber value={telemetry.recentAuditEvents} />
+                </span>
               </div>
-              <span className={`text-4xl font-black font-mono ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>
-                <AnimatedNumber value={telemetry.recentAuditEvents} />
-              </span>
+              {/* Hourly bar chart */}
+              {telemetry.auditByHour && telemetry.auditByHour.length > 0 ? (() => {
+                const data = telemetry.auditByHour
+                const maxVal = Math.max(...data, 1)
+                const nowHour = new Date().getHours()
+                return (
+                  <div className="flex items-end gap-[3px]" style={{ height: '80px' }}>
+                    {data.map((count, hour) => {
+                      const pct = (count / maxVal) * 100
+                      const isCurrent = hour === nowHour
+                      return (
+                        <div
+                          key={hour}
+                          className="flex-1 rounded-t-sm transition-all relative group cursor-pointer"
+                          style={{
+                            height: `${Math.max(pct, 2)}%`,
+                            background: isCurrent
+                              ? 'linear-gradient(to top, #f59e0b, #fbbf24)'
+                              : darkMode ? 'rgba(251,191,36,0.25)' : 'rgba(245,158,11,0.2)',
+                            minWidth: '4px'
+                          }}
+                          title={`${String(hour).padStart(2,'0')}:00 — ${count} event${count !== 1 ? 's' : ''}`}
+                        >
+                          {isCurrent && (
+                            <div className={`absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] font-bold ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>
+                              {count}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })() : (
+                <div className={`text-sm ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>No audit data available</div>
+              )}
+              <div className="flex justify-between mt-1.5">
+                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>00:00</span>
+                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>12:00</span>
+                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>23:00</span>
+              </div>
             </div>
 
             {/* Table Row Counts */}
-            <div className={`${card} lg:col-span-2`}>
+            <div className={card}>
               <div className="flex items-center gap-3 mb-4">
                 <span className={`material-symbols-outlined text-[20px] ${darkMode ? 'text-gray-400' : 'text-slate-500'}`}>table_chart</span>
-                <div className={label}>DATABASE TABLE ROWS</div>
+                <div className={label}>DB TABLE ROWS</div>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 {Object.entries(telemetry.tableRowCounts).map(([table, count]) => {
                   const shortName = table.replace('fs_', '').replace('pay_', 'P:')
                   return (
-                    <div key={table} className={`px-3 py-2.5 rounded-xl ${darkMode ? 'bg-gray-800/60' : 'bg-slate-50'}`}>
-                      <div className={`text-[9px] font-bold uppercase tracking-widest truncate ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>
+                    <div key={table} className={`px-2.5 py-2 rounded-xl ${darkMode ? 'bg-gray-800/60' : 'bg-slate-50'}`}>
+                      <div className={`text-[8px] font-bold uppercase tracking-widest truncate ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>
                         {shortName}
                       </div>
-                      <div className={`text-lg font-black font-mono ${darkMode ? 'text-gray-200' : 'text-slate-700'}`}>
+                      <div className={`text-base font-black font-mono ${darkMode ? 'text-gray-200' : 'text-slate-700'}`}>
                         {count < 0 ? '—' : count.toLocaleString()}
                       </div>
                     </div>
@@ -317,6 +437,37 @@ export default function SystemHealth() {
               </div>
             </div>
           </div>
+
+          {/* Recent Audit Log Feed */}
+          {telemetry.recentLogs && telemetry.recentLogs.length > 0 && (
+            <div className={card}>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="material-symbols-outlined text-blue-500 text-[20px]">history</span>
+                <div className={label}>RECENT ACTIVITY</div>
+              </div>
+              <div className="space-y-1 max-h-[320px] overflow-y-auto">
+                {telemetry.recentLogs.map(log => {
+                  const humanDetail = humanizeAudit(log.eventType, log.resource, log.success, log.details, log.username)
+                  const timeAgo = getTimeAgo(log.createdAtUtc)
+                  return (
+                    <div key={log.id} className={`flex items-start gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                      darkMode ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50'
+                    }`}>
+                      <div className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${log.success ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className={`text-sm leading-snug ${darkMode ? 'text-gray-200' : 'text-slate-700'}`}>
+                          {humanDetail}
+                        </div>
+                        <div className={`text-[10px] mt-0.5 ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>
+                          {timeAgo} · {log.ipAddress ?? 'unknown IP'}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </>
       )}
 

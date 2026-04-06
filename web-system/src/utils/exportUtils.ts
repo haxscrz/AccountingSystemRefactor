@@ -94,10 +94,17 @@ function drawPdfFooter(doc: jsPDF, pageNumber: number) {
   )
 }
 
-function buildColStyles(cols: ExportCol[]): Record<number, object> {
+function buildColStyles(cols: ExportCol[], pageUsableMm = 190): Record<number, object> {
   const styles: Record<number, object> = {}
+  const totalWidth = cols.reduce((s, c) => s + (c.width ?? 14), 0)
   cols.forEach((c, i) => {
-    if (c.numeric) styles[i] = { halign: 'right' }
+    const props: Record<string, unknown> = {}
+    if (c.numeric) props.halign = 'right'
+    // Proportional width in mm for PDF autoTable
+    if (c.width && totalWidth > 0) {
+      props.cellWidth = (c.width / totalWidth) * pageUsableMm
+    }
+    if (Object.keys(props).length > 0) styles[i] = props
   })
   return styles
 }
@@ -281,7 +288,7 @@ export function exportTablePDF(
       fontSize: 8
     },
     alternateRowStyles: { fillColor: PDF_STRIPE_COLOR },
-    columnStyles: buildColStyles(cols),
+    columnStyles: buildColStyles(cols, landscape ? 332 : 188),
     margin: { left: 14, right: 14 },
     willDrawCell: (data) => {
       if (data.section === 'body' && data.row.index === footerRowIdx) {
@@ -357,7 +364,7 @@ export function exportFinancialPDF(
         fontSize: 7.5
       },
       alternateRowStyles: { fillColor: PDF_STRIPE_COLOR },
-      columnStyles: buildColStyles(sec.cols),
+      columnStyles: buildColStyles(sec.cols, 188),
       margin: { left: margin, right: margin },
       willDrawCell: (data) => {
         if (data.section === 'body' && data.row.index === footerIdx) {

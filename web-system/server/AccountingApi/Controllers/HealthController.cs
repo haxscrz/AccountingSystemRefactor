@@ -92,9 +92,11 @@ public class HealthController : ControllerBase
     {
         var totalUsers = await _db.AppUsers.CountAsync();
         
-        // Count active sessions (refresh tokens not expired)
+        // Count active sessions — distinct users with non-expired, non-revoked tokens
         var activeSessionCount = await _db.AppRefreshTokens
             .Where(t => t.RevokedAtUtc == null && t.ExpiresAtUtc > DateTime.UtcNow)
+            .Select(t => t.UserId)
+            .Distinct()
             .CountAsync();
 
         // Company count
@@ -148,13 +150,42 @@ public class HealthController : ControllerBase
             .Where(l => l.CreatedAtUtc >= since)
             .CountAsync();
 
+        // Hourly audit histogram (last 24 hours)
+        var auditHourly = await _db.AppAuditLogs
+            .Where(l => l.CreatedAtUtc >= since)
+            .GroupBy(l => l.CreatedAtUtc.Hour)
+            .Select(g => new { Hour = g.Key, Count = g.Count() })
+            .ToListAsync();
+        var auditByHour = new int[24];
+        foreach (var h in auditHourly)
+            auditByHour[h.Hour] = h.Count;
+
+        // Recent audit log entries (last 20) with humanized details
+        var recentLogs = await _db.AppAuditLogs
+            .OrderByDescending(l => l.CreatedAtUtc)
+            .Take(20)
+            .Select(l => new
+            {
+                l.Id,
+                l.Username,
+                l.EventType,
+                l.Resource,
+                l.Success,
+                l.IpAddress,
+                l.Details,
+                l.CreatedAtUtc
+            })
+            .ToListAsync();
+
         return Ok(new
         {
             activeSessionCount,
             totalUsers,
             totalCompanies,
             tableRowCounts = rowCounts,
-            recentAuditEvents
+            recentAuditEvents,
+            auditByHour,
+            recentLogs
         });
     }
 }

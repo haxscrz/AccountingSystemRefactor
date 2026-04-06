@@ -370,12 +370,12 @@ export default function FSReports() {
 
     if (type === 'cdv') {
       const cols: ExportCol[] = [
-        { header: 'Date',        key: 'jDateStr',  width: 14 },
+        { header: 'Date',        key: 'jDateStr',  width: 18 },
         { header: 'CDV No.',     key: 'jJvNo',     width: 15 },
-        { header: 'Payee',       key: 'jPayTo',    width: 32 },
-        { header: 'Sup#',        key: 'supNo',     width: 15 },
-        { header: 'Bank#',       key: 'bankNo',    width: 22, numeric: true },
-        { header: 'Check No.',   key: 'jCkNo',     width: 22, numeric: true },
+        { header: 'Payee',       key: 'jPayTo',    width: 44 },
+        { header: 'Sup#',        key: 'supNo',     width: 10 },
+        { header: 'Bank#',       key: 'bankNo',    width: 18, numeric: true },
+        { header: 'Check No.',   key: 'jCkNo',     width: 18, numeric: true },
       ]
       
       const rows: any[] = []

@@ -13,6 +13,42 @@ interface AuditLog {
   createdAtUtc: string
 }
 
+function humanizeResource(resource: string): string {
+  if (!resource) return '—'
+  const r = resource.replace(/^\/api\/(fs|admin|auth|health|payroll)\//, '')
+  const map: Record<string, string> = {
+    'login': 'Sign In', 'logout': 'Sign Out', 'refresh': 'Session Refresh',
+    'checkmas': 'Check Disbursement', 'checkvou': 'Check Vouchers',
+    'cashrcpt': 'Cash Receipts', 'salebook': 'Sales Book',
+    'purcbook': 'Purchase Book', 'journals': 'Journal Vouchers',
+    'adjstmnt': 'Adjustments', 'accounts': 'Chart of Accounts',
+    'posting': 'Post Transactions', 'month-end': 'Month-End Processing',
+    'audit-logs': 'Audit Logs', 'users': 'User Management',
+    'backup': 'Database Backup', 'seed': 'Database Seed',
+  }
+  for (const [key, label] of Object.entries(map)) {
+    if (r.includes(key)) return label
+  }
+  return r.split('/')[0] || resource
+}
+
+function humanizeDetail(_eventType: string, detail: string | null, success: boolean): string {
+  if (!detail) return success ? 'Completed successfully' : 'Operation failed'
+  const d = detail.trim()
+  // Strip SQL queries
+  if (d.includes('SELECT ') || d.includes('INSERT ') || d.includes('UPDATE ') || d.includes('DELETE ')) {
+    return success ? 'Database operation completed' : 'Database operation failed'
+  }
+  // Known messages
+  if (d.includes('Unknown or inactive user')) return 'Unknown or inactive username entered'
+  if (d.includes('Invalid password')) return 'Incorrect password entered'
+  if (d.includes('Locked out')) return 'Account locked due to too many failed attempts'
+  // If it's already short and readable, return as-is
+  if (d.length <= 100 && !d.includes('{') && !d.includes('[')) return d
+  // Truncate very long technical text
+  return d.substring(0, 80) + '…'
+}
+
 function toCsv(rows: AuditLog[]): string {
   const header = ['ID', 'Username', 'EventType', 'Resource', 'Success', 'IP', 'Details', 'CreatedAtUtc']
   const body = rows.map((r) => [
@@ -182,14 +218,14 @@ export default function FSAuditLogs() {
                   <td className="px-5 py-3 text-on-surface-variant whitespace-nowrap">{new Date(r.createdAtUtc).toLocaleString()}</td>
                   <td className="px-5 py-3 font-medium text-on-surface">{r.username ?? 'system'}</td>
                   <td className="px-5 py-3 text-on-surface-variant">{r.eventType}</td>
-                  <td className="px-5 py-3 font-mono text-xs text-primary">{r.resource}</td>
+                  <td className="px-5 py-3 text-on-surface-variant">{humanizeResource(r.resource)}</td>
                   <td className="px-5 py-3">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider ${r.success ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
                       {r.success ? 'Success' : 'Failed'}
                     </span>
                   </td>
                   <td className="px-5 py-3 font-mono text-xs text-on-surface-variant">{r.ipAddress ?? '—'}</td>
-                  <td className="px-5 py-3 text-on-surface-variant truncate max-w-[200px]" title={r.details ?? ''}>{r.details ?? '—'}</td>
+                  <td className="px-5 py-3 text-on-surface-variant truncate max-w-[260px]" title={r.details ?? ''}>{humanizeDetail(r.eventType, r.details, r.success)}</td>
                 </tr>
               ))}
             </tbody>
