@@ -274,7 +274,7 @@ export default function Login() {
 
           {/* Version Footnote */}
           <div className="mt-8 flex justify-center items-center px-2">
-            <span className={`text-[10px] font-bold font-mono uppercase tracking-tighter ${darkMode ? 'text-gray-500' : 'text-on-surface-variant'}`}>V 3.3.0-UI</span>
+            <span className={`text-[10px] font-bold font-mono uppercase tracking-tighter ${darkMode ? 'text-gray-500' : 'text-on-surface-variant'}`}>V 3.8.0-Feature Fixes</span>
           </div>
         </div>
       </main>
