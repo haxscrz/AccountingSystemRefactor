@@ -3,6 +3,7 @@ import { useAuthStore } from './stores/authStore'
 import { useCompanyStore } from './stores/companyStore'
 import { useSettingsStore } from './stores/settingsStore'
 import InactivityToast from './components/InactivityToast'
+import EasterEgg from './components/EasterEgg'
 import Login from './pages/Login'
 import CompanySelection from './pages/CompanySelection'
 import Dashboard from './pages/Dashboard'
@@ -21,6 +22,7 @@ function AppContent() {
   return (
     <>
       <InactivityToast />
+      <EasterEgg />
       <Routes>
         <Route path="/login" element={isAuthenticated ? <Navigate to="/system-options" /> : <Login />} />
         
