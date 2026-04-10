@@ -191,32 +191,28 @@ function InteractiveTimeline({ logs, darkMode }: { logs: any[], darkMode: boolea
   const [hoverData, setHoverData] = useState<{ x: number, y: number, px: number, log: any } | null>(null)
   
   if (!logs || logs.length === 0) {
-    return <div className={`text-sm ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>No recent logs</div>
+    return <div className={`text-sm py-4 ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>No recent audit activity for this period</div>
   }
 
   // Reverse so oldest is first (left to right)
   const sortedLogs = [...logs].reverse()
-  const h = 90
+  const h = 140
 
-  // We map the X axis across the pure 24-hour day
-  const now = new Date()
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
-  const endOfDay = startOfDay + 24 * 60 * 60 * 1000
-
-  const getPercentX = (ts: string) => {
-    const t = new Date(ts.endsWith('Z') ? ts : ts + 'Z').getTime()
-    return Math.max(0, Math.min(100, ((t - startOfDay) / (endOfDay - startOfDay)) * 100))
+  // Distribute X evenly based on sequence index to avoid clumping
+  const getPercentX = (i: number) => {
+    if (sortedLogs.length <= 1) return 50
+    return (i / (sortedLogs.length - 1)) * 100
   }
 
-  const getYPercent = (log: any, i: number) => {
+  // Y axis creates visual "swimlanes" by category
+  const getYPercent = (log: any) => {
     const evt = (log.eventType || '').toLowerCase()
-    let base = 50
-    if (evt === 'login' || evt === 'logout') base = 20
-    else if (evt === 'create' || evt === 'delete') base = 80
-    
-    // Slight stagger so multiple rapid events don't totally eclipse each other
-    const stagger = (i % 3 - 1) * 10
-    return Math.max(10, Math.min(90, base + stagger))
+    // Data modification lane (Top)
+    if (evt.includes('create') || evt.includes('delete') || evt.includes('update') || evt.includes('restore') || evt.includes('post') || evt.includes('import')) return 20 
+    // Auth & Identity lane (Bottom)
+    if (evt.includes('login') || evt.includes('refresh') || evt.includes('logout')) return 80 
+    // General / System lane (Middle)
+    return 50 
   }
 
   const handleNodeClick = (logId: number) => {
@@ -229,25 +225,53 @@ function InteractiveTimeline({ logs, darkMode }: { logs: any[], darkMode: boolea
   }
 
   return (
-    <div className="relative group w-full px-2" style={{ height: h }}>
-      {/* Background Grid Lines representing quarters of the day */}
-      <div className="absolute inset-0 flex justify-between pointer-events-none opacity-20" style={{ zIndex: 0 }}>
-        {[0, 1, 2, 3, 4].map(idx => (
-          <div key={idx} className={`h-full w-px border-l border-dashed ${darkMode ? 'border-gray-500' : 'border-slate-400'}`} />
-        ))}
+    <div className="relative group w-full px-4 mt-2" style={{ height: h }}>
+      {/* Swimlane Labels & Background Grid */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        {/* Data Mod Lane */}
+        <div className={`absolute top-[20%] left-0 w-full border-t border-dashed -translate-y-1/2 ${darkMode ? 'border-gray-700/60' : 'border-slate-200'} transition-colors`} />
+        <span className={`absolute top-[20%] right-full mr-2 -translate-y-1/2 text-[9px] font-bold tracking-widest text-right w-20 leading-tight ${darkMode ? 'text-blue-500' : 'text-blue-600'}`}>DATA ACTION</span>
+        
+        {/* General Lane */}
+        <div className={`absolute top-[50%] left-0 w-full border-t border-dashed -translate-y-1/2 ${darkMode ? 'border-gray-700/60' : 'border-slate-200'} transition-colors`} />
+        <span className={`absolute top-[50%] right-full mr-2 -translate-y-1/2 text-[9px] font-bold tracking-widest text-right w-20 leading-tight ${darkMode ? 'text-amber-500' : 'text-amber-600'}`}>SYSTEM</span>
+        
+        {/* Auth Lane */}
+        <div className={`absolute top-[80%] left-0 w-full border-t border-dashed -translate-y-1/2 ${darkMode ? 'border-gray-700/60' : 'border-slate-200'} transition-colors`} />
+        <span className={`absolute top-[80%] right-full mr-2 -translate-y-1/2 text-[9px] font-bold tracking-widest text-right w-20 leading-tight ${darkMode ? 'text-emerald-500' : 'text-emerald-600'}`}>IDENTITY</span>
       </div>
       
-      {/* Container for SVGs and tooltips */}
-      <div className="relative w-full h-full z-10" 
-           onMouseLeave={() => setHoverData(null)}>
+      {/* Connecting Sequence Line */}
+      <div className="absolute inset-x-4 top-0 h-full pointer-events-none" style={{ zIndex: 5 }}>
+        <svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
+           <polyline 
+             points={sortedLogs.map((log, i) => `${getPercentX(i)}% ${getYPercent(log)}%`).join(', ')}
+             fill="none"
+             stroke={darkMode ? '#475569' : '#cbd5e1'}
+             strokeWidth="2"
+             strokeLinecap="round"
+             strokeLinejoin="round"
+             className="opacity-40"
+           />
+        </svg>
+      </div>
+
+      {/* Nodes Container */}
+      <div className="relative w-full h-full z-10" onMouseLeave={() => setHoverData(null)}>
         {sortedLogs.map((log, i) => {
-          const px = getPercentX(log.createdAtUtc)
-          const py = getYPercent(log, i)
-          const fill = log.success ? (darkMode ? '#10b981' : '#10b981') : (darkMode ? '#ef4444' : '#ef4444')
+          const px = getPercentX(i)
+          const py = getYPercent(log)
+          // Default colors based on lane, overwrite to red if failed
+          let fill = darkMode ? '#3b82f6' : '#2563eb' // data action blue
+          if (py === 80) fill = darkMode ? '#10b981' : '#059669' // identity green
+          else if (py === 50) fill = darkMode ? '#f59e0b' : '#d97706' // system amber
+          
+          if (!log.success) fill = darkMode ? '#ef4444' : '#dc2626' // failure red
+
           return (
             <div
               key={log.id}
-              className={`absolute w-3 h-3 -ml-1.5 -mt-1.5 rounded-full cursor-pointer transition-transform duration-200 hover:scale-150 ring-2 ${darkMode ? 'ring-[#1e293b]' : 'ring-white'}`}
+              className={`absolute w-[14px] h-[14px] -ml-[7px] -mt-[7px] rounded-full cursor-pointer transition-all duration-300 hover:scale-150 ring-4 ${!log.success ? 'animate-pulse' : ''} ${darkMode ? 'ring-[#1e293b] hover:ring-white' : 'ring-white shadow-sm hover:ring-slate-800'}`}
               style={{ left: `${px}%`, top: `${py}%`, backgroundColor: fill }}
               onMouseEnter={(e) => {
                 const rect = (e.target as HTMLElement).parentElement?.getBoundingClientRect()
@@ -263,25 +287,30 @@ function InteractiveTimeline({ logs, darkMode }: { logs: any[], darkMode: boolea
       {/* Tooltip Overlay */}
       {hoverData && (
         <div 
-          className={`absolute pointer-events-none transform -translate-x-1/2 -translate-y-full z-50 p-3 rounded-xl shadow-xl border w-64 backdrop-blur-md transition-all ${
-            darkMode ? 'bg-[#1e293b]/95 border-gray-600 text-white' : 'bg-white/95 border-slate-200 text-slate-800'
+          className={`absolute pointer-events-none transform -translate-x-1/2 -translate-y-full z-50 p-3 flex flex-col rounded-xl shadow-xl border w-64 backdrop-blur-xl transition-[opacity,transform] duration-150 ease-out ${
+            darkMode ? 'bg-[#0f172a]/95 border-gray-700/80 text-white' : 'bg-white/95 border-slate-200/80 text-slate-800'
           }`}
           style={{ 
             left: `${hoverData.x}%`, 
-            top: `calc(${hoverData.y}% - 12px)`,
-            // Prevent tooltip from overflowing screen left/right
+            top: `calc(${hoverData.y}% - 14px)`,
+            // Prevent tooltip from overflowing screen
             transform: hoverData.px < 130 ? 'translate(0%, -100%)' : (hoverData.px > (window.innerWidth - 130) ? 'translate(-100%, -100%)' : 'translate(-50%, -100%)')
           }}
         >
-          <div className="flex items-center gap-2 mb-1.5">
-            <div className={`w-2 h-2 rounded-full ${hoverData.log.success ? 'bg-emerald-500' : 'bg-red-500'}`} />
-            <span className="text-[10px] font-bold uppercase tracking-wider">{hoverData.log.eventType}</span>
+          <div className="flex items-center gap-2 mb-2">
+            <div className={`w-2 h-2 rounded-full shadow-inner ${hoverData.log.success ? 'bg-emerald-500' : 'bg-red-500 animate-pulse'}`} />
+            <span className="text-[10px] font-bold uppercase tracking-widest">{hoverData.log.eventType}</span>
           </div>
-          <div className="text-sm font-medium leading-snug line-clamp-3 mb-1.5">
+          <div className={`text-[13px] font-semibold leading-snug line-clamp-3 mb-2 ${darkMode ? 'text-gray-100' : 'text-slate-700'}`}>
              {humanizeAudit(hoverData.log.eventType, hoverData.log.resource, hoverData.log.success, hoverData.log.details, hoverData.log.username)}
           </div>
-          <div className={`text-[10px] font-mono ${darkMode ? 'text-gray-400' : 'text-slate-500'}`}>
-            {formatAuditTime(hoverData.log.createdAtUtc)}
+          <div className="flex items-center justify-between border-t border-dashed pt-2 mt-1 opacity-70">
+             <span className={`text-[10px] font-mono font-medium ${darkMode ? 'text-gray-300' : 'text-slate-500'}`}>
+                {formatAuditTime(hoverData.log.createdAtUtc)}
+             </span>
+             <span className={`text-[10px] font-mono font-medium ${darkMode ? 'text-gray-300' : 'text-slate-500'}`}>
+                {hoverData.log.ipAddress}
+             </span>
           </div>
         </div>
       )}
@@ -530,15 +559,24 @@ export default function SystemHealth() {
                   <AnimatedNumber value={telemetry.recentAuditEvents} />
                 </span>
               </div>
-              <div className="mt-4 border-b border-t py-4 relative">
+              <div className="mt-8 border-b py-2 relative pl-20 pr-4">
                  <InteractiveTimeline logs={telemetry.recentLogs || []} darkMode={darkMode} />
               </div>
-              <div className="flex justify-between mt-2 px-2">
-                <span className={`text-[9px] font-mono font-bold ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>00:00 (Midnight)</span>
-                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>06:00</span>
-                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>12:00</span>
-                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>18:00</span>
-                <span className={`text-[9px] font-mono font-bold ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>24:00</span>
+              <div className="flex justify-between mt-3 pl-20 pr-4">
+                <div className={`text-[10px] font-mono ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>
+                  Earliest Log: <strong className={darkMode ? 'text-gray-300' : 'text-slate-600'}>
+                    {telemetry.recentLogs && telemetry.recentLogs.length > 0 
+                      ? new Date(telemetry.recentLogs[telemetry.recentLogs.length - 1].createdAtUtc + 'Z').toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+                      : '—'}
+                  </strong>
+                </div>
+                <div className={`text-[10px] font-mono ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>
+                  Latest Log: <strong className={darkMode ? 'text-gray-300' : 'text-slate-600'}>
+                    {telemetry.recentLogs && telemetry.recentLogs.length > 0 
+                      ? new Date(telemetry.recentLogs[0].createdAtUtc + 'Z').toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+                      : '—'}
+                  </strong>
+                </div>
               </div>
             </div>
           </div>

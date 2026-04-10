@@ -92,10 +92,11 @@ public class HealthController : ControllerBase
     {
         var totalUsers = await _db.AppUsers.CountAsync();
         
-        // Count active sessions — distinct users with non-expired, non-revoked tokens
-        var activeSessionCount = await _db.AppRefreshTokens
-            .Where(t => t.RevokedAtUtc == null && t.ExpiresAtUtc > DateTime.UtcNow)
-            .Select(t => t.UserId)
+        // Count active sessions — distinct users who participated in the last 1 hour
+        var activeSessionCount = await _db.AppAuditLogs
+            .Where(l => l.CreatedAtUtc >= DateTime.UtcNow.AddHours(-1))
+            .Select(l => l.Username)
+            .Where(name => !string.IsNullOrEmpty(name))
             .Distinct()
             .CountAsync();
 
