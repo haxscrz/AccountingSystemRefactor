@@ -83,7 +83,7 @@ export default function CommandCenter() {
       const res = await fetch('/api/admin/users', { headers: headers() })
       if (res.ok) {
         const json = await res.json()
-        setAllUsers(json.data?.map((u: any) => u.username) || [])
+        setAllUsers(Array.isArray(json) ? json.map((u: any) => u.username) : [])
       }
     } catch {}
   }, [headers])
@@ -340,9 +340,15 @@ export default function CommandCenter() {
                 )}
                 <div>
                   <label className={labelCls}>Attach Image (optional)</label>
-                  <input type="file" accept="image/*" onChange={handleImageUpload}
-                    className={`mt-1 text-sm ${darkMode ? 'text-gray-400' : 'text-slate-500'}`}
-                  />
+                  <div className="relative group overflow-hidden mt-1 cursor-pointer">
+                    <input type="file" accept="image/*" onChange={handleImageUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <div className={`flex items-center justify-center gap-2 px-4 py-6 rounded-xl border-2 border-dashed transition-all ${darkMode ? 'border-gray-700 bg-gray-800/30 group-hover:bg-gray-800/60 group-hover:border-primary text-gray-400 group-hover:text-primary' : 'border-slate-300 bg-slate-50 group-hover:bg-slate-100 group-hover:border-primary text-slate-500 group-hover:text-primary'}`}>
+                      <span className="material-symbols-outlined text-[24px]">add_photo_alternate</span>
+                      <span className="text-sm font-semibold">Click to browse or drag an image here</span>
+                    </div>
+                  </div>
                   {newImageData && (
                     <div className="mt-2 relative inline-block">
                       <img src={newImageData} alt="Preview" className="max-h-32 rounded-xl border border-outline-variant/20" />
