@@ -668,15 +668,17 @@ app.Use(async (context, next) =>
     await next();
 });
 
-// Serve React frontend static files from wwwroot/
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
-// Audit mutating API calls (best-effort, non-blocking)
+// Audit mutating API calls — MUST be before MapControllers() to execute
 app.Use(async (context, next) =>
 {
-    var shouldAudit = context.Request.Path.StartsWithSegments("/api")
-                      && context.Request.Method is "POST" or "PUT" or "PATCH" or "DELETE";
+    var path = context.Request.Path.Value ?? "";
+    var method = context.Request.Method;
+    var isApi = path.StartsWith("/api", StringComparison.OrdinalIgnoreCase);
+    var isMutating = method is "POST" or "PUT" or "PATCH" or "DELETE";
+
+    // Skip auth endpoints (AuthController has its own explicit audit calls)
+    var isAuth = path.StartsWith("/api/auth", StringComparison.OrdinalIgnoreCase);
+    var shouldAudit = isApi && isMutating && !isAuth;
 
     await next();
 
@@ -689,21 +691,71 @@ app.Use(async (context, next) =>
         var username = context.User.Identity?.IsAuthenticated == true ? context.User.Identity?.Name : null;
         var uidClaim = context.User.FindFirst("uid")?.Value;
         _ = int.TryParse(uidClaim, out var uid);
+
+        // Derive a descriptive event type from HTTP method + URL pattern
+        var lowerPath = path.ToLowerInvariant();
+        string eventType;
+        if (lowerPath.Contains("/restore"))
+            eventType = "restore";
+        else if (lowerPath.Contains("/clone"))
+            eventType = "clone";
+        else if (lowerPath.Contains("/posting") || lowerPath.Contains("/post-all"))
+            eventType = "post";
+        else if (lowerPath.Contains("/month-end"))
+            eventType = "month-end";
+        else if (lowerPath.Contains("/backup"))
+            eventType = "backup";
+        else if (lowerPath.Contains("/import") || lowerPath.Contains("/seed"))
+            eventType = "import";
+        else if (method == "POST")
+            eventType = "create";
+        else if (method is "PUT" or "PATCH")
+            eventType = "update";
+        else if (method == "DELETE")
+            eventType = "delete";
+        else
+            eventType = "api_write";
+
+        // Derive a clean resource name from the URL
+        var resource = path;
+        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        // Typical: api / fs / vouchers / masters / {id}
+        // We want the module + entity portion
+        if (segments.Length >= 3)
+        {
+            var module = segments[1]; // fs, payroll, admin, etc.
+            var entity = segments[2]; // accounts, vouchers, journals, etc.
+            resource = $"{module}/{entity}";
+            // Append sub-entity if present and not an ID
+            if (segments.Length >= 4 && !int.TryParse(segments[3], out _))
+                resource += $"/{segments[3]}";
+        }
+
+        // Get company context if available
+        var companyCode = context.Request.Headers["X-Company-Code"].FirstOrDefault();
+        var details = $"method={method};status={context.Response.StatusCode}";
+        if (!string.IsNullOrEmpty(companyCode))
+            details += $";company={companyCode}";
+
         await audit.WriteAsync(
-            eventType: "api_write",
-            resource: context.Request.Path,
+            eventType: eventType,
+            resource: resource,
             success: context.Response.StatusCode < 400,
             userId: uid == 0 ? null : uid,
             username: username,
             ipAddress: context.Connection.RemoteIpAddress?.ToString(),
             userAgent: context.Request.Headers.UserAgent.ToString(),
-            details: $"method={context.Request.Method};status={context.Response.StatusCode}");
+            details: details);
     }
     catch
     {
         // best-effort logging only
     }
 });
+
+// Serve React frontend static files from wwwroot/
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.MapControllers();
 

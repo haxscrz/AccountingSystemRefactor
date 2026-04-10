@@ -150,21 +150,19 @@ public class HealthController : ControllerBase
             .Where(l => l.CreatedAtUtc >= since)
             .CountAsync();
 
-        // Hourly audit histogram (last 24 hours)
-        var auditHourly = await _db.AppAuditLogs
+        // Hourly audit histogram (last 24 hours) — use full datetime comparison
+        var rawHourlyLogs = await _db.AppAuditLogs
             .Where(l => l.CreatedAtUtc >= since)
-            .GroupBy(l => l.CreatedAtUtc.Hour)
-            .Select(g => new { Hour = g.Key, Count = g.Count() })
+            .Select(l => l.CreatedAtUtc)
             .ToListAsync();
         var auditByHour = new int[24];
-        foreach (var h in auditHourly)
-            auditByHour[h.Hour] = h.Count;
+        foreach (var ts in rawHourlyLogs)
+            auditByHour[ts.Hour] = auditByHour[ts.Hour] + 1;
 
-        // Recent audit log entries (last 20, exclude noisy middleware 'api_write' entries)
+        // Recent audit log entries (last 50)
         var recentLogs = await _db.AppAuditLogs
-            .Where(l => l.EventType != "api_write")
             .OrderByDescending(l => l.CreatedAtUtc)
-            .Take(20)
+            .Take(50)
             .Select(l => new
             {
                 l.Id,

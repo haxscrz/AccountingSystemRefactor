@@ -8,69 +8,97 @@ function humanizeAudit(
 ): string {
   const user = username || 'System'
   const evt = eventType.toLowerCase()
+  const res = friendlyResource(resource)
+  const company = extractCompany(details)
+  const companyTag = company ? ` [${company}]` : ''
+  const statusTag = !success ? ' (failed)' : ''
 
-  // Skip noisy api_write middleware entries
-  if (evt === 'api_write') {
-    return `${user} made an API call to ${friendlyResource(resource)}`
-  }
-
-  // Login / logout / refresh
+  // Authentication events
   if (evt === 'login' && success) return `${user} signed in successfully`
   if (evt === 'login' && !success) {
-    if (details?.includes('Locked out')) return `${user} was locked out after too many attempts`
+    if (details?.includes('Locked out')) return `${user} was locked out after too many failed attempts`
     if (details?.includes('Invalid password')) return `${user} entered an incorrect password`
-    if (details?.includes('Unknown')) return `Sign-in attempt with unknown username`
+    if (details?.includes('Unknown')) return `Sign-in attempt with unknown username "${username || '?'}"`
     return `${user} failed to sign in`
   }
   if (evt === 'logout') return `${user} signed out`
   if (evt === 'refresh') return `${user}'s session was refreshed`
 
-  // Data operations
-  if (evt === 'create') return `${user} created a new record in ${friendlyResource(resource)}`
-  if (evt === 'update') return `${user} updated a record in ${friendlyResource(resource)}`
-  if (evt === 'delete') return `${user} deleted a record from ${friendlyResource(resource)}`
-  if (evt === 'post') return `${user} posted transactions in ${friendlyResource(resource)}`
-  if (evt === 'import') return `${user} imported data into ${friendlyResource(resource)}`
-  if (evt === 'export') return `${user} exported data from ${friendlyResource(resource)}`
+  // CRUD operations
+  if (evt === 'create') return `${user} created a new ${res} entry${companyTag}${statusTag}`
+  if (evt === 'update') return `${user} updated a ${res} record${companyTag}${statusTag}`
+  if (evt === 'delete') return `${user} deleted a ${res} record${companyTag}${statusTag}`
+  if (evt === 'restore') return `${user} restored a ${res} record from recycle bin${companyTag}`
+
+  // Batch / processing operations
+  if (evt === 'clone') return `${user} cloned a ${res} record${companyTag}`
+  if (evt === 'post') return `${user} posted all transactions${companyTag}`
+  if (evt === 'month-end') return `${user} ran month-end processing${companyTag}`
   if (evt === 'backup') return `${user} created a database backup`
-  if (evt === 'month-end') return `${user} ran month-end processing`
+  if (evt === 'import') return `${user} imported data into ${res}${companyTag}`
+  if (evt === 'export') return `${user} exported data from ${res}${companyTag}`
 
-  // Fallback — strip SQL/technical content
-  if (details && (details.includes('SELECT') || details.includes('INSERT') || details.includes('UPDATE') || details.includes('DELETE'))) {
-    return `${user} performed a ${evt} operation on ${friendlyResource(resource)}`
-  }
+  // Legacy fallback for old api_write entries
+  if (evt === 'api_write') return `${user} made a data change in ${res}${companyTag}${statusTag}`
 
-  // Generic — only show clean details
-  const plainDetails = details && details.length < 80 && !details.includes('SELECT') && !details.includes('method=') ? ` — ${details}` : ''
-  return `${user} performed "${evt}" on ${friendlyResource(resource)}${plainDetails}`
+  // Generic fallback
+  return `${user} performed "${evt}" on ${res}${companyTag}${statusTag}`
+}
+
+function extractCompany(details: string | null): string | null {
+  if (!details) return null
+  const match = details.match(/company=([^;]+)/)
+  return match ? match[1] : null
 }
 
 function friendlyResource(resource: string): string {
   if (!resource) return 'the system'
-  // Strip API prefix
-  const r = resource.replace(/^\/api\/(fs|admin|auth|health|payroll)\//, '')
-  const map: Record<string, string> = {
-    'login': 'authentication',
-    'logout': 'session',
-    'refresh': 'session',
-    'checkmas': 'Check Disbursement',
-    'checkvou': 'Check Vouchers',
-    'cashrcpt': 'Cash Receipts',
-    'salebook': 'Sales Book',
-    'purcbook': 'Purchase Book',
-    'journals': 'Journal Vouchers',
-    'adjstmnt': 'Adjustments',
-    'accounts': 'Chart of Accounts',
-    'posting': 'Transaction Posting',
-    'month-end': 'Month-End Processing',
-    'audit-logs': 'Audit Logs',
-    'users': 'User Management',
-    'backup': 'Database Backup',
+  const r = resource.toLowerCase().replace(/^\//, '')
+
+  // New middleware format: "module/entity" or "module/entity/sub-entity"
+  const resourceMap: Record<string, string> = {
+    // FS module
+    'fs/accounts': 'Chart of Accounts',
+    'fs/vouchers/masters': 'Check Disbursement (Header)',
+    'fs/vouchers/lines': 'Check Disbursement (Line Item)',
+    'fs/vouchers/restore': 'Check Disbursement',
+    'fs/vouchers/clone': 'Check Disbursement',
+    'fs/vouchers': 'Check Disbursement',
+    'fs/journals/receipts': 'Cash Receipt',
+    'fs/journals/sales': 'Sales Book',
+    'fs/journals/general': 'Journal Voucher',
+    'fs/journals/purchase': 'Purchase Book',
+    'fs/journals/adjustments': 'Adjustment',
+    'fs/journals': 'Journal Entry',
+    'fs/posting': 'Transaction Posting',
+    'fs/month-end': 'Month-End Processing',
+    'fs/backup': 'Database Backup',
+    'fs/banks': 'Bank',
+    'fs/suppliers': 'Supplier',
+    'fs/signatories': 'Signatory',
+    'fs/system-info': 'System Info',
+    // Payroll module
+    'payroll/employees': 'Employee',
+    'payroll/timecards': 'Timecard',
+    'payroll/departments': 'Department',
+    'payroll/tax-table': 'Tax Table',
+    'payroll/computation': 'Payroll Computation',
+    'payroll/premium': 'Premium Payment',
+    'payroll/system-info': 'Payroll System Info',
+    // Admin module
+    'admin/users': 'User Account',
+    'admin/import': 'Data Import',
+    'admin/audit-logs': 'Audit Logs',
   }
-  for (const [key, label] of Object.entries(map)) {
-    if (r.includes(key)) return label
+
+  for (const [key, label] of Object.entries(resourceMap)) {
+    if (r.startsWith(key)) return label
   }
-  return r.split('/')[0] || 'the system'
+
+  // Fallback: clean up the path
+  const segments = r.split('/')
+  if (segments.length >= 2) return segments.slice(0, 2).join(' / ')
+  return r || 'the system'
 }
 
 function formatAuditTime(utcStr: string): string {
@@ -436,11 +464,11 @@ export default function SystemHealth() {
                 <div className={`text-sm ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>No audit data available</div>
               )}
               <div className="flex justify-between mt-1">
-                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>00:00</span>
+                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>00:00 UTC</span>
                 <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>06:00</span>
                 <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>12:00</span>
                 <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>18:00</span>
-                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>23:00</span>
+                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>23:00 UTC</span>
               </div>
             </div>
           </div>
@@ -452,7 +480,7 @@ export default function SystemHealth() {
                 <span className="material-symbols-outlined text-blue-500 text-[20px]">history</span>
                 <div className={label}>RECENT ACTIVITY</div>
               </div>
-              <div className="space-y-1 max-h-[320px] overflow-y-auto">
+              <div className="space-y-1 max-h-[480px] overflow-y-auto">
                 {telemetry.recentLogs.map(log => {
                   const humanDetail = humanizeAudit(log.eventType, log.resource, log.success, log.details, log.username)
                   const formattedTime = formatAuditTime(log.createdAtUtc)
