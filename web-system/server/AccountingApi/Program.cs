@@ -361,6 +361,48 @@ using (var initScope = app.Services.CreateScope())
         RunSql("CREATE INDEX IF NOT EXISTS ix_app_refresh_tokens_user_expiry ON app_refresh_tokens(user_id, expires_at_utc)");
         RunSql("CREATE INDEX IF NOT EXISTS ix_app_audit_created_at ON app_audit_logs(created_at_utc)");
 
+        // Command Center tables
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS app_support_tickets (
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                from_username   TEXT NOT NULL DEFAULT '',
+                message         TEXT NOT NULL DEFAULT '',
+                status          TEXT NOT NULL DEFAULT 'open',
+                resolved_by     TEXT NULL,
+                admin_notes     TEXT NULL,
+                created_at_utc  TEXT NOT NULL DEFAULT (datetime('now')),
+                resolved_at_utc TEXT NULL
+            )");
+
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS app_announcements (
+                id                INTEGER PRIMARY KEY AUTOINCREMENT,
+                author_id         INTEGER NOT NULL,
+                author_username   TEXT NOT NULL DEFAULT '',
+                title             TEXT NOT NULL DEFAULT '',
+                body              TEXT NOT NULL DEFAULT '',
+                image_data        TEXT NULL,
+                priority          TEXT NOT NULL DEFAULT 'normal',
+                target_type       TEXT NOT NULL DEFAULT 'all',
+                target_users_json TEXT NULL,
+                created_at_utc    TEXT NOT NULL DEFAULT (datetime('now')),
+                expires_at_utc    TEXT NULL
+            )");
+
+        RunSql(@"
+            CREATE TABLE IF NOT EXISTS app_announcement_reactions (
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                announcement_id INTEGER NOT NULL,
+                user_id         INTEGER NOT NULL,
+                username        TEXT NOT NULL DEFAULT '',
+                reaction_type   TEXT NOT NULL DEFAULT 'like',
+                created_at_utc  TEXT NOT NULL DEFAULT (datetime('now'))
+            )");
+
+        RunSql("CREATE INDEX IF NOT EXISTS ix_app_support_tickets_status ON app_support_tickets(status)");
+        RunSql("CREATE INDEX IF NOT EXISTS ix_app_announcements_created ON app_announcements(created_at_utc)");
+        RunSql("CREATE UNIQUE INDEX IF NOT EXISTS ix_app_reactions_unique ON app_announcement_reactions(announcement_id, user_id)");
+
         // ── User data isolation: add created_by_user_id to all tenant tables ──
         foreach (var table in tenantTables)
         {

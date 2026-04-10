@@ -157,3 +157,102 @@ public sealed class AppAuditLog
 	[Column("created_at_utc")]
 	public DateTime CreatedAtUtc { get; set; }
 }
+
+[Table("app_support_tickets")]
+public sealed class AppSupportTicket
+{
+	[Key]
+	public int Id { get; set; }
+
+	[Column("from_username")]
+	[MaxLength(80)]
+	public string FromUsername { get; set; } = string.Empty;
+
+	[Column("message")]
+	[MaxLength(2000)]
+	public string Message { get; set; } = string.Empty;
+
+	[Column("status")]
+	[MaxLength(20)]
+	public string Status { get; set; } = "open"; // open, resolved, dismissed
+
+	[Column("resolved_by")]
+	[MaxLength(80)]
+	public string? ResolvedBy { get; set; }
+
+	[Column("admin_notes")]
+	[MaxLength(1000)]
+	public string? AdminNotes { get; set; }
+
+	[Column("created_at_utc")]
+	public DateTime CreatedAtUtc { get; set; }
+
+	[Column("resolved_at_utc")]
+	public DateTime? ResolvedAtUtc { get; set; }
+}
+
+[Table("app_announcements")]
+public sealed class AppAnnouncement
+{
+	[Key]
+	public int Id { get; set; }
+
+	[Column("author_id")]
+	public int AuthorId { get; set; }
+
+	[Column("author_username")]
+	[MaxLength(80)]
+	public string AuthorUsername { get; set; } = string.Empty;
+
+	[Column("title")]
+	[MaxLength(200)]
+	public string Title { get; set; } = string.Empty;
+
+	[Column("body")]
+	[MaxLength(4000)]
+	public string Body { get; set; } = string.Empty;
+
+	[Column("image_data")]
+	public string? ImageData { get; set; } // base64 data URL
+
+	[Column("priority")]
+	[MaxLength(20)]
+	public string Priority { get; set; } = "normal"; // normal, urgent
+
+	[Column("target_type")]
+	[MaxLength(20)]
+	public string TargetType { get; set; } = "all"; // all, select
+
+	[Column("target_users_json")]
+	public string? TargetUsersJson { get; set; } // JSON array of usernames
+
+	[Column("created_at_utc")]
+	public DateTime CreatedAtUtc { get; set; }
+
+	[Column("expires_at_utc")]
+	public DateTime? ExpiresAtUtc { get; set; }
+}
+
+[Table("app_announcement_reactions")]
+public sealed class AppAnnouncementReaction
+{
+	[Key]
+	public int Id { get; set; }
+
+	[Column("announcement_id")]
+	public int AnnouncementId { get; set; }
+
+	[Column("user_id")]
+	public int UserId { get; set; }
+
+	[Column("username")]
+	[MaxLength(80)]
+	public string Username { get; set; } = string.Empty;
+
+	[Column("reaction_type")]
+	[MaxLength(20)]
+	public string ReactionType { get; set; } = "like";
+
+	[Column("created_at_utc")]
+	public DateTime CreatedAtUtc { get; set; }
+}

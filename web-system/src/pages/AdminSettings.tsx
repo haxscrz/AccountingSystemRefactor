@@ -6,6 +6,7 @@ import Breadcrumbs from '../components/Breadcrumbs'
 import UserManagement from './UserManagement'
 import OrganizationManagement from './OrganizationManagement'
 import SystemHealth from './SystemHealth'
+import CommandCenter from './CommandCenter'
 
 export default function AdminSettings() {
   const [searchParams] = useSearchParams()
@@ -20,8 +21,9 @@ export default function AdminSettings() {
   } = useSettingsStore()
 
   const initialTab = searchParams.get('tab') as any || 'preferences'
-  const [activeTab, setActiveTab] = useState<'preferences' | 'organization' | 'users' | 'health'>(
+  const [activeTab, setActiveTab] = useState<'preferences' | 'organization' | 'users' | 'health' | 'command-center'>(
     initialTab === 'health' && user?.role === 'superadmin' ? 'health' : 
+    initialTab === 'command-center' && user?.role === 'superadmin' ? 'command-center' :
     ['preferences', 'organization', 'users'].includes(initialTab) ? initialTab : 'preferences'
   )
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -30,6 +32,7 @@ export default function AdminSettings() {
   useEffect(() => {
     const tabParam = searchParams.get('tab')
     if (tabParam === 'health' && user?.role === 'superadmin') setActiveTab('health')
+    if (tabParam === 'command-center' && user?.role === 'superadmin') setActiveTab('command-center')
   }, [searchParams, user])
 
   const syncProfileToApi = async (photoDataUrl: string | null) => {
@@ -67,15 +70,15 @@ export default function AdminSettings() {
   return (
     <div className={`min-h-screen flex font-body ${darkMode ? 'bg-[#0a0f1e] text-gray-100' : 'bg-slate-50 text-slate-900'}`}>
       
-      {/* Sidebar Navigation */}
-      <aside className={`w-72 border-r flex flex-col ${darkMode ? 'bg-[#0f172a] border-gray-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+      {/* Sidebar Navigation — STICKY */}
+      <aside className={`w-72 border-r flex flex-col sticky top-0 h-screen flex-shrink-0 ${darkMode ? 'bg-[#0f172a] border-gray-800' : 'bg-white border-slate-200 shadow-sm'}`}>
         <div className="p-6 border-b border-inherit">
           <Breadcrumbs segments={[{ label: 'Settings' }]} />
           <h1 className="font-headline font-bold text-lg leading-tight text-primary mt-3">Settings</h1>
           <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-slate-500'}`}>System Administration</p>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           <button 
             onClick={() => setActiveTab('preferences')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all ${activeTab === 'preferences' ? (darkMode ? 'bg-primary/20 text-blue-400' : 'bg-primary/10 text-primary') : (darkMode ? 'text-gray-400 hover:bg-gray-800/50' : 'text-slate-600 hover:bg-slate-100')}`}
@@ -100,6 +103,14 @@ export default function AdminSettings() {
               >
                 <span className="material-symbols-outlined text-[20px]">manage_accounts</span>
                 User Management
+              </button>
+
+              <button 
+                onClick={() => setActiveTab('command-center')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all ${activeTab === 'command-center' ? (darkMode ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-500/10 text-purple-600') : (darkMode ? 'text-gray-400 hover:bg-gray-800/50' : 'text-slate-600 hover:bg-slate-100')}`}
+              >
+                <span className="material-symbols-outlined text-[20px]">campaign</span>
+                Command Center
               </button>
 
               <button 
@@ -239,7 +250,12 @@ export default function AdminSettings() {
              <UserManagement />
           )}
 
-          {/* 4. SYSTEM HEALTH */}
+          {/* 4. COMMAND CENTER */}
+          {activeTab === 'command-center' && user?.role === 'superadmin' && (
+             <CommandCenter />
+          )}
+
+          {/* 5. SYSTEM HEALTH */}
           {activeTab === 'health' && user?.role === 'superadmin' && (
              <SystemHealth />
           )}

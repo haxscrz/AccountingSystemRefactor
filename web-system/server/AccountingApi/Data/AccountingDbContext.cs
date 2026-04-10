@@ -44,6 +44,11 @@ public sealed class AccountingDbContext : DbContext
     public DbSet<AppRefreshToken> AppRefreshTokens { get; set; } = null!;
     public DbSet<AppAuditLog> AppAuditLogs { get; set; } = null!;
 
+    // Command Center Tables
+    public DbSet<AppSupportTicket> AppSupportTickets { get; set; } = null!;
+    public DbSet<AppAnnouncement> AppAnnouncements { get; set; } = null!;
+    public DbSet<AppAnnouncementReaction> AppAnnouncementReactions { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

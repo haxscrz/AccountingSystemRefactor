@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
-import { useNotificationStore } from '../stores/notificationStore'
 import { useSettingsStore } from '../stores/settingsStore'
 
 /* ── Legal popup content ── */
@@ -112,7 +111,6 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   
   const login = useAuthStore(state => state.login)
-  const addNotification = useNotificationStore(state => state.addNotification)
   const darkMode = useSettingsStore(state => state.darkMode)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -135,14 +133,22 @@ export default function Login() {
     }
   }
 
-  const handleContactSubmit = () => {
+  const handleContactSubmit = async () => {
     if (!contactUsername.trim()) return
-    addNotification({
-      type: 'support',
-      title: 'Login Assistance Request',
-      message: `User "${contactUsername.trim()}" is requesting help signing in.${contactMessage.trim() ? ` Message: "${contactMessage.trim()}"` : ''}`,
-      from: contactUsername.trim(),
-    })
+    
+    try {
+      await fetch('/api/command-center/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: contactUsername.trim(),
+          message: contactMessage.trim() || undefined
+        })
+      })
+    } catch {
+      // Ignore errors, show success to user regardless
+    }
+
     setContactSent(true)
     setTimeout(() => {
       setShowContact(false)
