@@ -6,8 +6,9 @@ const LOGOUT_AT_MS = 5 * 60 * 1000        // Logout at 5 minutes
 const COUNTDOWN_SECONDS = Math.floor((LOGOUT_AT_MS - WARNING_AT_MS) / 1000) // 60 seconds
 
 export function useInactivityLogout() {
-  const logout = useAuthStore((s) => s.logout)
+  const lockSession = useAuthStore((s) => s.lockSession)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const isSessionLocked = useAuthStore((s) => s.isSessionLocked)
   
   const warningTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -33,17 +34,16 @@ export function useInactivityLogout() {
     countdownRef.current = setInterval(() => {
       setSecondsRemaining(prev => {
         if (prev <= 1) {
-          // Time's up — logout
+          // Time's up — lock session instead of global logout to prevent data loss!
           clearAllTimers()
           setShowWarningToast(false)
-          alert('You have been automatically logged out due to inactivity.')
-          logout()
+          lockSession()
           return 0
         }
         return prev - 1
       })
     }, 1000)
-  }, [clearAllTimers, logout])
+  }, [clearAllTimers, lockSession])
 
   // Set the initial warning timer
   const resetTimer = useCallback(() => {
@@ -75,7 +75,7 @@ export function useInactivityLogout() {
 
   // Activity detection
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || isSessionLocked) {
       clearAllTimers()
       setShowWarningToast(false)
       setShowWelcomeBack(false)
@@ -90,14 +90,24 @@ export function useInactivityLogout() {
       }
     }
 
+    // Catch background activity (e.g., when the window is blurred)
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && !showWarningToastRef.current) {
+        resetTimer()
+      }
+    }
+
     const events = ['mousedown', 'keydown', 'mousemove', 'scroll', 'touchstart', 'click']
     events.forEach(e => window.addEventListener(e, onActivity, { passive: true }))
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    
     resetTimer()
 
     return () => {
       events.forEach(e => window.removeEventListener(e, onActivity))
+      document.removeEventListener('visibilitychange', onVisibilityChange)
     }
-  }, [isAuthenticated, resetTimer, clearAllTimers])
+  }, [isAuthenticated, isSessionLocked, resetTimer, clearAllTimers])
 
   return { 
     showWarningToast, 

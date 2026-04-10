@@ -17,7 +17,6 @@ export interface TelemetryData {
   totalCompanies: number
   tableRowCounts: Record<string, number>
   recentAuditEvents: number
-  auditByHour: number[]
   recentLogs: {
     id: number
     username: string | null
@@ -92,7 +91,11 @@ export function useSystemTelemetry(pollIntervalMs = 10000) {
 
   const fetchTelemetry = useCallback(async () => {
     try {
-      const resp = await fetch('/api/health/telemetry')
+      const now = new Date()
+      // Construct local midnight string
+      const localMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
+      
+      const resp = await fetch(`/api/health/telemetry?localMidnight=${encodeURIComponent(localMidnight)}`)
       if (!mountedRef.current) return
       if (resp.ok) {
         const data = await resp.json() as TelemetryData

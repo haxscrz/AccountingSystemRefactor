@@ -187,6 +187,108 @@ function UptimeDisplay({ seconds }: { seconds: number }) {
   )
 }
 
+function InteractiveTimeline({ logs, darkMode }: { logs: any[], darkMode: boolean }) {
+  const [hoverData, setHoverData] = useState<{ x: number, y: number, px: number, log: any } | null>(null)
+  
+  if (!logs || logs.length === 0) {
+    return <div className={`text-sm ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>No recent logs</div>
+  }
+
+  // Reverse so oldest is first (left to right)
+  const sortedLogs = [...logs].reverse()
+  const h = 90
+
+  // We map the X axis across the pure 24-hour day
+  const now = new Date()
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+  const endOfDay = startOfDay + 24 * 60 * 60 * 1000
+
+  const getPercentX = (ts: string) => {
+    const t = new Date(ts.endsWith('Z') ? ts : ts + 'Z').getTime()
+    return Math.max(0, Math.min(100, ((t - startOfDay) / (endOfDay - startOfDay)) * 100))
+  }
+
+  const getYPercent = (log: any, i: number) => {
+    const evt = (log.eventType || '').toLowerCase()
+    let base = 50
+    if (evt === 'login' || evt === 'logout') base = 20
+    else if (evt === 'create' || evt === 'delete') base = 80
+    
+    // Slight stagger so multiple rapid events don't totally eclipse each other
+    const stagger = (i % 3 - 1) * 10
+    return Math.max(10, Math.min(90, base + stagger))
+  }
+
+  const handleNodeClick = (logId: number) => {
+    const el = document.getElementById(`audit-log-${logId}`)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      el.classList.add('bg-amber-500/20')
+      setTimeout(() => el.classList.remove('bg-amber-500/20'), 2000)
+    }
+  }
+
+  return (
+    <div className="relative group w-full px-2" style={{ height: h }}>
+      {/* Background Grid Lines representing quarters of the day */}
+      <div className="absolute inset-0 flex justify-between pointer-events-none opacity-20" style={{ zIndex: 0 }}>
+        {[0, 1, 2, 3, 4].map(idx => (
+          <div key={idx} className={`h-full w-px border-l border-dashed ${darkMode ? 'border-gray-500' : 'border-slate-400'}`} />
+        ))}
+      </div>
+      
+      {/* Container for SVGs and tooltips */}
+      <div className="relative w-full h-full z-10" 
+           onMouseLeave={() => setHoverData(null)}>
+        {sortedLogs.map((log, i) => {
+          const px = getPercentX(log.createdAtUtc)
+          const py = getYPercent(log, i)
+          const fill = log.success ? (darkMode ? '#10b981' : '#10b981') : (darkMode ? '#ef4444' : '#ef4444')
+          return (
+            <div
+              key={log.id}
+              className={`absolute w-3 h-3 -ml-1.5 -mt-1.5 rounded-full cursor-pointer transition-transform duration-200 hover:scale-150 ring-2 ${darkMode ? 'ring-[#1e293b]' : 'ring-white'}`}
+              style={{ left: `${px}%`, top: `${py}%`, backgroundColor: fill }}
+              onMouseEnter={(e) => {
+                const rect = (e.target as HTMLElement).parentElement?.getBoundingClientRect()
+                const clickX = rect ? (px / 100) * rect.width : 0
+                setHoverData({ x: px, px: clickX, y: py, log })
+              }}
+              onClick={() => handleNodeClick(log.id)}
+            />
+          )
+        })}
+      </div>
+
+      {/* Tooltip Overlay */}
+      {hoverData && (
+        <div 
+          className={`absolute pointer-events-none transform -translate-x-1/2 -translate-y-full z-50 p-3 rounded-xl shadow-xl border w-64 backdrop-blur-md transition-all ${
+            darkMode ? 'bg-[#1e293b]/95 border-gray-600 text-white' : 'bg-white/95 border-slate-200 text-slate-800'
+          }`}
+          style={{ 
+            left: `${hoverData.x}%`, 
+            top: `calc(${hoverData.y}% - 12px)`,
+            // Prevent tooltip from overflowing screen left/right
+            transform: hoverData.px < 130 ? 'translate(0%, -100%)' : (hoverData.px > (window.innerWidth - 130) ? 'translate(-100%, -100%)' : 'translate(-50%, -100%)')
+          }}
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <div className={`w-2 h-2 rounded-full ${hoverData.log.success ? 'bg-emerald-500' : 'bg-red-500'}`} />
+            <span className="text-[10px] font-bold uppercase tracking-wider">{hoverData.log.eventType}</span>
+          </div>
+          <div className="text-sm font-medium leading-snug line-clamp-3 mb-1.5">
+             {humanizeAudit(hoverData.log.eventType, hoverData.log.resource, hoverData.log.success, hoverData.log.details, hoverData.log.username)}
+          </div>
+          <div className={`text-[10px] font-mono ${darkMode ? 'text-gray-400' : 'text-slate-500'}`}>
+            {formatAuditTime(hoverData.log.createdAtUtc)}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function SystemHealth() {
   const darkMode = useSettingsStore(s => s.darkMode)
   const { health, latencyMs, latencyHistory, memoryHistory, isLoading: healthLoading, refetch } = useSystemHealth(10000)
@@ -428,47 +530,15 @@ export default function SystemHealth() {
                   <AnimatedNumber value={telemetry.recentAuditEvents} />
                 </span>
               </div>
-              {/* Smooth area line graph */}
-              {telemetry.auditByHour && telemetry.auditByHour.length > 0 ? (() => {
-                const data = telemetry.auditByHour
-                const max = Math.max(...data, 1)
-                const min = 0
-                const range = max - min || 1
-                const h = 72
-                const w = 500
-                const points = data.map((v, i) => {
-                  const x = (i / (data.length - 1)) * w
-                  const y = h - ((v - min) / range) * (h - 8) - 4
-                  return `${x},${y}`
-                }).join(' ')
-                const areaPoints = `0,${h} ${points} ${w},${h}`
-                const nowHour = new Date().getHours()
-                const nowX = (nowHour / (data.length - 1)) * w
-                const nowY = h - ((data[nowHour] - min) / range) * (h - 8) - 4
-                return (
-                  <div>
-                    <svg viewBox={`0 0 ${w} ${h}`} className="w-full" style={{ height: '72px' }} preserveAspectRatio="none">
-                      <defs>
-                        <linearGradient id="audit-grad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.3" />
-                          <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
-                        </linearGradient>
-                      </defs>
-                      <polygon points={areaPoints} fill="url(#audit-grad)" />
-                      <polyline points={points} fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      <circle cx={nowX} cy={nowY} r="4" fill="#fbbf24" stroke="#f59e0b" strokeWidth="1.5" />
-                    </svg>
-                  </div>
-                )
-              })() : (
-                <div className={`text-sm ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>No audit data available</div>
-              )}
-              <div className="flex justify-between mt-1">
-                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>00:00 UTC</span>
-                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>06:00</span>
-                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>12:00</span>
-                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>18:00</span>
-                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-600' : 'text-slate-400'}`}>23:00 UTC</span>
+              <div className="mt-4 border-b border-t py-4 relative">
+                 <InteractiveTimeline logs={telemetry.recentLogs || []} darkMode={darkMode} />
+              </div>
+              <div className="flex justify-between mt-2 px-2">
+                <span className={`text-[9px] font-mono font-bold ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>00:00 (Midnight)</span>
+                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>06:00</span>
+                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>12:00</span>
+                <span className={`text-[9px] font-mono ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>18:00</span>
+                <span className={`text-[9px] font-mono font-bold ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>24:00</span>
               </div>
             </div>
           </div>
@@ -485,7 +555,10 @@ export default function SystemHealth() {
                   const humanDetail = humanizeAudit(log.eventType, log.resource, log.success, log.details, log.username)
                   const formattedTime = formatAuditTime(log.createdAtUtc)
                   return (
-                    <div key={log.id} className={`flex items-start gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+                    <div 
+                      id={`audit-log-${log.id}`}
+                      key={log.id} 
+                      className={`flex items-start gap-3 px-3 py-2.5 rounded-xl transition-all duration-500 ${
                       darkMode ? 'hover:bg-gray-800/40' : 'hover:bg-slate-50'
                     }`}>
                       <div className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${log.success ? 'bg-emerald-500' : 'bg-red-500'}`} />

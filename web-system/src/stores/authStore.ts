@@ -16,6 +16,9 @@ interface AuthState {
   refreshToken: string | null
   accessTokenExpiresAtUtc: string | null
   refreshTokenExpiresAtUtc: string | null
+  isSessionLocked: boolean
+  lockSession: () => void
+  unlockSession: (pwd: string) => Promise<{ success: boolean; message: string }>
   login: (username: string, password: string) => Promise<{ success: boolean; message: string }>
   logout: () => Promise<void>
 }
@@ -43,6 +46,7 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
+      isSessionLocked: false,
       accessToken: null,
       refreshToken: null,
       accessTokenExpiresAtUtc: null,
@@ -63,6 +67,7 @@ export const useAuthStore = create<AuthState>()(
           set({
             user: null,
             isAuthenticated: false,
+            isSessionLocked: false,
             accessToken: null,
             refreshToken: null,
             accessTokenExpiresAtUtc: null,
@@ -91,6 +96,7 @@ export const useAuthStore = create<AuthState>()(
           set({
             user: null,
             isAuthenticated: false,
+            isSessionLocked: false,
             accessToken: null,
             refreshToken: null,
             accessTokenExpiresAtUtc: null,
@@ -104,6 +110,7 @@ export const useAuthStore = create<AuthState>()(
           set({
             user: null,
             isAuthenticated: false,
+            isSessionLocked: false,
             accessToken: null,
             refreshToken: null,
             accessTokenExpiresAtUtc: null,
@@ -118,7 +125,8 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: data.tokens.refreshToken,
           accessTokenExpiresAtUtc: data.tokens.accessTokenExpiresAtUtc,
           refreshTokenExpiresAtUtc: data.tokens.refreshTokenExpiresAtUtc,
-          isAuthenticated: true
+          isAuthenticated: true,
+          isSessionLocked: false
         })
         try {
           localStorage.removeItem('company-storage')
@@ -126,6 +134,45 @@ export const useAuthStore = create<AuthState>()(
           // ignore storage failures
         }
         return { success: true, message: data.message || 'Login successful' }
+      },
+      lockSession: () => set({ isSessionLocked: true }),
+      unlockSession: async (password: string) => {
+        const state = useAuthStore.getState()
+        if (!state.user || !state.isSessionLocked) return { success: true, message: 'Not locked' }
+        
+        const controller = new AbortController()
+        const timeoutId = window.setTimeout(() => controller.abort(), 15000)
+
+        let response: Response
+        try {
+          response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: state.user.username, password }),
+            signal: controller.signal
+          })
+        } catch {
+          return { success: false, message: 'Server unreachable.' }
+        } finally {
+          window.clearTimeout(timeoutId)
+        }
+
+        if (!response.ok) {
+          return { success: false, message: 'Invalid password. Your session remains locked.' }
+        }
+
+        const data = await response.json() as LoginApiResponse
+        if (data.success && data.user && data.tokens) {
+          set({
+            accessToken: data.tokens.accessToken,
+            refreshToken: data.tokens.refreshToken,
+            accessTokenExpiresAtUtc: data.tokens.accessTokenExpiresAtUtc,
+            refreshTokenExpiresAtUtc: data.tokens.refreshTokenExpiresAtUtc,
+            isSessionLocked: false
+          })
+          return { success: true, message: 'Session unlocked.' }
+        }
+        return { success: false, message: 'Failed to unlock.' }
       },
       logout: async () => {
         const state = useAuthStore.getState()
@@ -147,6 +194,7 @@ export const useAuthStore = create<AuthState>()(
         set({
           user: null,
           isAuthenticated: false,
+          isSessionLocked: false,
           accessToken: null,
           refreshToken: null,
           accessTokenExpiresAtUtc: null,

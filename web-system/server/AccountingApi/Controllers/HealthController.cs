@@ -88,7 +88,7 @@ public class HealthController : ControllerBase
 
     [HttpGet("telemetry")]
     [Authorize(Roles = "superadmin")]
-    public async Task<IActionResult> GetTelemetry()
+    public async Task<IActionResult> GetTelemetry([FromQuery] string? localMidnight)
     {
         var totalUsers = await _db.AppUsers.CountAsync();
         
@@ -144,25 +144,27 @@ public class HealthController : ControllerBase
         }
         catch { /* ignore connection errors */ }
 
-        // Recent audit events (last 24 hours)
-        var since = DateTime.UtcNow.AddHours(-24);
+        // Define the "start of day"
+        DateTime since;
+        if (!string.IsNullOrEmpty(localMidnight) && DateTime.TryParse(localMidnight, out var parsed))
+        {
+            since = parsed.ToUniversalTime();
+        }
+        else
+        {
+            since = DateTime.UtcNow.Date; // Fallback to UTC midnight
+        }
+
+        // Audit events since local midnight
         var recentAuditEvents = await _db.AppAuditLogs
             .Where(l => l.CreatedAtUtc >= since)
             .CountAsync();
 
-        // Hourly audit histogram (last 24 hours) — use full datetime comparison
-        var rawHourlyLogs = await _db.AppAuditLogs
-            .Where(l => l.CreatedAtUtc >= since)
-            .Select(l => l.CreatedAtUtc)
-            .ToListAsync();
-        var auditByHour = new int[24];
-        foreach (var ts in rawHourlyLogs)
-            auditByHour[ts.Hour] = auditByHour[ts.Hour] + 1;
-
-        // Recent audit log entries (last 50)
+        // Complete log entries for the day (up to 500 for the rich timeline chart)
         var recentLogs = await _db.AppAuditLogs
+            .Where(l => l.CreatedAtUtc >= since)
             .OrderByDescending(l => l.CreatedAtUtc)
-            .Take(50)
+            .Take(500)
             .Select(l => new
             {
                 l.Id,
@@ -183,7 +185,6 @@ public class HealthController : ControllerBase
             totalCompanies,
             tableRowCounts = rowCounts,
             recentAuditEvents,
-            auditByHour,
             recentLogs
         });
     }
