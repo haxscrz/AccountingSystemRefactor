@@ -74,7 +74,10 @@ export default function AppShell({
   const [showNotifPanel, setShowNotifPanel] = useState(false)
   const [announcements, setAnnouncements] = useState<ServerAnnouncement[]>([])
   const [readIds, setReadIds] = useState<Set<number>>(() => {
-    try { return new Set(JSON.parse(localStorage.getItem('read-announcements') || '[]')) } catch { return new Set() }
+    try { 
+      const key = `read-announcements-${user?.username || 'anonymous'}`
+      return new Set(JSON.parse(localStorage.getItem(key) || '[]')) 
+    } catch { return new Set() }
   })
   const [openAnnouncementId, setOpenAnnouncementId] = useState<number | null>(null)
   const notifRef = useRef<HTMLDivElement>(null)
@@ -114,7 +117,8 @@ export default function AppShell({
     setReadIds(prev => {
       const next = new Set(prev)
       next.add(id)
-      localStorage.setItem('read-announcements', JSON.stringify([...next]))
+      const key = `read-announcements-${user?.username || 'anonymous'}`
+      localStorage.setItem(key, JSON.stringify([...next]))
       return next
     })
   }
@@ -122,7 +126,8 @@ export default function AppShell({
   const markAllAsRead = () => {
     const allIds = announcements.map(a => a.id)
     setReadIds(new Set(allIds))
-    localStorage.setItem('read-announcements', JSON.stringify(allIds))
+    const key = `read-announcements-${user?.username || 'anonymous'}`
+    localStorage.setItem(key, JSON.stringify(allIds))
   }
 
   const isItemActive = (item: { route?: string; label: string }) => {

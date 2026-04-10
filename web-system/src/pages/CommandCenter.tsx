@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSettingsStore } from '../stores/settingsStore'
 import { useAuthStore } from '../stores/authStore'
+import AnnouncementModal from '../components/AnnouncementModal'
 
 interface Ticket {
   id: number
@@ -52,6 +53,7 @@ export default function CommandCenter() {
   const [newImageData, setNewImageData] = useState<string | null>(null)
   const [allUsers, setAllUsers] = useState<string[]>([])
   const [creating, setCreating] = useState(false)
+  const [openAnnouncementId, setOpenAnnouncementId] = useState<number | null>(null)
 
   const headers = useCallback(() => ({
     'Content-Type': 'application/json',
@@ -375,7 +377,7 @@ export default function CommandCenter() {
             </div>
           ) : (
             announcements.map(a => (
-              <div key={a.id} className={`${card} relative overflow-hidden`}>
+              <div key={a.id} className={`${card} relative overflow-hidden group cursor-pointer hover:border-primary/50 transition-colors`} onClick={() => setOpenAnnouncementId(a.id)}>
                 {a.priority === 'urgent' && <div className="absolute top-0 left-0 w-1 h-full bg-red-500" />}
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
@@ -392,7 +394,7 @@ export default function CommandCenter() {
                       <span className="flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">favorite</span>{a.reactionCount}</span>
                     </div>
                   </div>
-                  <button onClick={() => handleDeleteAnnouncement(a.id)} className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-red-500/20 text-gray-500 hover:text-red-400' : 'hover:bg-red-50 text-slate-400 hover:text-red-500'}`}>
+                  <button onClick={(e) => { e.stopPropagation(); handleDeleteAnnouncement(a.id); }} className={`p-2 rounded-lg transition-colors z-10 relative ${darkMode ? 'hover:bg-red-500/20 text-gray-500 hover:text-red-400' : 'hover:bg-red-50 text-slate-400 hover:text-red-500'}`}>
                     <span className="material-symbols-outlined text-[18px]">delete</span>
                   </button>
                 </div>
@@ -400,6 +402,13 @@ export default function CommandCenter() {
             ))
           )}
         </div>
+      )}
+
+      {openAnnouncementId !== null && (
+        <AnnouncementModal
+          announcementId={openAnnouncementId}
+          onClose={() => { setOpenAnnouncementId(null); fetchAnnouncements() }}
+        />
       )}
     </div>
   )
