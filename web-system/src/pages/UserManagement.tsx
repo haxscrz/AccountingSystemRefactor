@@ -14,6 +14,8 @@ interface UserItem {
   assignedCompanies: string[] | null
   isActive: boolean
   profileImageUrl: string | null
+  failedLoginCount: number
+  lockoutEndUtc: string | null
   lastLoginUtc: string | null
   createdAtUtc: string
 }
@@ -203,6 +205,16 @@ export default function UserManagement() {
     }
   }
 
+  const handleUnlock = async (id: number) => {
+    try {
+      await axios.post(`${API}/users/${id}/unlock`)
+      setSuccess('User account has been successfully unlocked.')
+      fetchUsers()
+    } catch (e: any) {
+      setError(e?.response?.data?.message || 'Failed to unlock user.')
+    }
+  }
+
 
   return (
     <div className={`w-full relative animate-fade-in ${darkMode ? 'text-gray-100' : 'text-on-surface'}`}>
@@ -287,6 +299,23 @@ export default function UserManagement() {
                         Payroll
                       </div>
                     </div>
+
+                    {/* Lockout Indicator */}
+                    {u.lockoutEndUtc && new Date((u.lockoutEndUtc.endsWith('Z') ? u.lockoutEndUtc : u.lockoutEndUtc + 'Z')) > new Date() && (
+                      <div className="mb-4 bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex flex-col items-center text-center animate-pulse">
+                         <span className="material-symbols-outlined text-red-500 text-[24px] mb-1">lock_clock</span>
+                         <span className="text-red-500 font-bold text-[11px] uppercase tracking-widest">Account Locked</span>
+                         <span className={`text-[10px] my-1 font-mono ${darkMode ? 'text-gray-400' : 'text-slate-500'}`}>
+                           Failed attempts: {u.failedLoginCount}
+                           <br />
+                           Unlocks roughly at: {new Date((u.lockoutEndUtc.endsWith('Z') ? u.lockoutEndUtc : u.lockoutEndUtc + 'Z')).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})}
+                         </span>
+                         <button onClick={() => handleUnlock(u.id)} className="mt-2 w-full bg-red-500 text-white text-[11px] font-bold py-1.5 rounded-lg hover:bg-red-600 transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer z-10 relative">
+                           <span className="material-symbols-outlined text-[14px]">key_off</span>
+                           Reset Lockout
+                         </button>
+                      </div>
+                    )}
 
                     {/* Last Login */}
                     <div className={`text-[11px] font-mono mb-4 ${darkMode ? 'text-gray-500' : 'text-on-surface-variant/60'}`}>

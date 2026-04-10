@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/authStore'
 import { useCompanyStore } from '../stores/companyStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import Breadcrumbs from '../components/Breadcrumbs'
+import GlobalNotificationBell from '../components/GlobalNotificationBell'
 import axios from 'axios'
 
 const PUBLIC_API = '/api'
@@ -116,7 +117,8 @@ export default function CompanySelection() {
             <span className={`text-xl font-bold tracking-tighter font-headline ${darkMode ? 'text-blue-400' : 'text-slate-900'}`}>AWM</span>
             <span className={`text-xs font-medium ${darkMode ? 'text-gray-500' : 'text-slate-400'}`}>by iSupplyTech Co. Ltd.</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            <GlobalNotificationBell />
             <button onClick={handleLogout} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-['Manrope'] font-semibold tracking-tight ${darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-slate-500 hover:text-slate-700'}`}>
               <span className="material-symbols-outlined" data-icon="logout">logout</span>
               <span>Logout</span>

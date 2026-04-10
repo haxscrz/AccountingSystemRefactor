@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import Breadcrumbs from '../components/Breadcrumbs'
+import GlobalNotificationBell from '../components/GlobalNotificationBell'
 
 // ── File classification types (matches backend DbfTableRouter) ──────────
 type FileClassification = 'required' | 'optional' | 'ignored'
@@ -336,8 +337,11 @@ export default function DataImport() {
                 <p className={`text-[11px] font-bold uppercase tracking-widest mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Legacy DBF Ingestion Engine</p>
               </div>
             </div>
-            <div className={`w-12 h-12 flex items-center justify-center rounded-2xl shadow-lg ${darkMode ? 'bg-white/5 shadow-purple-500/10' : 'bg-white shadow-purple-500/20 text-purple-600'}`}>
-              <span className="material-symbols-outlined text-2xl">cloud_upload</span>
+            <div className="flex items-center gap-4">
+              <GlobalNotificationBell />
+              <div className={`w-12 h-12 flex items-center justify-center rounded-2xl shadow-lg ${darkMode ? 'bg-white/5 shadow-purple-500/10' : 'bg-white shadow-purple-500/20 text-purple-600'}`}>
+                <span className="material-symbols-outlined text-2xl">cloud_upload</span>
+              </div>
             </div>
           </div>
         </div>

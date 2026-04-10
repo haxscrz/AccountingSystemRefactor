@@ -107,6 +107,7 @@ export default function Login() {
   const [showContact, setShowContact] = useState(false)
   const [contactMessage, setContactMessage] = useState('')
   const [contactUsername, setContactUsername] = useState('')
+  const [isUrgent, setIsUrgent] = useState(false)
   const [contactSent, setContactSent] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   
@@ -142,7 +143,7 @@ export default function Login() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: contactUsername.trim(),
-          message: contactMessage.trim() || undefined
+          message: (isUrgent ? '[URGENT] ' : '') + (contactMessage.trim() || 'No additional details provided.')
         })
       })
     } catch {
@@ -155,6 +156,7 @@ export default function Login() {
       setContactSent(false)
       setContactMessage('')
       setContactUsername('')
+      setIsUrgent(false)
     }, 3000)
   }
 
@@ -349,6 +351,18 @@ export default function Login() {
                       rows={3}
                       className="w-full px-3 py-2.5 bg-surface-container-low border-none rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary/30 focus:bg-surface-container-lowest transition-all placeholder:text-outline-variant resize-none"
                     />
+                  </div>
+                  <div className="flex items-center gap-2 py-1">
+                    <input 
+                      type="checkbox" 
+                      id="isUrgent" 
+                      checked={isUrgent} 
+                      onChange={e => setIsUrgent(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-300 text-error focus:ring-error transition-all"
+                    />
+                    <label htmlFor="isUrgent" className="text-sm font-bold text-error cursor-pointer">
+                      Flag as Urgent Support (e.g. Account Locked)
+                    </label>
                   </div>
                   <button 
                     onClick={handleContactSubmit}

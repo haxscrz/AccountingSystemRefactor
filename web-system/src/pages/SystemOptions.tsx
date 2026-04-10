@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { useSettingsStore } from '../stores/settingsStore'
+import GlobalNotificationBell from '../components/GlobalNotificationBell'
 
 export default function SystemOptions() {
   const navigate = useNavigate()
@@ -27,9 +28,12 @@ export default function SystemOptions() {
           </div>
           <span className={`font-headline text-lg font-bold tracking-tight ${darkMode ? 'text-gray-200' : 'text-slate-800'}`}>Accounting & Workforce</span>
         </div>
-        <button onClick={handleLogout} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${darkMode ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-slate-900 hover:bg-black/5'}`}>
-          <span className="material-symbols-outlined text-[18px]">logout</span> Logout
-        </button>
+        <div className="flex items-center gap-4">
+          <GlobalNotificationBell />
+          <button onClick={handleLogout} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${darkMode ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-slate-900 hover:bg-black/5'}`}>
+            <span className="material-symbols-outlined text-[18px]">logout</span> Logout
+          </button>
+        </div>
       </div>
 
       <div className="w-full max-w-5xl z-10 text-center mb-12">

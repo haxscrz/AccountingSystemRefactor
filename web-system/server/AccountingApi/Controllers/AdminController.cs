@@ -99,6 +99,7 @@ public sealed class AdminController : ControllerBase
         int Id, string Username, string Role,
         bool CanAccessFs, bool CanAccessPayroll,
         bool IsActive, string? ProfileImageUrl, string[]? AssignedCompanies,
+        int FailedLoginCount, DateTime? LockoutEndUtc,
         DateTime? LastLoginUtc, DateTime CreatedAtUtc);
 
     public sealed record CreateUserRequest(
@@ -125,6 +126,7 @@ public sealed class AdminController : ControllerBase
                 u.CanAccessFs, u.CanAccessPayroll,
                 u.IsActive, u.ProfileImageUrl, 
                 string.IsNullOrWhiteSpace(u.AssignedCompaniesJson) ? null : System.Text.Json.JsonSerializer.Deserialize<string[]>(u.AssignedCompaniesJson, (System.Text.Json.JsonSerializerOptions)null),
+                u.FailedLoginCount, u.LockoutEndUtc,
                 u.LastLoginUtc, u.CreatedAtUtc))
             .ToListAsync();
 
@@ -147,6 +149,7 @@ public sealed class AdminController : ControllerBase
             user.CanAccessFs, user.CanAccessPayroll,
             user.IsActive, user.ProfileImageUrl,
             string.IsNullOrWhiteSpace(user.AssignedCompaniesJson) ? null : System.Text.Json.JsonSerializer.Deserialize<string[]>(user.AssignedCompaniesJson, (System.Text.Json.JsonSerializerOptions)null),
+            user.FailedLoginCount, user.LockoutEndUtc,
             user.LastLoginUtc, user.CreatedAtUtc));
     }
 
@@ -194,6 +197,7 @@ public sealed class AdminController : ControllerBase
             user.CanAccessFs, user.CanAccessPayroll,
             user.IsActive, user.ProfileImageUrl,
             string.IsNullOrWhiteSpace(user.AssignedCompaniesJson) ? null : System.Text.Json.JsonSerializer.Deserialize<string[]>(user.AssignedCompaniesJson, (System.Text.Json.JsonSerializerOptions)null),
+            user.FailedLoginCount, user.LockoutEndUtc,
             user.LastLoginUtc, user.CreatedAtUtc));
     }
 
@@ -234,6 +238,7 @@ public sealed class AdminController : ControllerBase
             user.CanAccessFs, user.CanAccessPayroll,
             user.IsActive, user.ProfileImageUrl,
             string.IsNullOrWhiteSpace(user.AssignedCompaniesJson) ? null : System.Text.Json.JsonSerializer.Deserialize<string[]>(user.AssignedCompaniesJson, (System.Text.Json.JsonSerializerOptions)null),
+            user.FailedLoginCount, user.LockoutEndUtc,
             user.LastLoginUtc, user.CreatedAtUtc));
     }
 
@@ -258,6 +263,22 @@ public sealed class AdminController : ControllerBase
         await _db.SaveChangesAsync(ct);
 
         return Ok(new { message = "Password reset successfully." });
+    }
+
+    // POST /api/admin/users/{id}/unlock
+    [HttpPost("users/{id:int}/unlock")]
+    [Authorize(Policy = "SuperAdminOnly")]
+    public async Task<IActionResult> UnlockUser(int id, CancellationToken ct)
+    {
+        var user = await _db.AppUsers.FirstOrDefaultAsync(u => u.Id == id, ct);
+        if (user is null) return NotFound(new { message = "User not found" });
+
+        user.FailedLoginCount = 0;
+        user.LockoutEndUtc = null;
+        user.UpdatedAtUtc = DateTime.UtcNow;
+        await _db.SaveChangesAsync(ct);
+
+        return Ok(new { message = "User account unlocked." });
     }
 
     // DELETE /api/admin/users/{id}

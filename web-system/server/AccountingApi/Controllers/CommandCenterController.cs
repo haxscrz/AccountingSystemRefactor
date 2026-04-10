@@ -180,12 +180,12 @@ public sealed class CommandCenterController : ControllerBase
         return Ok(new { message = "Announcement deleted." });
     }
 
-    /// <summary>Get announcements for the current user (notification bell)</summary>
     [HttpGet("my-announcements")]
     [Authorize]
     public async Task<IActionResult> GetMyAnnouncements()
     {
         var (userId, username) = GetCurrentUser();
+        var isSuperAdmin = User.IsInRole("superadmin");
         var now = DateTime.UtcNow;
 
         var query = _db.AppAnnouncements
@@ -194,7 +194,6 @@ public sealed class CommandCenterController : ControllerBase
 
         var all = await query.ToListAsync();
 
-        // Filter to announcements targeting this user
         var mine = all.Where(a =>
         {
             if (a.TargetType == "all") return true;
@@ -207,16 +206,15 @@ public sealed class CommandCenterController : ControllerBase
             catch { return false; }
         }).ToList();
 
-        // Get reaction info
         var announcementIds = mine.Select(a => a.Id).ToList();
         var reactions = await _db.AppAnnouncementReactions
             .Where(r => announcementIds.Contains(r.AnnouncementId))
             .ToListAsync();
 
-        var result = mine.Select(a =>
+        var resultList = mine.Select(a =>
         {
             var announcementReactions = reactions.Where(r => r.AnnouncementId == a.Id).ToList();
-            return new
+            return (object)new
             {
                 a.Id,
                 a.AuthorUsername,
@@ -229,9 +227,50 @@ public sealed class CommandCenterController : ControllerBase
                 ReactedByMe = announcementReactions.Any(r => r.UserId == userId),
                 ReactedBy = announcementReactions.Select(r => r.Username).ToList()
             };
-        });
+        }).ToList();
 
-        return Ok(new { data = result });
+        if (isSuperAdmin)
+        {
+            var lockedUsers = await _db.AppUsers.Where(u => u.LockoutEndUtc != null && u.LockoutEndUtc > now).ToListAsync();
+            foreach(var u in lockedUsers)
+            {
+                resultList.Add(new {
+                    Id = -1000 - u.Id,
+                    AuthorUsername = "System Alert",
+                    Title = $"Security Lockout: {u.Username}",
+                    Body = $"User {u.Username} has been locked out after {u.FailedLoginCount} failed attempts. Access automatically restores on {u.LockoutEndUtc?.ToString("g")}.",
+                    ImageData = (string?)null,
+                    Priority = "urgent",
+                    CreatedAtUtc = u.UpdatedAtUtc,
+                    ReactionCount = 0,
+                    ReactedByMe = false,
+                    ReactedBy = new List<string>()
+                });
+            }
+
+            var urgentTickets = await _db.AppSupportTickets.Where(t => t.Status == "open" && t.Message.Contains("[URGENT]")).ToListAsync();
+            foreach(var t in urgentTickets)
+            {
+                resultList.Add(new {
+                    Id = -2000 - t.Id,
+                    AuthorUsername = t.FromUsername,
+                    Title = "Urgent Support Request",
+                    Body = t.Message,
+                    ImageData = (string?)null,
+                    Priority = "urgent",
+                    CreatedAtUtc = t.CreatedAtUtc,
+                    ReactionCount = 0,
+                    ReactedByMe = false,
+                    ReactedBy = new List<string>()
+                });
+            }
+        }
+
+        // We can order by CreatedAtUtc in memory, but it requires dynamic/reflection if we mixed object types. 
+        // We'll just append them at the top since they are priority alerts.
+        resultList.Reverse(); // Newest first
+
+        return Ok(new { data = resultList });
     }
 
     /// <summary>Get full announcement detail</summary>

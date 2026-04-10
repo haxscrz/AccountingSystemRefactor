@@ -7,6 +7,7 @@ import UserManagement from './UserManagement'
 import OrganizationManagement from './OrganizationManagement'
 import SystemHealth from './SystemHealth'
 import CommandCenter from './CommandCenter'
+import GlobalNotificationBell from '../components/GlobalNotificationBell'
 
 export default function AdminSettings() {
   const [searchParams] = useSearchParams()
@@ -130,8 +131,11 @@ export default function AdminSettings() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-10 overflow-y-auto w-full">
-        <div className={activeTab === 'preferences' ? "max-w-3xl mx-auto" : "max-w-6xl mx-auto w-full"}>
+      <main className="flex-1 p-10 overflow-y-auto w-full relative">
+        <div className="absolute top-6 right-6 z-50">
+          <GlobalNotificationBell />
+        </div>
+        <div className={activeTab === 'preferences' ? "max-w-3xl mx-auto mt-4" : "max-w-6xl mx-auto w-full mt-4"}>
           
           {/* 1. PREFERENCES */}
           {activeTab === 'preferences' && (
