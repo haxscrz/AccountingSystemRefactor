@@ -437,11 +437,6 @@ export default function FSReports() {
         }
       })
 
-      const footer = {
-        jDateStr: 'GRAND TOTALS', jJvNo: '', jPayTo: '', supNo: '',
-        bankNo: '', jCkNo: ''
-      }
-
       if (format === 'csv')  exportTableCSV(reportTitle, cols, rows)
       if (format === 'xlsx') exportTableXLSX(reportTitle, cols, rows)
       if (format === 'pdf')  exportVouchersPDF(filteredMasters, voucherLines, readSelectedCompanyName(), acctDescMap)
