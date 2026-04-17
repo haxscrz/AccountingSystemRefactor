@@ -111,7 +111,10 @@ function fmtDate(d: string) {
 }
 function filterByDate<T extends { jDate: string }>(rows: T[], from: string, to: string): T[] {
   return rows.filter(r => {
-    const d = r.jDate ? new Date(r.jDate).toISOString().split('T')[0] : ''
+    if (!r.jDate) return false
+    const dt = new Date(r.jDate)
+    if (isNaN(dt.getTime())) return false
+    const d = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`
     return d >= from && d <= to
   })
 }
@@ -441,7 +444,7 @@ export default function FSReports() {
 
       if (format === 'csv')  exportTableCSV(reportTitle, cols, rows)
       if (format === 'xlsx') exportTableXLSX(reportTitle, cols, rows)
-      if (format === 'pdf')  exportTablePDF(reportTitle, subtitle, cols, rows, footer)
+      if (format === 'pdf')  exportVouchersPDF(filteredMasters, voucherLines, readSelectedCompanyName(), acctDescMap)
       return
     }
 
