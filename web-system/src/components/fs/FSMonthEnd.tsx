@@ -152,6 +152,7 @@ export default function FSMonthEnd() {
 
       // Refresh system info to show updated period
       await loadSystemInfo()
+      window.dispatchEvent(new CustomEvent('fs-system-info-updated'))
 
     } catch (err: any) {
       const errMsg = err.response?.data?.error
@@ -371,24 +372,23 @@ export default function FSMonthEnd() {
         </button>
       )}
 
-      {/* ── Toast Notification ── */}
+      {/* Toast Notification */}
       {toast && (
-        <div className={`fixed bottom-6 right-6 z-[100] px-5 py-3.5 rounded-xl border text-sm font-semibold shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-bottom-3 ${
-          toast.type === 'error'
-            ? 'bg-red-600 text-white border-red-700'
-            : toast.type === 'success'
-              ? 'bg-emerald-600 text-white border-emerald-700'
-              : toast.type === 'warning'
-                ? 'bg-amber-500 text-white border-amber-600'
-                : 'bg-surface text-on-surface border-outline-variant/30 shadow-lg'
-        }`}>
-          <span className="material-symbols-outlined text-[18px]">
-            {toast.type === 'error' ? 'error' : toast.type === 'success' ? 'check_circle' : toast.type === 'warning' ? 'warning' : 'info'}
-          </span>
-          {toast.text}
-          <button type="button" onClick={() => setToast(null)} className="ml-3 opacity-70 hover:opacity-100 transition-opacity">
-            <span className="material-symbols-outlined text-[16px]">close</span>
-          </button>
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className={`flex items-center gap-3 px-5 py-3.5 rounded-full shadow-lg border text-sm font-bold tracking-wide backdrop-blur-md ${
+            toast.type === 'error' ? 'bg-error/95 text-white border-error shadow-error/20' :
+            toast.type === 'warning' ? 'bg-amber-500/95 text-white border-amber-600 shadow-amber-500/20' :
+            toast.type === 'success' ? 'bg-emerald-600/95 text-white border-emerald-700 shadow-emerald-500/20' :
+            'bg-surface-container-highest/95 text-on-surface border-outline-variant/30 shadow-black/10'
+          }`}>
+            <span className="material-symbols-outlined text-[18px]">
+              {toast.type === 'error' ? 'error' : toast.type === 'warning' ? 'warning' : toast.type === 'success' ? 'check_circle' : 'info'}
+            </span>
+            <span>{toast.text}</span>
+            <button type="button" onClick={() => setToast(null)} className="ml-3 opacity-70 hover:opacity-100 transition-opacity">
+              <span className="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

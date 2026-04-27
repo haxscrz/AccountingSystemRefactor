@@ -50,21 +50,28 @@ export default function FSSystem() {
     'July', 'August', 'September', 'October', 'November', 'December']
 
   useEffect(() => {
-    fetch('/api/fs/system-info', {
-      headers: {
-        'Authorization': `Bearer ${accessToken ?? ''}`,
-        'X-Company-Code': selectedCompanyCode ?? '',
-      }
-    })
-      .then(r => r.ok ? r.json() : null)
-      .then(res => {
-        if (!res) return
-        const d = res?.data ?? res
-        const mo = d.currentMonth ?? d.current_month ?? 0
-        const yr = d.currentYear ?? d.current_year ?? 0
-        if (mo && yr) setStatusPeriod(`${MONTH_NAMES[mo] ?? mo} ${yr}`)
+    const fetchInfo = () => {
+      fetch('/api/fs/system-info', {
+        headers: {
+          'Authorization': `Bearer ${accessToken ?? ''}`,
+          'X-Company-Code': selectedCompanyCode ?? '',
+        }
       })
-      .catch(() => {})
+        .then(r => r.ok ? r.json() : null)
+        .then(res => {
+          if (!res) return
+          const d = res?.data ?? res
+          const mo = d.currentMonth ?? d.current_month ?? 0
+          const yr = d.currentYear ?? d.current_year ?? 0
+          if (mo && yr) setStatusPeriod(`${MONTH_NAMES[mo] ?? mo} ${yr}`)
+        })
+        .catch(() => {})
+    }
+
+    fetchInfo()
+
+    window.addEventListener('fs-system-info-updated', fetchInfo)
+    return () => window.removeEventListener('fs-system-info-updated', fetchInfo)
   }, [accessToken, selectedCompanyCode])
 
   const handleBackup = async () => {

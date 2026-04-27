@@ -31,32 +31,40 @@ export default function FSFiscalNarrative() {
   const [fetchError, setFetchError] = useState(false)
 
   useEffect(() => {
-    fetch('/api/fs/system-info', {
-      headers: {
-        'Authorization': `Bearer ${accessToken ?? ''}`,
-        'X-Company-Code': companyCode ?? '',
-      }
-    })
-      .then(r => r.ok ? r.json() : Promise.reject(r.status))
-      .then(res => {
-        const d = res?.data ?? res
-        setInfo({
-          currentMonth:         d.currentMonth        ?? d.current_month          ?? 0,
-          currentYear:          d.currentYear         ?? d.current_year           ?? 0,
-          begDate:              d.begDate             ?? d.beg_date               ?? '',
-          endDate:              d.endDate             ?? d.end_date               ?? '',
-          unpostedChecks:       d.unpostedChecks      ?? d.unposted_checks        ?? 0,
-          unpostedCashReceipts: d.unpostedCashReceipts?? d.unposted_cash_receipts ?? 0,
-          unpostedSalesBook:    d.unpostedSalesBook   ?? d.unposted_sales_book    ?? 0,
-          unpostedJournals:     d.unpostedJournals    ?? d.unposted_journals      ?? 0,
-          unpostedPurchaseBook: d.unpostedPurchaseBook?? d.unposted_purchase_book ?? 0,
-          unpostedAdjustments:  d.unpostedAdjustments ?? d.unposted_adjustments   ?? 0,
-          totalUnposted:        d.totalUnposted       ?? d.total_unposted         ?? 0,
-        })
+    const fetchInfo = () => {
+      setLoading(true)
+      fetch('/api/fs/system-info', {
+        headers: {
+          'Authorization': `Bearer ${accessToken ?? ''}`,
+          'X-Company-Code': companyCode ?? '',
+        }
       })
-      .catch(() => setFetchError(true))
-      .finally(() => setLoading(false))
-  }, [])
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(res => {
+          const d = res?.data ?? res
+          setInfo({
+            currentMonth:         d.currentMonth        ?? d.current_month          ?? 0,
+            currentYear:          d.currentYear         ?? d.current_year           ?? 0,
+            begDate:              d.begDate             ?? d.beg_date               ?? '',
+            endDate:              d.endDate             ?? d.end_date               ?? '',
+            unpostedChecks:       d.unpostedChecks      ?? d.unposted_checks        ?? 0,
+            unpostedCashReceipts: d.unpostedCashReceipts?? d.unposted_cash_receipts ?? 0,
+            unpostedSalesBook:    d.unpostedSalesBook   ?? d.unposted_sales_book    ?? 0,
+            unpostedJournals:     d.unpostedJournals    ?? d.unposted_journals      ?? 0,
+            unpostedPurchaseBook: d.unpostedPurchaseBook?? d.unposted_purchase_book ?? 0,
+            unpostedAdjustments:  d.unpostedAdjustments ?? d.unposted_adjustments   ?? 0,
+            totalUnposted:        d.totalUnposted       ?? d.total_unposted         ?? 0,
+          })
+        })
+        .catch(() => setFetchError(true))
+        .finally(() => setLoading(false))
+    }
+
+    fetchInfo()
+
+    window.addEventListener('fs-system-info-updated', fetchInfo)
+    return () => window.removeEventListener('fs-system-info-updated', fetchInfo)
+  }, [accessToken, companyCode])
 
   const periodLabel = info
     ? `${MONTH_NAMES[info.currentMonth] ?? info.currentMonth} ${info.currentYear}`
