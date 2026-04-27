@@ -30,6 +30,17 @@ export default function FSPosting() {
   const [loadingInfo, setLoadingInfo] = useState(true)
   const [recordsPosted, setRecordsPosted] = useState(0)
 
+  // Custom UI states
+  const [toast, setToast] = useState<{ text: string; type: 'success' | 'error' | 'info' | 'warning' } | null>(null)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 4500)
+      return () => clearTimeout(timer)
+    }
+  }, [toast])
+
   const loadSystemInfo = async () => {
     setLoadingInfo(true)
     try {
@@ -46,21 +57,18 @@ export default function FSPosting() {
     void loadSystemInfo()
   }, [])
 
-  const handlePost = async () => {
+  const initiatePost = () => {
     if (!sysInfo) return
     if (sysInfo.totalUnposted === 0) {
-      alert("No transactions to post for the current period.")
+      setToast({ text: "No transactions to post for the current period.", type: 'info' })
       return
     }
+    setShowConfirmModal(true)
+  }
 
-    if (!window.confirm(
-      'POST ALL TRANSACTIONS?\\n\\n' +
-      'This action will:\\n' +
-      '1. Move all unposted entries into the posted ledger\\n' +
-      '2. Recalculate all Chart of Account ending balances\\n\\n' +
-      `Proceed with posting ${sysInfo.totalUnposted} transactions?`
-    )) return
-
+  const handlePost = async () => {
+    if (!sysInfo) return
+    setShowConfirmModal(false)
     setPosting(true)
     setResultMessage('')
 
@@ -69,10 +77,13 @@ export default function FSPosting() {
       setRecordsPosted(resp.data.recordsPosted ?? 0)
       setResultSuccess(true)
       setResultMessage(resp.data.message || 'Posting completed successfully.')
+      setToast({ text: 'Records successfully posted to ledger.', type: 'success' })
       await loadSystemInfo()  // Refresh counts after posting
     } catch (err: any) {
+      const msg = err.response?.data?.error || err.response?.data?.Error || err.message || 'Posting failed.'
       setResultSuccess(false)
-      setResultMessage(err.response?.data?.error || err.response?.data?.Error || err.message || 'Posting failed.')
+      setResultMessage(msg)
+      setToast({ text: msg, type: 'error' })
     } finally {
       setPosting(false)
     }
@@ -98,6 +109,61 @@ export default function FSPosting() {
         title="Post All Transactions"
         subtitle="Apply unposted journal entries to the core ledger accounts"
       />
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className={`flex items-center gap-3 px-5 py-3.5 rounded-full shadow-lg border text-sm font-bold tracking-wide backdrop-blur-md ${
+            toast.type === 'error' ? 'bg-error/95 text-white border-error shadow-error/20' :
+            toast.type === 'warning' ? 'bg-amber-500/95 text-white border-amber-600 shadow-amber-500/20' :
+            toast.type === 'success' ? 'bg-emerald-600/95 text-white border-emerald-700 shadow-emerald-500/20' :
+            'bg-surface-container-highest/95 text-on-surface border-outline-variant/30 shadow-black/10'
+          }`}>
+            <span className="material-symbols-outlined text-[18px]">
+              {toast.type === 'error' ? 'error' : toast.type === 'warning' ? 'warning' : toast.type === 'success' ? 'check_circle' : 'info'}
+            </span>
+            <span>{toast.text}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && sysInfo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="max-w-md w-full bg-surface-container-lowest rounded-3xl shadow-2xl overflow-hidden border border-outline-variant/30 animate-in slide-in-from-bottom-4 duration-300">
+            <div className="p-8">
+              <div className="w-14 h-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-6">
+                <span className="material-symbols-outlined text-3xl">publish</span>
+              </div>
+              <h2 className="text-2xl font-headline font-bold text-on-surface mb-3 tracking-tight">Post All Transactions?</h2>
+              <p className="text-on-surface-variant text-sm leading-relaxed mb-6">
+                This action will move all temporary unposted entries into the posted permanent ledger and recalculate all Chart of Account ending balances.
+              </p>
+              
+              <div className="bg-surface-container/50 px-4 py-3 rounded-xl flex items-center justify-between mb-8">
+                <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Pending Records</span>
+                <span className="font-mono text-lg font-black text-primary">{sysInfo.totalUnposted}</span>
+              </div>
+              
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setShowConfirmModal(false)}
+                  className="flex-1 py-3 px-4 rounded-xl font-bold tracking-wide text-sm bg-transparent border border-outline-variant/30 hover:bg-surface-container transition-colors"
+                >
+                  CANCEL
+                </button>
+                <button 
+                  onClick={handlePost}
+                  className="flex-1 py-3 px-4 rounded-xl font-bold tracking-wide text-sm bg-primary text-on-primary hover:bg-primary/90 shadow-md hover:shadow-lg hover:-translate-y-0.5 border border-primary/20 transition-all flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">done_all</span>
+                  CONFIRM
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {resultMessage && (
         <div className={`px-5 py-4 rounded-xl border-l-4 font-bold text-sm shadow-sm flex items-center justify-between transition-all animate-in fade-in slide-in-from-top-2 ${
@@ -143,7 +209,7 @@ export default function FSPosting() {
                   ? 'bg-surface-container-high text-on-surface-variant/50 cursor-not-allowed border-none'
                   : 'bg-gradient-to-br from-primary to-primary-container text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 border border-primary/20'
               }`}
-              onClick={handlePost}
+              onClick={initiatePost}
               disabled={posting || loadingInfo || (sysInfo ? sysInfo.totalUnposted === 0 : false)}
             >
               {posting ? (

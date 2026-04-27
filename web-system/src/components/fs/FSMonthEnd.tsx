@@ -68,9 +68,6 @@ export default function FSMonthEnd() {
   // Pre-flight validation
   const preflightErrors: string[] = []
   if (sysInfo) {
-    if (sysInfo.totalUnposted > 0) {
-      preflightErrors.push(`${sysInfo.totalUnposted} unposted transaction(s) remain. All transactions must be posted before closing.`)
-    }
     if (sysInfo.currentMonth < 1 || sysInfo.currentMonth > 12) {
       preflightErrors.push('Current month value is invalid. Check system configuration.')
     }
@@ -101,11 +98,8 @@ export default function FSMonthEnd() {
       return
     }
 
-    // Check for unposted transactions one more time
-    if (sysInfo.totalUnposted > 0) {
-      showToast(`Cannot close period: ${sysInfo.totalUnposted} unposted transaction(s) remain.`, 'error')
-      return
-    }
+    // We intentionally allow unposted transactions because Month-End backend logic
+    // will auto-post them internally before ZAPping the tables.
 
     // Final confirmation
     if (!window.confirm(
@@ -229,13 +223,13 @@ export default function FSMonthEnd() {
               {
                 label: 'Unposted Transactions',
                 val: String(sysInfo.totalUnposted),
-                badge: sysInfo.totalUnposted > 0 ? 'error' : 'success'
+                badge: sysInfo.totalUnposted > 0 ? 'warning' : 'success'
               },
             ].map(row => (
               <div key={row.label} className="flex items-center justify-between px-6 py-3.5">
                 <span className="text-sm text-on-surface-variant">{row.label}</span>
                 {row.badge ? (
-                  <span className={`px-3 py-0.5 rounded-full text-[11px] font-bold ${row.badge === 'error' ? 'bg-error/10 text-error' : 'bg-emerald-100 text-emerald-700'}`}>
+                  <span className={`px-3 py-0.5 rounded-full text-[11px] font-bold ${row.badge === 'error' ? 'bg-error/10 text-error' : row.badge === 'warning' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-700'}`}>
                     {row.val}
                   </span>
                 ) : (
