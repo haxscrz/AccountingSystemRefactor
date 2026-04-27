@@ -1,0 +1,126 @@
+{
+  "tableName": "pay_phitable",
+  "sourcePath": "PAY/OTHR/PHITABLE.DBF",
+  "rowCount": 16,
+  "columns": [
+    "GREATOREQL",
+    "LESSTHAN",
+    "SALARYCRDT",
+    "EMP_ER_SHR",
+    "EMP_EE_SHR"
+  ],
+  "rows": [
+    {
+      "GREATOREQL": -1,
+      "LESSTHAN": 0,
+      "SALARYCRDT": 0,
+      "EMP_ER_SHR": 0,
+      "EMP_EE_SHR": 0
+    },
+    {
+      "GREATOREQL": 0,
+      "LESSTHAN": 3500,
+      "SALARYCRDT": 3000,
+      "EMP_ER_SHR": 37.5,
+      "EMP_EE_SHR": 37.5
+    },
+    {
+      "GREATOREQL": 3500,
+      "LESSTHAN": 4000,
+      "SALARYCRDT": 3500,
+      "EMP_ER_SHR": 43.75,
+      "EMP_EE_SHR": 43.75
+    },
+    {
+      "GREATOREQL": 4000,
+      "LESSTHAN": 4500,
+      "SALARYCRDT": 4000,
+      "EMP_ER_SHR": 50,
+      "EMP_EE_SHR": 50
+    },
+    {
+      "GREATOREQL": 4500,
+      "LESSTHAN": 5000,
+      "SALARYCRDT": 4500,
+      "EMP_ER_SHR": 56.25,
+      "EMP_EE_SHR": 56.25
+    },
+    {
+      "GREATOREQL": 5000,
+      "LESSTHAN": 5500,
+      "SALARYCRDT": 5000,
+      "EMP_ER_SHR": 62.5,
+      "EMP_EE_SHR": 62.5
+    },
+    {
+      "GREATOREQL": 5500,
+      "LESSTHAN": 6000,
+      "SALARYCRDT": 5500,
+      "EMP_ER_SHR": 68.75,
+      "EMP_EE_SHR": 68.75
+    },
+    {
+      "GREATOREQL": 6000,
+      "LESSTHAN": 6500,
+      "SALARYCRDT": 6000,
+      "EMP_ER_SHR": 75,
+      "EMP_EE_SHR": 75
+    },
+    {
+      "GREATOREQL": 6500,
+      "LESSTHAN": 7000,
+      "SALARYCRDT": 6500,
+      "EMP_ER_SHR": 81.25,
+      "EMP_EE_SHR": 81.25
+    },
+    {
+      "GREATOREQL": 7000,
+      "LESSTHAN": 7500,
+      "SALARYCRDT": 7000,
+      "EMP_ER_SHR": 87.5,
+      "EMP_EE_SHR": 87.5
+    },
+    {
+      "GREATOREQL": 7500,
+      "LESSTHAN": 8000,
+      "SALARYCRDT": 7500,
+      "EMP_ER_SHR": 93.75,
+      "EMP_EE_SHR": 93.75
+    },
+    {
+      "GREATOREQL": 8000,
+      "LESSTHAN": 8500,
+      "SALARYCRDT": 8000,
+      "EMP_ER_SHR": 100,
+      "EMP_EE_SHR": 100
+    },
+    {
+      "GREATOREQL": 8500,
+      "LESSTHAN": 9000,
+      "SALARYCRDT": 8500,
+      "EMP_ER_SHR": 106.25,
+      "EMP_EE_SHR": 106.25
+    },
+    {
+      "GREATOREQL": 9000,
+      "LESSTHAN": 9500,
+      "SALARYCRDT": 9000,
+      "EMP_ER_SHR": 112.5,
+      "EMP_EE_SHR": 112.5
+    },
+    {
+      "GREATOREQL": 9500,
+      "LESSTHAN": 10000,
+      "SALARYCRDT": 9500,
+      "EMP_ER_SHR": 118.75,
+      "EMP_EE_SHR": 118.75
+    },
+    {
+      "GREATOREQL": 10000,
+      "LESSTHAN": 999999999,
+      "SALARYCRDT": 10000,
+      "EMP_ER_SHR": 125,
+      "EMP_EE_SHR": 125
+    }
+  ]
+}

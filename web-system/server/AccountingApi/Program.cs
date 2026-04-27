@@ -27,13 +27,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICompanyContextAccessor, CompanyContextAccessor>();
 
 // Resolve SQLite path relative to app root so Azure doesn't create a blank DB in the wrong directory
-var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting.db";
-if (rawConnStr.Contains("Data Source=") && !Path.IsPathRooted(rawConnStr.Replace("Data Source=", "")))
-{
-    var dbFileName = rawConnStr.Replace("Data Source=", "").Trim();
-    var absoluteDbPath = Path.Combine(builder.Environment.ContentRootPath, dbFileName);
-    rawConnStr = $"Data Source={absoluteDbPath}";
-}
+var absoluteDbPath = Path.Combine(builder.Environment.ContentRootPath, "accounting_v5.db");
+var rawConnStr = $"Data Source={absoluteDbPath}";
 builder.Services.AddDbContext<AccountingDbContext>(options => options.UseSqlite(rawConnStr));
 
 // Services
@@ -631,7 +626,13 @@ using (var initScope = app.Services.CreateScope())
             continue;
         }
 
-        var now = DateTime.UtcNow;
+        var earliestCheck = db.FSCheckMas
+            .IgnoreQueryFilters()
+            .Where(x => x.CompanyCode == companyCode)
+            .OrderBy(x => x.JDate)
+            .FirstOrDefault();
+
+        var now = earliestCheck?.JDate ?? DateTime.UtcNow;
         db.FSSysId.Add(new AccountingApi.Models.FSSysId
         {
             CompanyCode = companyCode,
@@ -639,7 +640,7 @@ using (var initScope = app.Services.CreateScope())
             PresYr    = now.Year,
             BegDate   = new DateTime(now.Year, now.Month, 1),
             EndDate   = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month)),
-            UpdatedAt = now
+            UpdatedAt = DateTime.UtcNow
         });
     }
     db.SaveChanges();

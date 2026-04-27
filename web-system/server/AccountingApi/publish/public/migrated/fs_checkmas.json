@@ -1,0 +1,207 @@
+{
+  "tableName": "fs_checkmas",
+  "sourcePath": "Ellen's Data/Ellen/data/CHECKMAS.DBF",
+  "rowCount": 19,
+  "columns": [
+    "J_JV_NO",
+    "J_DATE",
+    "J_CK_NO",
+    "J_PAY_TO",
+    "J_CK_AMT",
+    "J_DESC",
+    "BANK_NO",
+    "SUP_NO"
+  ],
+  "rows": [
+    {
+      "J_JV_NO": "00145450",
+      "J_DATE": "2026-02-12",
+      "J_CK_NO": "00145450",
+      "J_PAY_TO": "INSULAR HEALTH CARE INC.",
+      "J_CK_AMT": 95408,
+      "J_DESC": "HEALTH CARD PREM.REM. FOR THE PERIOD 01.21/07.20.2",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "00145452",
+      "J_DATE": "2026-02-19",
+      "J_CK_NO": "00145452",
+      "J_PAY_TO": "ASIONG'S IND. PRODUCTS",
+      "J_CK_AMT": 4800,
+      "J_DESC": "PAYMENT OF FACTORY SUPPLIES  GLOVES  INV.#172346.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "00145451",
+      "J_DATE": "2026-02-19",
+      "J_CK_NO": "00145451",
+      "J_PAY_TO": "HIGLLY ENTERPRISES",
+      "J_CK_AMT": 18200,
+      "J_DESC": "PAYMENT OF UNIFORMS 130 PCS. @140.00",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602017",
+      "J_DATE": "2026-02-23",
+      "J_CK_NO": "B2602017",
+      "J_PAY_TO": "A.CARVAJAL / E. SANCHEZ",
+      "J_CK_AMT": 542453.91,
+      "J_DESC": "PAYROLL FOR THE PERIOD 02.01/02.15/2026.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602018",
+      "J_DATE": "2026-02-23",
+      "J_CK_NO": "B2602018",
+      "J_PAY_TO": "ELENOR T. SANCHEZ",
+      "J_CK_AMT": 3320,
+      "J_DESC": "ADMIN FEE FOR THE MONTH  OF  FEBRUARY 2026.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602019",
+      "J_DATE": "2026-02-24",
+      "J_CK_NO": "B2602019",
+      "J_PAY_TO": "A.CARVAJAL / E. SANCHEZ",
+      "J_CK_AMT": 14102.33,
+      "J_DESC": "PETTY CASH FUND REPLENISHMENT.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602020",
+      "J_DATE": "2026-02-25",
+      "J_CK_NO": "B2602020",
+      "J_PAY_TO": "A.CARVAJAL / E. SANCHEZ",
+      "J_CK_AMT": 5744.5,
+      "J_DESC": "PETTY CASH FUND REPLENISHMENT.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602021",
+      "J_DATE": "2026-02-25",
+      "J_CK_NO": "B2602021",
+      "J_PAY_TO": "ALEXIS A. CARVAJAL",
+      "J_CK_AMT": 6450.08,
+      "J_DESC": "PETTY CASH FUND REPLENIHSMNT.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602022",
+      "J_DATE": "2026-02-26",
+      "J_CK_NO": "B2602022",
+      "J_PAY_TO": "MARLON PABLO",
+      "J_CK_AMT": 5000,
+      "J_DESC": "COMPANY LOAN FOR SALARY DEDUCTION.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602023",
+      "J_DATE": "2026-02-27",
+      "J_CK_NO": "B2602023",
+      "J_PAY_TO": "A.CARVAJAL / E. SANCHEZ",
+      "J_CK_AMT": 987279.8,
+      "J_DESC": "PAYROLL FOR THE PERIOD 02.16/02.28.26.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602024",
+      "J_DATE": "2026-02-28",
+      "J_CK_NO": "B2602024",
+      "J_PAY_TO": "SOCIAL SEC. SYSTEM",
+      "J_CK_AMT": 133985,
+      "J_DESC": "SSS PREMIUM REM.  FOR FEB. 2026.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602025",
+      "J_DATE": "2026-02-28",
+      "J_CK_NO": "B2602025",
+      "J_PAY_TO": "SOCIAL SEC. SYSTEM",
+      "J_CK_AMT": 12612.88,
+      "J_DESC": "SSS SALARY LOAN  REM.  FOR FEB. 2026.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602026",
+      "J_DATE": "2026-02-28",
+      "J_CK_NO": "B2602026",
+      "J_PAY_TO": "SOCIAL SEC. SYSTEM",
+      "J_CK_AMT": 2858.52,
+      "J_DESC": "SSS CALAMITY LOAN REMITTANCE FOR FEB. 2026.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602027",
+      "J_DATE": "2026-02-28",
+      "J_CK_NO": "B2602027",
+      "J_PAY_TO": "HOME DEV. MUTUAL FUND",
+      "J_CK_AMT": 29653.12,
+      "J_DESC": "PAH-IBIG PREM. REM. FOR FEB. 2026.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602028",
+      "J_DATE": "2026-02-28",
+      "J_CK_NO": "B2602028",
+      "J_PAY_TO": "HOME DEV. MUTUAL FUND",
+      "J_CK_AMT": 24410.23,
+      "J_DESC": "PAG-IBIG STL/MPL LOAN REMITTANCE FOR FEB. 2026",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602029",
+      "J_DATE": "2026-02-28",
+      "J_CK_NO": "B2602029",
+      "J_PAY_TO": "HOME DEV. MUTUAL FUND",
+      "J_CK_AMT": 1850.86,
+      "J_DESC": "PAG-IBIG CALAMITY LOAN REMITTANCE FOR FEB. 2026.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602031",
+      "J_DATE": "2026-02-28",
+      "J_CK_NO": "B2602031",
+      "J_PAY_TO": "BUREAU OF INT. REV.",
+      "J_CK_AMT": 2509.07,
+      "J_DESC": "EWT REMITTANCE FOR FEB. 2026.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602032",
+      "J_DATE": "2026-02-28",
+      "J_CK_NO": "B2602032",
+      "J_PAY_TO": "BUREAU OF INT. REV.",
+      "J_CK_AMT": 27268.11,
+      "J_DESC": "WTAX REMITTNACE FOR  FEB. 2026.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    },
+    {
+      "J_JV_NO": "B2602030",
+      "J_DATE": "2026-02-28",
+      "J_CK_NO": "B2602030",
+      "J_PAY_TO": "PHIL. HEALTH INS. CORP.",
+      "J_CK_AMT": 46673.3,
+      "J_DESC": "PHILHEALTH PREM. REM. FOR  FEB. 2026.",
+      "BANK_NO": 5,
+      "SUP_NO": 5
+    }
+  ]
+}

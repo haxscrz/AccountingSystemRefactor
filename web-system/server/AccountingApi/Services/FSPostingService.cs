@@ -46,22 +46,26 @@ public sealed class FSPostingService
     /// Helper: returns true if a check master record is an Advance CDV (next-period entry).
     /// Advance CDVs must be excluded from posting, counts, and month-end ZAP.
     /// </summary>
-    private static bool IsAdvanceCheck(FSCheckMas m) =>
+    private static bool IsAdvanceCheck(FSCheckMas m, FSSysId sysId) =>
         m.JJvNo.StartsWith("ADV", StringComparison.OrdinalIgnoreCase) ||
-        m.JCkNo.StartsWith("ADV", StringComparison.OrdinalIgnoreCase);
+        m.JCkNo.StartsWith("ADV", StringComparison.OrdinalIgnoreCase) ||
+        (sysId != null && m.JDate > sysId.EndDate);
 
     public async Task<int> GetTableCountAsync(string tableName, CancellationToken cancellationToken = default)
     {
         try
         {
+            var companyCode = _companyContextAccessor.CompanyCode;
+            var sysId = await _context.FSSysId.FirstOrDefaultAsync(s => s.CompanyCode == companyCode, cancellationToken);
+
             return tableName switch
             {
-                // Exclude Advance CDVs (ADV prefix) from unposted counts
+                // Exclude Advance CDVs (future date or ADV prefix) from unposted counts
                 "fs_checkmas" => await _context.FSCheckMas
-                    .CountAsync(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"), cancellationToken),
+                    .CountAsync(c => !(c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV") || (sysId != null && c.JDate > sysId.EndDate)), cancellationToken),
                 "fs_checkvou" => await _context.FSCheckVou
                     .CountAsync(v => !_context.FSCheckMas.Any(m =>
-                        m.JCkNo == v.JCkNo && (m.JJvNo.StartsWith("ADV") || m.JCkNo.StartsWith("ADV"))), cancellationToken),
+                        m.JCkNo == v.JCkNo && (m.JJvNo.StartsWith("ADV") || m.JCkNo.StartsWith("ADV") || (sysId != null && m.JDate > sysId.EndDate))), cancellationToken),
                 "fs_cashrcpt" => await _context.FSCashRcpt.CountAsync(cancellationToken),
                 "fs_salebook" => await _context.FSSaleBook.CountAsync(cancellationToken),
                 "fs_journals" => await _context.FSJournals.CountAsync(cancellationToken),
@@ -83,6 +87,8 @@ public sealed class FSPostingService
                 return (false, "Invalid company context.", 0);
             }
 
+            var sysId = await _context.FSSysId.FirstOrDefaultAsync(s => s.CompanyCode == companyCode, cancellationToken);
+
             // Step 1: Clear posted journals table
             await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_pournals WHERE company_code = {companyCode}", cancellationToken);
 
@@ -94,9 +100,9 @@ public sealed class FSPostingService
             int totalRecords = 0;
 
             // Step 3: Post from Check Vouchers (checkvou + checkmas for dates)
-            // IMPORTANT: Skip Advance CDVs (ADV prefix) — they belong to the NEXT period
+            // IMPORTANT: Skip Advance CDVs (ADV prefix or future date) — they belong to the NEXT period
             var advanceCheckNos = await _context.FSCheckMas
-                .Where(m => m.JJvNo.StartsWith("ADV") || m.JCkNo.StartsWith("ADV"))
+                .Where(m => m.JJvNo.StartsWith("ADV") || m.JCkNo.StartsWith("ADV") || (sysId != null && m.JDate > sysId.EndDate))
                 .Select(m => m.JCkNo)
                 .ToListAsync(cancellationToken);
 
@@ -294,9 +300,10 @@ public sealed class FSPostingService
                 return (false, $"Month-end mismatch. System is on {sysId.PresYr}-{sysId.PresMo:00}, but you requested {year}-{month:00}.");
             }
 
-            // Exclude Advance CDVs (ADV prefix) from unposted count — they are next-period entries
+            // Exclude Advance CDVs (ADV prefix or future date) from unposted count — they are next-period entries
+            var endDateStr = sysId.EndDate.ToString("yyyy-MM-dd");
             var unpostedCount = await _context.FSCheckMas
-                                    .CountAsync(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"), cancellationToken)
+                                    .CountAsync(c => !(c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV") || c.JDate > sysId.EndDate), cancellationToken)
                                + await _context.FSCashRcpt.CountAsync(cancellationToken)
                                + await _context.FSSaleBook.CountAsync(cancellationToken)
                                + await _context.FSJournals.CountAsync(cancellationToken)
@@ -346,12 +353,13 @@ public sealed class FSPostingService
             }
 
             // Step 4: Clear all transaction files (ZAP equivalent)
-            // IMPORTANT: Preserve Advance CDVs (ADV prefix) — they belong to the NEXT period
+            // IMPORTANT: Preserve Advance CDVs (ADV prefix or future date) — they belong to the NEXT period
+            var endDateParam = sysId.EndDate.ToString("yyyy-MM-dd");
             await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"DELETE FROM fs_checkvou WHERE company_code = {companyCode} AND j_ck_no NOT IN (SELECT j_ck_no FROM fs_checkmas WHERE company_code = {companyCode} AND (j_jv_no LIKE 'ADV%' OR j_ck_no LIKE 'ADV%'))",
+                $"DELETE FROM fs_checkvou WHERE company_code = {companyCode} AND j_ck_no NOT IN (SELECT j_ck_no FROM fs_checkmas WHERE company_code = {companyCode} AND (j_jv_no LIKE 'ADV%' OR j_ck_no LIKE 'ADV%' OR j_date > {endDateParam}))",
                 cancellationToken);
             await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"DELETE FROM fs_checkmas WHERE company_code = {companyCode} AND j_jv_no NOT LIKE 'ADV%' AND j_ck_no NOT LIKE 'ADV%'",
+                $"DELETE FROM fs_checkmas WHERE company_code = {companyCode} AND j_jv_no NOT LIKE 'ADV%' AND j_ck_no NOT LIKE 'ADV%' AND j_date <= {endDateParam}",
                 cancellationToken);
             await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_cashrcpt WHERE company_code = {companyCode}", cancellationToken);
             await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_salebook WHERE company_code = {companyCode}", cancellationToken);

@@ -1,0 +1,308 @@
+{
+  "generatedAt": "2026-03-31T12:17:35.609Z",
+  "datasetCount": 20,
+  "datasets": [
+    {
+      "key": "fs_accounts",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/ACCOUNTS.DBF",
+      "outputFile": "fs_accounts.json",
+      "rowCount": 114,
+      "columns": [
+        "ACCT_CODE",
+        "ACCT_DESC",
+        "OPEN_BAL",
+        "CUR_DEBIT",
+        "CUR_CREDIT",
+        "END_BAL",
+        "GL_EFFECT",
+        "GL_REPORT",
+        "FORMULA",
+        "INITIALIZE"
+      ]
+    },
+    {
+      "key": "fs_acctnew",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/ACCTNEW.DBF",
+      "outputFile": "fs_acctnew.json",
+      "rowCount": 113,
+      "columns": [
+        "ACCT_CODE",
+        "ACCT_DESC",
+        "OPEN_BAL",
+        "CUR_DEBIT",
+        "CUR_CREDIT",
+        "GL_EFFECT",
+        "GL_REPORT",
+        "END_BAL"
+      ]
+    },
+    {
+      "key": "fs_accts",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/ACCTS.DBF",
+      "outputFile": "fs_accts.json",
+      "rowCount": 113,
+      "columns": [
+        "ACCT_CODE",
+        "ACCT_DESC",
+        "OPEN_BAL",
+        "CUR_DEBIT",
+        "CUR_CREDIT",
+        "ENDBAL",
+        "END_BAL",
+        "GL_EFFECT",
+        "GL_REPORT",
+        "FORMULA"
+      ]
+    },
+    {
+      "key": "fs_acheckma",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/Acheckma.dbf",
+      "outputFile": "fs_acheckma.json",
+      "rowCount": 0,
+      "columns": [
+        "J_JV_NO",
+        "J_DATE",
+        "J_CK_NO",
+        "J_PAY_TO",
+        "J_CK_AMT",
+        "J_DESC",
+        "BANK_NO",
+        "SUP_NO"
+      ]
+    },
+    {
+      "key": "fs_acheckvo",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/Acheckvo.dbf",
+      "outputFile": "fs_acheckvo.json",
+      "rowCount": 0,
+      "columns": [
+        "J_CK_NO",
+        "ACCT_CODE",
+        "J_CK_AMT",
+        "J_D_OR_C"
+      ]
+    },
+    {
+      "key": "fs_adjstmnt",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/ADJSTMNT.DBF",
+      "outputFile": "fs_adjstmnt.json",
+      "rowCount": 0,
+      "columns": [
+        "J_JV_NO",
+        "J_DATE",
+        "ACCT_CODE",
+        "J_CK_AMT",
+        "J_D_OR_C"
+      ]
+    },
+    {
+      "key": "fs_banks",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/BANKS.DBF",
+      "outputFile": "fs_banks.json",
+      "rowCount": 0,
+      "columns": [
+        "BANK_NO",
+        "BANK_NAME",
+        "BANK_ADDR",
+        "BANK_ACCT"
+      ]
+    },
+    {
+      "key": "fs_cashrcpt",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/CASHRCPT.DBF",
+      "outputFile": "fs_cashrcpt.json",
+      "rowCount": 3,
+      "columns": [
+        "J_JV_NO",
+        "J_DATE",
+        "ACCT_CODE",
+        "J_CK_AMT",
+        "J_D_OR_C"
+      ]
+    },
+    {
+      "key": "fs_checkmas",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/CHECKMAS.DBF",
+      "outputFile": "fs_checkmas.json",
+      "rowCount": 19,
+      "columns": [
+        "J_JV_NO",
+        "J_DATE",
+        "J_CK_NO",
+        "J_PAY_TO",
+        "J_CK_AMT",
+        "J_DESC",
+        "BANK_NO",
+        "SUP_NO"
+      ]
+    },
+    {
+      "key": "fs_checkvou",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/CHECKVOU.DBF",
+      "outputFile": "fs_checkvou.json",
+      "rowCount": 87,
+      "columns": [
+        "J_CK_NO",
+        "ACCT_CODE",
+        "J_CK_AMT",
+        "J_D_OR_C"
+      ]
+    },
+    {
+      "key": "fs_effects",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/EFFECTS.DBF",
+      "outputFile": "fs_effects.json",
+      "rowCount": 26,
+      "columns": [
+        "GL_REPORT",
+        "GL_EFFECT",
+        "GL_HEAD",
+        "GL_AMT"
+      ]
+    },
+    {
+      "key": "fs_journals",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/JOURNALS.DBF",
+      "outputFile": "fs_journals.json",
+      "rowCount": 25,
+      "columns": [
+        "J_JV_NO",
+        "J_DATE",
+        "ACCT_CODE",
+        "J_CK_AMT",
+        "J_D_OR_C"
+      ]
+    },
+    {
+      "key": "fs_old_accounts",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/OLD ACCOUNTS.DBF",
+      "outputFile": "fs_old_accounts.json",
+      "rowCount": 114,
+      "columns": [
+        "ACCT_CODE",
+        "ACCT_DESC",
+        "OPEN_BAL",
+        "CUR_DEBIT",
+        "CUR_CREDIT",
+        "END_BAL",
+        "GL_EFFECT",
+        "GL_REPORT",
+        "FORMULA",
+        "INITIALIZE"
+      ]
+    },
+    {
+      "key": "fs_old_effects",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/OLD EFFECTS.DBF",
+      "outputFile": "fs_old_effects.json",
+      "rowCount": 26,
+      "columns": [
+        "GL_REPORT",
+        "GL_EFFECT",
+        "GL_HEAD",
+        "GL_AMT"
+      ]
+    },
+    {
+      "key": "fs_pournals",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/POURNALS.DBF",
+      "outputFile": "fs_pournals.json",
+      "rowCount": 123,
+      "columns": [
+        "J_JV_NO",
+        "J_DATE",
+        "ACCT_CODE",
+        "J_CK_AMT",
+        "J_D_OR_C"
+      ]
+    },
+    {
+      "key": "fs_purcbook",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/PURCBOOK.DBF",
+      "outputFile": "fs_purcbook.json",
+      "rowCount": 3,
+      "columns": [
+        "J_JV_NO",
+        "J_DATE",
+        "ACCT_CODE",
+        "J_CK_AMT",
+        "J_D_OR_C"
+      ]
+    },
+    {
+      "key": "fs_salebook",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/SALEBOOK.DBF",
+      "outputFile": "fs_salebook.json",
+      "rowCount": 3,
+      "columns": [
+        "J_JV_NO",
+        "J_DATE",
+        "ACCT_CODE",
+        "J_CK_AMT",
+        "J_D_OR_C"
+      ]
+    },
+    {
+      "key": "fs_schedule",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/SCHEDULE.DBF",
+      "outputFile": "fs_schedule.json",
+      "rowCount": 29,
+      "columns": [
+        "GL_HEAD",
+        "ACCT_CODE",
+        "ACCT_DESC"
+      ]
+    },
+    {
+      "key": "fs_supplier",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/SUPPLIER.DBF",
+      "outputFile": "fs_supplier.json",
+      "rowCount": 1,
+      "columns": [
+        "SUP_NO",
+        "SUP_NAME",
+        "SUP_ADDR",
+        "SUP_PHONE",
+        "SUP_FAX",
+        "SUP_CONTAK"
+      ]
+    },
+    {
+      "key": "fs_xaccounts",
+      "module": "fs",
+      "sourcePath": "Ellen's Data/Ellen/data/xaccounts.dbf",
+      "outputFile": "fs_xaccounts.json",
+      "rowCount": 114,
+      "columns": [
+        "ACCT_CODE",
+        "ACCT_DESC",
+        "OPEN_BAL",
+        "CUR_DEBIT",
+        "CUR_CREDIT",
+        "END_BAL",
+        "GL_EFFECT",
+        "GL_REPORT",
+        "FORMULA"
+      ]
+    }
+  ]
+}

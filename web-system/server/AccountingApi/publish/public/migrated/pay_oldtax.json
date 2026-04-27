@@ -1,0 +1,589 @@
+{
+  "tableName": "pay_oldtax",
+  "sourcePath": "PAY/OTHR/OLDTAX.DBF",
+  "rowCount": 96,
+  "columns": [
+    "EXEMPTION",
+    "PESO",
+    "PERCENT",
+    "SALARY"
+  ],
+  "rows": [
+    {
+      "EXEMPTION": "HF0",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "HF0",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 521
+    },
+    {
+      "EXEMPTION": "HF0",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 729
+    },
+    {
+      "EXEMPTION": "HF0",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1146
+    },
+    {
+      "EXEMPTION": "HF0",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 1979
+    },
+    {
+      "EXEMPTION": "HF0",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 3438
+    },
+    {
+      "EXEMPTION": "HF0",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 5729
+    },
+    {
+      "EXEMPTION": "HF0",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 10938
+    },
+    {
+      "EXEMPTION": "HF1",
+      "PESO": 0,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "HF1",
+      "PESO": 0,
+      "PERCENT": "05",
+      "SALARY": 688
+    },
+    {
+      "EXEMPTION": "HF1",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 896
+    },
+    {
+      "EXEMPTION": "HF1",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1313
+    },
+    {
+      "EXEMPTION": "HF1",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 2146
+    },
+    {
+      "EXEMPTION": "HF1",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 3604
+    },
+    {
+      "EXEMPTION": "HF1",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 5896
+    },
+    {
+      "EXEMPTION": "HF1",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 11104
+    },
+    {
+      "EXEMPTION": "HF2",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "HF2",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 854
+    },
+    {
+      "EXEMPTION": "HF2",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 1063
+    },
+    {
+      "EXEMPTION": "HF2",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1479
+    },
+    {
+      "EXEMPTION": "HF2",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 2313
+    },
+    {
+      "EXEMPTION": "HF2",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 3771
+    },
+    {
+      "EXEMPTION": "HF2",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 6063
+    },
+    {
+      "EXEMPTION": "HF2",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 11271
+    },
+    {
+      "EXEMPTION": "HF3",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "HF3",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 1021
+    },
+    {
+      "EXEMPTION": "HF3",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 1229
+    },
+    {
+      "EXEMPTION": "HF3",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1646
+    },
+    {
+      "EXEMPTION": "HF3",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 2479
+    },
+    {
+      "EXEMPTION": "HF3",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 3938
+    },
+    {
+      "EXEMPTION": "HF3",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 6229
+    },
+    {
+      "EXEMPTION": "HF3",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 11438
+    },
+    {
+      "EXEMPTION": "HF4",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "HF4",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 1188
+    },
+    {
+      "EXEMPTION": "HF4",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 1396
+    },
+    {
+      "EXEMPTION": "HF4",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1813
+    },
+    {
+      "EXEMPTION": "HF4",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 2646
+    },
+    {
+      "EXEMPTION": "HF4",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 4104
+    },
+    {
+      "EXEMPTION": "HF4",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 6396
+    },
+    {
+      "EXEMPTION": "HF4",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 11604
+    },
+    {
+      "EXEMPTION": "ME1",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "ME1",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 833
+    },
+    {
+      "EXEMPTION": "ME1",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 1042
+    },
+    {
+      "EXEMPTION": "ME1",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1458
+    },
+    {
+      "EXEMPTION": "ME1",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 2292
+    },
+    {
+      "EXEMPTION": "ME1",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 3750
+    },
+    {
+      "EXEMPTION": "ME1",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 6042
+    },
+    {
+      "EXEMPTION": "ME1",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 11250
+    },
+    {
+      "EXEMPTION": "ME2",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "ME2",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 1000
+    },
+    {
+      "EXEMPTION": "ME2",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 1208
+    },
+    {
+      "EXEMPTION": "ME2",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1625
+    },
+    {
+      "EXEMPTION": "ME2",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 2458
+    },
+    {
+      "EXEMPTION": "ME2",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 3917
+    },
+    {
+      "EXEMPTION": "ME2",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 6208
+    },
+    {
+      "EXEMPTION": "ME2",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 11417
+    },
+    {
+      "EXEMPTION": "ME3",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "ME3",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 1167
+    },
+    {
+      "EXEMPTION": "ME3",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 1375
+    },
+    {
+      "EXEMPTION": "ME3",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1792
+    },
+    {
+      "EXEMPTION": "ME3",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 2625
+    },
+    {
+      "EXEMPTION": "ME3",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 4083
+    },
+    {
+      "EXEMPTION": "ME3",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 6375
+    },
+    {
+      "EXEMPTION": "ME3",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 11583
+    },
+    {
+      "EXEMPTION": "ME4",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "ME4",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 1333
+    },
+    {
+      "EXEMPTION": "ME4",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 1542
+    },
+    {
+      "EXEMPTION": "ME4",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1958
+    },
+    {
+      "EXEMPTION": "ME4",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 2792
+    },
+    {
+      "EXEMPTION": "ME4",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 4250
+    },
+    {
+      "EXEMPTION": "ME4",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 6542
+    },
+    {
+      "EXEMPTION": "ME4",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 11750
+    },
+    {
+      "EXEMPTION": "ME0",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "ME0",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 667
+    },
+    {
+      "EXEMPTION": "ME0",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 875
+    },
+    {
+      "EXEMPTION": "ME0",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1292
+    },
+    {
+      "EXEMPTION": "ME0",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 2125
+    },
+    {
+      "EXEMPTION": "ME0",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 3583
+    },
+    {
+      "EXEMPTION": "ME0",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 5875
+    },
+    {
+      "EXEMPTION": "ME0",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 11083
+    },
+    {
+      "EXEMPTION": "S0",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 1
+    },
+    {
+      "EXEMPTION": "S0",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 417
+    },
+    {
+      "EXEMPTION": "S0",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 625
+    },
+    {
+      "EXEMPTION": "S0",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 1042
+    },
+    {
+      "EXEMPTION": "S0",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 1875
+    },
+    {
+      "EXEMPTION": "S0",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 3333
+    },
+    {
+      "EXEMPTION": "S0",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 5625
+    },
+    {
+      "EXEMPTION": "S0",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 10833
+    },
+    {
+      "EXEMPTION": "Z",
+      "PESO": null,
+      "PERCENT": "00",
+      "SALARY": 0
+    },
+    {
+      "EXEMPTION": "Z",
+      "PESO": null,
+      "PERCENT": "05",
+      "SALARY": 0
+    },
+    {
+      "EXEMPTION": "Z",
+      "PESO": 10.42,
+      "PERCENT": "10",
+      "SALARY": 208
+    },
+    {
+      "EXEMPTION": "Z",
+      "PESO": 52.08,
+      "PERCENT": "15",
+      "SALARY": 625
+    },
+    {
+      "EXEMPTION": "Z",
+      "PESO": 177.08,
+      "PERCENT": "20",
+      "SALARY": 1458
+    },
+    {
+      "EXEMPTION": "Z",
+      "PESO": 468.75,
+      "PERCENT": "25",
+      "SALARY": 2917
+    },
+    {
+      "EXEMPTION": "Z",
+      "PESO": 1041.67,
+      "PERCENT": "30",
+      "SALARY": 5208
+    },
+    {
+      "EXEMPTION": "Z",
+      "PESO": 2604.17,
+      "PERCENT": "32",
+      "SALARY": 10417
+    }
+  ]
+}

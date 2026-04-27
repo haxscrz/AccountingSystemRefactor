@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounting System - Month-End Processing Manual</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background-color: #f8fafc;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 60px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .header-tag {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0284c7;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #0284c7;
+            margin-top: 40px;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            color: #0f172a;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: #475569;
+            margin-bottom: 16px;
+        }
+
+        .intro-text {
+            font-size: 1.15rem;
+            color: #334155;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 50px auto;
+        }
+
+        .step-container {
+            margin-bottom: 40px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .step-header {
+            background: #f1f5f9;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-number {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 32px;
+            height: 32px;
+            background: #0ea5e9;
+            color: white;
+            font-weight: 700;
+            border-radius: 50%;
+        }
+
+        .step-content {
+            padding: 30px 24px;
+            background: white;
+        }
+
+        ul {
+            list-style-type: none;
+            margin-bottom: 20px;
+        }
+
+        li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 12px;
+            color: #475569;
+        }
+
+        li::before {
+            content: "•";
+            position: absolute;
+            left: 8px;
+            color: #0ea5e9;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .screenshot-wrap {
+            margin-top: 24px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .screenshot-wrap img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .banner {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 24px 0;
+        }
+
+        .banner-warning {
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        .banner-info {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .banner strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 1.1rem;
+        }
+
+        code {
+            font-family: monospace;
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #0f172a;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="header-tag">Administration Guide</span>
+            <h1>Month-End Processing Manual</h1>
+        </div>
+
+        <p class="intro-text">
+            This guide will specifically walk you through the process of legally starting a new accounting period. 
+            The <strong>Month-End Processing</strong> system is a powerful native utility that intelligently applies unposted journal entries to the permanent ledger, recalculates Trial Balance data, and wipes out pending queues, seamlessly allowing your chronological records to roll over into the new month.
+        </p>
+
+        <h2>Important Prerequisites</h2>
+        
+        <div class="banner banner-info">
+            <div>
+                <strong>A Note on Unposted Transactions</strong>
+                <p style="margin: 0;">Don't worry if you still have hanging unposted transactions pending in the system! You completely skip manually posting them yourself. The Month-End system is now highly advanced; it will automatically scoop them up, dynamically bulk-post them to the correct charts via the Ledger Engine, and resolve them before securely zapping the data to make way for your next month's entries!</p>
+            </div>
+        </div>
+
+        <h2>Step-by-Step Instructions</h2>
+
+        <div class="step-container">
+            <div class="step-header">
+                <span class="step-number">1</span>
+                <h3 style="margin: 0;">Access the Month-End Processing Page</h3>
+            </div>
+            <div class="step-content">
+                <ul>
+                    <li>Make sure you have logged in securely and loaded into your correct Company context.</li>
+                    <li>On the far-left main navigation menu, click on <strong>FS System</strong> to switch to your modules.</li>
+                    <li>Look under the <strong>Administration</strong> section on the left sidebar and select <strong>Month-End Processing</strong>.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-header">
+                <span class="step-number">2</span>
+                <h3 style="margin: 0;">Review Current Period & Warning Flags</h3>
+            </div>
+            <div class="step-content">
+                <p>On the top of the Month-End page, you will spot a diagnostic card labeled <strong>Current Period Information</strong>.</p>
+                <ul>
+                    <li>Carefully verify the <strong>Period to Close</strong> matches the month you intend to officially close out.</li>
+                    <li>If you have pending entries, you'll see a soft-amber warning badge under <strong>Unposted Transactions</strong> natively alerting you that a bulk ledger-commit will trigger. You may proceed!</li>
+                </ul>
+                <div class="screenshot-wrap">
+                    <img src="file:///C:/Users/hans/.gemini/antigravity/brain/0d631ef8-0881-44fc-b979-6c30159195f0/new_month_end_unblocked_1777268906229.png" alt="Month End Review Screen">
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-header">
+                <span class="step-number">3</span>
+                <h3 style="margin: 0;">Confirm Period</h3>
+            </div>
+            <div class="step-content">
+                <p>In the first section titled <strong>"1. Confirm Period"</strong>:</p>
+                <ul>
+                    <li>Look exactly at the expected date format prompt next to the box (for example: <code>4/2026</code>).</li>
+                    <li>Type that exact month and year combination directly into the text box.</li>
+                    <li>Click the blue <strong>Confirm</strong> button to unlock Phase 2.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-header">
+                <span class="step-number">4</span>
+                <h3 style="margin: 0;">Execute Ledger Ledger Posting & Close</h3>
+            </div>
+            <div class="step-content">
+                <p>After unlocking the module, Step 2 will unblur dynamically.</p>
+                <ul>
+                    <li>Double check everything one last time.</li>
+                    <li>Click the red <strong>Execute Month-End Close</strong> button.</li>
+                </ul>
+                <div class="banner banner-warning">
+                    <div>
+                        <strong>Warning: Unrecoverable Action</strong>
+                        <p style="margin: 0;">Month-End closes are completely irreversible! They rewrite your balances immediately.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-header">
+                <span class="step-number">5</span>
+                <h3 style="margin: 0;">Check the Processing Log & Finish</h3>
+            </div>
+            <div class="step-content">
+                <p>Once you click the execute button, a sophisticated terminal pop-up log box will appear displaying real-time events. Look for lines like "Starting month-end processing..." and "Accounts processed: XXXX".</p>
+                <p>Wait silently while it securely connects to your isolated server. Once entirely completed, a green toast notification will fade down confirming: <strong>"Month-end close completed successfully!"</strong></p>
+                <p><strong>You have successfully rolled over the system into the next month!</strong> The UI will instantly snap your active period to the brand new month, allowing you to freely enter transactions organically.</p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

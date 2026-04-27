@@ -107,9 +107,12 @@ public class FSMonthEndService : IFSMonthEndService
     /// </summary>
     public async Task<MonthEndStatus> GetMonthEndStatusAsync()
     {
-        // Exclude Advance CDVs (ADV prefix) from unposted counts — they belong to the NEXT period
+        var companyCode = _companyContextAccessor.CompanyCode;
+        var sysId = await _context.FSSysId.FirstOrDefaultAsync(s => s.CompanyCode == companyCode);
+        
+        // Exclude Advance CDVs (ADV prefix or future date) from unposted counts — they belong to the NEXT period
         var checkCount = await _context.FSCheckMas
-            .CountAsync(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"));
+            .CountAsync(c => !(c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV") || (sysId != null && c.JDate > sysId.EndDate)));
         var cashRcptCount = await _context.FSCashRcpt.CountAsync();
         var salesBookCount = await _context.FSSaleBook.CountAsync();
         var journalCount = await _context.FSJournals.CountAsync();
@@ -140,11 +143,14 @@ public class FSMonthEndService : IFSMonthEndService
     /// </summary>
     public async Task<UnpostedTransactionSummary> GetUnpostedTransactionSummaryAsync()
     {
+        var companyCode = _companyContextAccessor.CompanyCode;
+        var sysId = await _context.FSSysId.FirstOrDefaultAsync(s => s.CompanyCode == companyCode);
+
         return new UnpostedTransactionSummary
         {
-            // Exclude Advance CDVs (ADV prefix) — they belong to the NEXT period
+            // Exclude Advance CDVs (ADV prefix or future date) — they belong to the NEXT period
             UnpostedChecks = await _context.FSCheckMas.AsNoTracking()
-                .Where(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"))
+                .Where(c => !(c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV") || (sysId != null && c.JDate > sysId.EndDate)))
                 .ToListAsync() ?? new(),
             UnpostedCashRcpts = await _context.FSCashRcpt.AsNoTracking().ToListAsync() ?? new(),
             UnpostedSalesBooks = await _context.FSSaleBook.AsNoTracking().ToListAsync() ?? new(),

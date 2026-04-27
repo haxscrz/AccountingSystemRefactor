@@ -1,0 +1,535 @@
+{
+  "tableName": "fs_checkvou",
+  "sourcePath": "Ellen's Data/Ellen/data/CHECKVOU.DBF",
+  "rowCount": 87,
+  "columns": [
+    "J_CK_NO",
+    "ACCT_CODE",
+    "J_CK_AMT",
+    "J_D_OR_C"
+  ],
+  "rows": [
+    {
+      "J_CK_NO": "00145450",
+      "ACCT_CODE": "1151",
+      "J_CK_AMT": 34942.85,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "00145450",
+      "ACCT_CODE": "1142",
+      "J_CK_AMT": 10222.29,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "00145450",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 10105.36,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "00145450",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 30032.14,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "00145450",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 10105.36,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "00145450",
+      "ACCT_CODE": "2166",
+      "J_CK_AMT": 1703.71,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "00145450",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 93704.29,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "00145451",
+      "ACCT_CODE": "2112",
+      "J_CK_AMT": 18200,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "00145451",
+      "ACCT_CODE": "2166",
+      "J_CK_AMT": 162.5,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "00145451",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 18037.5,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "00145452",
+      "ACCT_CODE": "2112",
+      "J_CK_AMT": 4800,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "00145452",
+      "ACCT_CODE": "2166",
+      "J_CK_AMT": 42.86,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "00145452",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 4757.14,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "4701",
+      "J_CK_AMT": 50300.06,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "4702",
+      "J_CK_AMT": 5500,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "4710",
+      "J_CK_AMT": 8050,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "4722",
+      "J_CK_AMT": 500,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "4714",
+      "J_CK_AMT": 830.04,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "4727",
+      "J_CK_AMT": 477273.81,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "2165",
+      "J_CK_AMT": 3341.75,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "2163",
+      "J_CK_AMT": 22475,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "2164",
+      "J_CK_AMT": 12623.89,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "2163",
+      "J_CK_AMT": 19557.5,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "2161",
+      "J_CK_AMT": 6306.44,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "2161",
+      "J_CK_AMT": 1429.26,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 6204.44,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 925.43,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 5760.54,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 6258.48,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 457571.15,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602017",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 0.03,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602018",
+      "ACCT_CODE": "4701",
+      "J_CK_AMT": 3320,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602018",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 3320,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602019",
+      "ACCT_CODE": "4706",
+      "J_CK_AMT": 800,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602019",
+      "ACCT_CODE": "4710",
+      "J_CK_AMT": 3402.33,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602019",
+      "ACCT_CODE": "4702",
+      "J_CK_AMT": 900,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602019",
+      "ACCT_CODE": "4708",
+      "J_CK_AMT": 9000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602019",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 14102.33,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602020",
+      "ACCT_CODE": "4710",
+      "J_CK_AMT": 5744.5,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602020",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 5744.5,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602021",
+      "ACCT_CODE": "2112",
+      "J_CK_AMT": 4950.08,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602021",
+      "ACCT_CODE": "2112",
+      "J_CK_AMT": 1500,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602021",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 6450.08,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602022",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 5000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602022",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 5000,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "4701",
+      "J_CK_AMT": 50845.82,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "4702",
+      "J_CK_AMT": 5500,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "4710",
+      "J_CK_AMT": 8050,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "4714",
+      "J_CK_AMT": 1683,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 100000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "4727",
+      "J_CK_AMT": 821200.97,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "2165",
+      "J_CK_AMT": 21596.37,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "2163",
+      "J_CK_AMT": 21900,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "2164",
+      "J_CK_AMT": 2202.67,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "2163",
+      "J_CK_AMT": 3779.15,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "2161",
+      "J_CK_AMT": 6306.44,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "2161",
+      "J_CK_AMT": 1429.26,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 6255.48,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 925.43,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 9514.54,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 5691.83,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 907678.63,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602023",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 0.01,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602024",
+      "ACCT_CODE": "2163",
+      "J_CK_AMT": 44375,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602024",
+      "ACCT_CODE": "4703",
+      "J_CK_AMT": 88750,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602024",
+      "ACCT_CODE": "4703",
+      "J_CK_AMT": 860,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602024",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 133985,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602025",
+      "ACCT_CODE": "2161",
+      "J_CK_AMT": 12612.88,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602025",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 12612.88,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602026",
+      "ACCT_CODE": "2161",
+      "J_CK_AMT": 2858.52,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602026",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 2858.52,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602027",
+      "ACCT_CODE": "2164",
+      "J_CK_AMT": 14826.56,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602027",
+      "ACCT_CODE": "4703",
+      "J_CK_AMT": 14826.56,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602027",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 29653.12,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602028",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 12459.92,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602028",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 11950.31,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602028",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 24410.23,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602029",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 1850.86,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602029",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 1850.86,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602030",
+      "ACCT_CODE": "2163",
+      "J_CK_AMT": 23336.65,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602030",
+      "ACCT_CODE": "4703",
+      "J_CK_AMT": 23336.65,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602030",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 46673.3,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602031",
+      "ACCT_CODE": "2166",
+      "J_CK_AMT": 2509.07,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602031",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 2509.07,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "B2602032",
+      "ACCT_CODE": "2165",
+      "J_CK_AMT": 24938.11,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602032",
+      "ACCT_CODE": "2165",
+      "J_CK_AMT": 2330,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "B2602032",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 27268.11,
+      "J_D_OR_C": "C"
+    }
+  ]
+}

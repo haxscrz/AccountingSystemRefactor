@@ -1,0 +1,31 @@
+{
+  "tableName": "pay_billing",
+  "sourcePath": "PAY/OTHR/BILLING.DBF",
+  "rowCount": 1,
+  "columns": [
+    "EYERID",
+    "EYEENO",
+    "HDMFID",
+    "LNAME",
+    "FNAME",
+    "MID",
+    "PERCOV",
+    "AMORT",
+    "ORNO",
+    "ORDATE"
+  ],
+  "rows": [
+    {
+      "EYERID": "",
+      "EYEENO": "",
+      "HDMFID": "",
+      "LNAME": "",
+      "FNAME": "",
+      "MID": "",
+      "PERCOV": "",
+      "AMORT": 0,
+      "ORNO": "",
+      "ORDATE": ""
+    }
+  ]
+}
