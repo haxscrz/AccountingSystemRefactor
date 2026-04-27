@@ -27,13 +27,14 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICompanyContextAccessor, CompanyContextAccessor>();
 
 // Resolve SQLite path relative to app root so Azure doesn't create a blank DB in the wrong directory
-// NOTE: We force the filename here so Azure portal env-var overrides cannot change which DB file is loaded.
-// Change this to switch database versions (ensures Azure uses our freshly deployed file).
-const string ForcedDbFileName = "accounting_v5.db";
-var rawConnStr = $"Data Source={ForcedDbFileName}";
-if (!Path.IsPathRooted(ForcedDbFileName))
+// IMPORTANT: The filename must be changed to a NEW name each time we want Azure to deploy a fresh DB.
+// Azure App Service's persistent storage will keep the old DB file if the name stays the same.
+// Current: accounting_v6.db — this contains: Gian (from backup, Feb 2026) + other companies as they were.
+var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting_v6.db";
+if (rawConnStr.Contains("Data Source=") && !Path.IsPathRooted(rawConnStr.Replace("Data Source=", "")))
 {
-    var absoluteDbPath = Path.Combine(builder.Environment.ContentRootPath, ForcedDbFileName);
+    var dbFileName = rawConnStr.Replace("Data Source=", "").Trim();
+    var absoluteDbPath = Path.Combine(builder.Environment.ContentRootPath, dbFileName);
     rawConnStr = $"Data Source={absoluteDbPath}";
 }
 builder.Services.AddDbContext<AccountingDbContext>(options => options.UseSqlite(rawConnStr));
