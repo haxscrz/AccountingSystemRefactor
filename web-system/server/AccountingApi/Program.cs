@@ -27,8 +27,15 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICompanyContextAccessor, CompanyContextAccessor>();
 
 // Resolve SQLite path relative to app root so Azure doesn't create a blank DB in the wrong directory
-var absoluteDbPath = Path.Combine(builder.Environment.ContentRootPath, "accounting_v5.db");
-var rawConnStr = $"Data Source={absoluteDbPath}";
+// NOTE: We force the filename here so Azure portal env-var overrides cannot change which DB file is loaded.
+// Change this to switch database versions (ensures Azure uses our freshly deployed file).
+const string ForcedDbFileName = "accounting_v5.db";
+var rawConnStr = $"Data Source={ForcedDbFileName}";
+if (!Path.IsPathRooted(ForcedDbFileName))
+{
+    var absoluteDbPath = Path.Combine(builder.Environment.ContentRootPath, ForcedDbFileName);
+    rawConnStr = $"Data Source={absoluteDbPath}";
+}
 builder.Services.AddDbContext<AccountingDbContext>(options => options.UseSqlite(rawConnStr));
 
 // Services
@@ -615,6 +622,9 @@ using (var initScope = app.Services.CreateScope())
     }
 
     // Ensure fs_sys_id has at least one row (main menu needs it)
+    // IMPORTANT: derive the period from the EARLIEST unposted check for that company,
+    // NOT from DateTime.UtcNow — otherwise a fresh deploy would initialize to the current
+    // real-world month even when backup data belongs to an earlier period (e.g. February).
     foreach (var companyCode in CompanyCatalog.AllCodes)
     {
         var hasFsSysId = db.FSSysId
@@ -626,20 +636,35 @@ using (var initScope = app.Services.CreateScope())
             continue;
         }
 
+        // Try to derive the period from the earliest check in the database for this company.
+        // Exclude future-dated checks (potential advance CDVs) when determining current period.
         var earliestCheck = db.FSCheckMas
             .IgnoreQueryFilters()
-            .Where(x => x.CompanyCode == companyCode)
-            .OrderBy(x => x.JDate)
+            .Where(c => c.CompanyCode == companyCode)
+            .OrderBy(c => c.JDate)
             .FirstOrDefault();
 
-        var now = earliestCheck?.JDate ?? DateTime.UtcNow;
+        DateTime periodDate;
+        if (earliestCheck != null)
+        {
+            // Use the earliest check date as the period anchor
+            periodDate = earliestCheck.JDate;
+            Console.WriteLine($"[startup] fs_sys_id for '{companyCode}': derived from earliest check {earliestCheck.JCkNo} dated {periodDate:yyyy-MM-dd}");
+        }
+        else
+        {
+            // No checks at all — fall back to current date
+            periodDate = DateTime.UtcNow;
+            Console.WriteLine($"[startup] fs_sys_id for '{companyCode}': no checks found, defaulting to current month {periodDate:yyyy-MM}");
+        }
+
         db.FSSysId.Add(new AccountingApi.Models.FSSysId
         {
             CompanyCode = companyCode,
-            PresMo    = now.Month,
-            PresYr    = now.Year,
-            BegDate   = new DateTime(now.Year, now.Month, 1),
-            EndDate   = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month)),
+            PresMo    = periodDate.Month,
+            PresYr    = periodDate.Year,
+            BegDate   = new DateTime(periodDate.Year, periodDate.Month, 1),
+            EndDate   = new DateTime(periodDate.Year, periodDate.Month, DateTime.DaysInMonth(periodDate.Year, periodDate.Month)),
             UpdatedAt = DateTime.UtcNow
         });
     }

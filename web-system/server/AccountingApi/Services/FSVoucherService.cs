@@ -118,12 +118,10 @@ public interface IFSVoucherService
 public class FSVoucherService : IFSVoucherService
 {
     private readonly AccountingDbContext _context;
-    private readonly ICompanyContextAccessor _companyContextAccessor;
 
-    public FSVoucherService(AccountingDbContext context, ICompanyContextAccessor companyContextAccessor)
+    public FSVoucherService(AccountingDbContext context)
     {
         _context = context;
-        _companyContextAccessor = companyContextAccessor;
     }
 
     #region Check Master Operations
@@ -136,18 +134,15 @@ public class FSVoucherService : IFSVoucherService
     /// </summary>
     public async Task<List<FSCheckMas>> GetAllCheckMastersAsync(string type = "all")
     {
-        var companyCode = _companyContextAccessor.CompanyCode;
-        var sysId = await _context.FSSysId.FirstOrDefaultAsync(s => s.CompanyCode == companyCode);
-
         var query = _context.FSCheckMas.AsNoTracking();
 
         if (string.Equals(type, "current", StringComparison.OrdinalIgnoreCase))
         {
-            query = query.Where(c => !(c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV") || (sysId != null && c.JDate > sysId.EndDate)));
+            query = query.Where(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"));
         }
         else if (string.Equals(type, "advance", StringComparison.OrdinalIgnoreCase))
         {
-            query = query.Where(c => c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV") || (sysId != null && c.JDate > sysId.EndDate));
+            query = query.Where(c => c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV"));
         }
 
         return await query
