@@ -264,9 +264,9 @@ public sealed class FSController : ControllerBase
     #region Check Disbursement Vouchers (Master: 8 fields, Detail: 4 fields)
 
     [HttpGet("vouchers/masters")]
-    public async Task<IActionResult> GetAllCheckMasters()
+    public async Task<IActionResult> GetAllCheckMasters([FromQuery] string type = "all")
     {
-        var checks = await _voucherService.GetAllCheckMastersAsync();
+        var checks = await _voucherService.GetAllCheckMastersAsync(type);
         return Ok(new { data = checks, count = checks.Count });
     }
 

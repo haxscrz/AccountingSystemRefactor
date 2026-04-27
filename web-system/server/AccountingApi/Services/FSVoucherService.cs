@@ -33,7 +33,7 @@ public interface IFSVoucherService
 {
     #region Check Master - Main Operations
 
-    Task<List<FSCheckMas>> GetAllCheckMastersAsync();
+    Task<List<FSCheckMas>> GetAllCheckMastersAsync(string type = "all");
     Task<FSCheckMas?> GetCheckMasterByJVAsync(string jvNo);
     Task<FSCheckMas?> GetCheckMasterByCheckNoAsync(string checkNo);
     Task<FSCheckMas> CreateCheckMasterAsync(FSCheckMas checkMaster);
@@ -127,12 +127,25 @@ public class FSVoucherService : IFSVoucherService
     #region Check Master Operations
 
     /// <summary>
-    /// Get all check disbursement vouchers
+    /// Get all check disbursement vouchers, optionally filtered by type.
+    /// type = "all" (default): return all records
+    /// type = "current": exclude Advance CDVs (ADV prefix)
+    /// type = "advance": only Advance CDVs (ADV prefix)
     /// </summary>
-    public async Task<List<FSCheckMas>> GetAllCheckMastersAsync()
+    public async Task<List<FSCheckMas>> GetAllCheckMastersAsync(string type = "all")
     {
-        return await _context.FSCheckMas
-            .AsNoTracking()
+        var query = _context.FSCheckMas.AsNoTracking();
+
+        if (string.Equals(type, "current", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.Where(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"));
+        }
+        else if (string.Equals(type, "advance", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.Where(c => c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV"));
+        }
+
+        return await query
             .OrderByDescending(c => c.JDate)
             .ThenBy(c => c.JCkNo)
             .ToListAsync();

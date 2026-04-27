@@ -172,7 +172,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
     const preserveCkNo = currentCkNoRef.current
     setIsLoading(true)
     try {
-      const resp = await axios.get(`${API_BASE}/vouchers/masters`)
+      const resp = await axios.get(`${API_BASE}/vouchers/masters`, { params: { type } })
       const data: CheckMaster[] = (resp.data?.data ?? []).map(mapMaster)
       setMasters(data)
       // Restore position: find the same check in the refreshed list
@@ -195,7 +195,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [type])
 
   const loadLines = useCallback(async (ckNo: string) => {
     if (!ckNo) { setLines([]); return }
@@ -388,7 +388,8 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
       return match ? Math.max(max, parseInt(match[1], 10)) : max
     }, 0)
     const nextNum = Math.max(maxJvNum, maxCkNum) + 1
-    const newJv  = `CDV${String(nextNum).padStart(5, '0')}`
+    const prefix = type === 'advance' ? 'ADV' : 'CDV'
+    const newJv  = `${prefix}${String(nextNum).padStart(5, '0')}`
     const newCk  = newJv  // Per PRG convention: Check# defaults to same as CDV#
     setMasterForm({ ...EMPTY_MASTER, jJvNo: newJv, jCkNo: newCk })
     setMode('addMaster')
