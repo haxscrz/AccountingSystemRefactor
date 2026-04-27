@@ -17,7 +17,29 @@ public sealed class FSPostingService
 
     public async Task<FSSysId?> GetSysIdAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.FSSysId.FirstOrDefaultAsync(cancellationToken);
+        var sysId = await _context.FSSysId.FirstOrDefaultAsync(cancellationToken);
+        if (sysId == null)
+        {
+            var companyCode = _companyContextAccessor.CompanyCode;
+            if (!string.IsNullOrEmpty(companyCode) && CompanyCatalog.IsValid(companyCode))
+            {
+                var earliestCheck = await _context.FSCheckMas.OrderBy(x => x.JDate).FirstOrDefaultAsync(cancellationToken);
+                var latestDate = earliestCheck?.JDate ?? DateTime.Now;
+
+                sysId = new FSSysId
+                {
+                    CompanyCode = companyCode,
+                    PresMo = latestDate.Month,
+                    PresYr = latestDate.Year,
+                    BegDate = new DateTime(latestDate.Year, latestDate.Month, 1),
+                    EndDate = new DateTime(latestDate.Year, latestDate.Month, DateTime.DaysInMonth(latestDate.Year, latestDate.Month)),
+                    UpdatedAt = DateTime.UtcNow
+                };
+                _context.FSSysId.Add(sysId);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+        return sysId;
     }
 
     public async Task<int> GetTableCountAsync(string tableName, CancellationToken cancellationToken = default)
