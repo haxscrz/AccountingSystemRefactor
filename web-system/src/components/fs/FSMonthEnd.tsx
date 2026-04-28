@@ -23,8 +23,8 @@ export default function FSMonthEnd() {
   const [resultSuccess, setResultSuccess] = useState(false)
   const [confirmText, setConfirmText] = useState('')
   const [processLog, setProcessLog] = useState<string[]>([])
+  const [showFinalConfirm, setShowFinalConfirm] = useState(false)
 
-  // Toast system
   const [toast, setToast] = useState<{ text: string; type: ToastType } | null>(null)
 
   const showToast = useCallback((text: string, type: ToastType = 'info') => {
@@ -65,7 +65,6 @@ export default function FSMonthEnd() {
 
   const currentPeriodLabel = sysInfo ? `${MONTH_NAMES[sysInfo.currentMonth]} ${sysInfo.currentYear}` : '—'
 
-  // Pre-flight validation
   const preflightErrors: string[] = []
   if (sysInfo) {
     if (sysInfo.currentMonth < 1 || sysInfo.currentMonth > 12) {
@@ -90,31 +89,18 @@ export default function FSMonthEnd() {
 
   const handleConfirmAndClose = async () => {
     if (!sysInfo) return
-
-    // Double-check confirmation text
     const expected = `${sysInfo.currentMonth}/${sysInfo.currentYear}`
     if (confirmText.trim() !== expected) {
       showToast(`Period mismatch. Type exactly: ${expected}`, 'error')
       return
     }
+    // Show styled modal instead of window.confirm()
+    setShowFinalConfirm(true)
+  }
 
-    // We intentionally allow unposted transactions because Month-End backend logic
-    // will auto-post them internally before ZAPping the tables.
-
-    // Final confirmation
-    if (!window.confirm(
-      `MONTH-END PROCESSING FOR ${currentPeriodLabel.toUpperCase()}\n\n` +
-      `This will:\n` +
-      `• Roll all account balances forward\n` +
-      `• Apply DC/CD formula logic\n` +
-      `• Clear all transaction tables\n` +
-      `${sysInfo.currentMonth === 12 ? '• RESET expense & income accounts (YEAR-END)\n' : ''}` +
-      `\nWARNING: This action cannot be undone!\n\nContinue?`
-    )) {
-      showToast('Month-end processing cancelled.', 'info')
-      return
-    }
-
+  const executePeriodClose = async () => {
+    if (!sysInfo) return
+    setShowFinalConfirm(false)
     setProcessing(true)
     setResultMessage('')
     setProcessLog([])
@@ -127,19 +113,14 @@ export default function FSMonthEnd() {
       const resp = await axios.post(
         `${API_BASE}/month-end?year=${sysInfo.currentYear}&month=${sysInfo.currentMonth}`,
         null,
-        { timeout: 120000 } // 2 minute timeout for large datasets
+        { timeout: 120000 }
       )
 
       const msg = resp.data.message || 'Month-end processing completed successfully.'
       addLog(`Server response: ${msg}`)
 
-      // Parse response details if available
-      if (resp.data.accountsProcessed !== undefined) {
-        addLog(`Accounts processed: ${resp.data.accountsProcessed}`)
-      }
-      if (resp.data.transactionsCleared !== undefined) {
-        addLog(`Transactions cleared: ${resp.data.transactionsCleared}`)
-      }
+      if (resp.data.accountsProcessed !== undefined) addLog(`Accounts processed: ${resp.data.accountsProcessed}`)
+      if (resp.data.transactionsCleared !== undefined) addLog(`Transactions cleared: ${resp.data.transactionsCleared}`)
       if (resp.data.newMonth !== undefined && resp.data.newYear !== undefined) {
         addLog(`New period: ${MONTH_NAMES[resp.data.newMonth] || resp.data.newMonth} ${resp.data.newYear}`)
       }
@@ -150,7 +131,6 @@ export default function FSMonthEnd() {
       setStep(3)
       showToast('Month-end close completed successfully!', 'success')
 
-      // Refresh system info to show updated period
       await loadSystemInfo()
       window.dispatchEvent(new CustomEvent('fs-system-info-updated'))
 
@@ -164,24 +144,16 @@ export default function FSMonthEnd() {
 
       addLog(`ERROR: ${errMsg}`)
 
-      // Specific error handling
-      if (err.response?.status === 400) {
-        addLog('Bad request — check that all prerequisites are met.')
-      } else if (err.response?.status === 409) {
-        addLog('Conflict — another process may already be running.')
-      } else if (err.response?.status === 500) {
-        addLog('Internal server error — check server logs for details.')
-      } else if (!err.response) {
-        addLog('No response from server — connection may have been lost.')
-      }
+      if (err.response?.status === 400) addLog('Bad request — check that all prerequisites are met.')
+      else if (err.response?.status === 409) addLog('Conflict — another process may already be running.')
+      else if (err.response?.status === 500) addLog('Internal server error — check server logs for details.')
+      else if (!err.response) addLog('No response from server — connection may have been lost.')
 
       setResultSuccess(false)
       setResultMessage(errMsg)
       showToast(`Month-end failed: ${errMsg}`, 'error')
 
-      // Refresh system info in case partial processing occurred
       try { await loadSystemInfo() } catch { /* best effort */ }
-
     } finally {
       setProcessing(false)
     }
@@ -246,7 +218,6 @@ export default function FSMonthEnd() {
               </div>
             )}
 
-            {/* Pre-flight warnings */}
             {preflightErrors.length > 0 && (
               <div className="px-5 py-3">
                 {preflightErrors.map((err, i) => (
@@ -372,7 +343,7 @@ export default function FSMonthEnd() {
         </button>
       )}
 
-      {/* Toast Notification */}
+      {/* Toast */}
       {toast && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top-4 duration-300">
           <div className={`flex items-center gap-3 px-5 py-3.5 rounded-full shadow-lg border text-sm font-bold tracking-wide backdrop-blur-md ${
@@ -388,6 +359,80 @@ export default function FSMonthEnd() {
             <button type="button" onClick={() => setToast(null)} className="ml-3 opacity-70 hover:opacity-100 transition-opacity">
               <span className="material-symbols-outlined text-[16px]">close</span>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Final Confirmation Modal ─────────────────────────────────────────── */}
+      {showFinalConfirm && sysInfo && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          {/* Scrim */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => { setShowFinalConfirm(false); showToast('Month-end processing cancelled.', 'info') }}
+          />
+          {/* Card */}
+          <div className="relative bg-white rounded-3xl shadow-2xl border border-outline-variant/20 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Red header */}
+            <div className="bg-error px-6 pt-6 pb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[22px] text-white">lock_clock</span>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/70">Irreversible Action</p>
+                  <h2 className="text-white font-headline font-bold text-lg leading-tight">
+                    Close {currentPeriodLabel}?
+                  </h2>
+                </div>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-4">
+              <p className="text-sm text-on-surface-variant">
+                You are about to run <strong className="text-on-surface">Month-End Processing</strong> for{' '}
+                <strong className="text-primary">{currentPeriodLabel}</strong>. This will:
+              </p>
+
+              <ul className="space-y-2.5">
+                {[
+                  { icon: 'trending_up', text: 'Roll all account balances forward' },
+                  { icon: 'calculate', text: 'Apply DC/CD formula logic to all accounts' },
+                  { icon: 'delete_sweep', text: 'Clear all current-period transaction tables' },
+                  ...(isYearEnd ? [{ icon: 'restart_alt', text: 'Reset expense & income accounts (Year-End)' }] : []),
+                ].map(item => (
+                  <li key={item.icon} className="flex items-center gap-2.5 text-sm text-on-surface">
+                    <span className="material-symbols-outlined text-[16px] text-on-surface-variant/60 shrink-0">{item.icon}</span>
+                    {item.text}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex items-start gap-2.5 px-4 py-3 bg-error/5 border border-error/20 rounded-xl">
+                <span className="material-symbols-outlined text-[16px] text-error shrink-0 mt-0.5">warning</span>
+                <p className="text-xs text-error font-semibold leading-relaxed">
+                  This action cannot be undone. Advance CDVs for the current period will be preserved.
+                </p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 pb-6 flex gap-3 justify-end">
+              <button
+                onClick={() => { setShowFinalConfirm(false); showToast('Month-end processing cancelled.', 'info') }}
+                className="px-5 py-2.5 rounded-xl border border-outline-variant/25 text-sm font-semibold text-on-surface-variant hover:bg-surface-container transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executePeriodClose}
+                className="px-5 py-2.5 rounded-xl bg-error text-white text-sm font-bold hover:bg-error/90 active:scale-[0.98] transition-all flex items-center gap-2 shadow-sm shadow-error/30"
+              >
+                <span className="material-symbols-outlined text-[16px]">lock_clock</span>
+                Yes, Close Period
+              </button>
+            </div>
           </div>
         </div>
       )}

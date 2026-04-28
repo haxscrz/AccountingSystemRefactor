@@ -1535,24 +1535,62 @@ public sealed class FSController : ControllerBase
     {
         var companyCode = _companyContextAccessor.CompanyCode;
         var now = DateTime.UtcNow;
-        var currentPeriod = now.Date;
 
+        // Get current period boundaries from fs_sys_id
+        var sysId = await _postingService.GetSysIdAsync(cancellationToken);
+        if (sysId == null)
+            return BadRequest(new { error = "System period not configured. Cannot determine current period." });
+
+        var periodBeg = sysId.BegDate;
+        var periodEnd = sysId.EndDate;
+
+        // Only transfer advance checks whose original date falls within the CURRENT period
+        // e.g. if current period is March 2026, only transfer ADV checks dated in March 2026
         var advanceChecks = await _db.FSCheckMas
-            .Where(c => (c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV")) && !c.IsDeleted && c.CompanyCode == companyCode)
+            .IgnoreQueryFilters()
+            .Where(c => c.CompanyCode == companyCode
+                     && !c.IsDeleted
+                     && (c.JJvNo.StartsWith("ADV") || c.JCkNo.StartsWith("ADV"))
+                     && c.JDate >= periodBeg && c.JDate <= periodEnd)
             .ToListAsync(cancellationToken);
 
         if (advanceChecks.Count == 0)
-            return Ok(new { message = "No advance CDB vouchers found to transfer." });
+            return Ok(new { message = $"No advance CDB vouchers found for the current period ({sysId.PresMo}/{sysId.PresYr})." });
 
+        var transferred = 0;
         foreach (var check in advanceChecks)
         {
-            check.JDate = currentPeriod;
+            // Save original ADV key before stripping, so checkvou lookup works
+            var originalCkNo = check.JCkNo;
+
+            // Strip ADV prefix from check number: ADV183026 → 183026
+            if (check.JCkNo.StartsWith("ADV"))
+                check.JCkNo = check.JCkNo.Substring(3);
+
+            // Strip ADV prefix from JV number
+            if (check.JJvNo != null && check.JJvNo.StartsWith("ADV"))
+                check.JJvNo = check.JJvNo.Substring(3);
+
+            // Update matching checkvou rows using the ORIGINAL ADV-prefixed key
+            var voucherRows = await _db.FSCheckVou
+                .IgnoreQueryFilters()
+                .Where(v => v.CompanyCode == companyCode && v.JCkNo == originalCkNo)
+                .ToListAsync(cancellationToken);
+            foreach (var vRow in voucherRows)
+                vRow.JCkNo = check.JCkNo; // new stripped key
+
             check.UpdatedAt = now;
+            transferred++;
         }
 
         await _db.SaveChangesAsync(cancellationToken);
 
-        return Ok(new { message = $"Transferred {advanceChecks.Count} advance CDB voucher(s) to the current period." });
+        return Ok(new
+        {
+            message = $"Transferred {transferred} advance CDB voucher(s) into {sysId.PresMo}/{sysId.PresYr}. " +
+                      "They are now regular check disbursements for this period.",
+            transferred
+        });
     }
 
     // ---------------------------------------------------------
