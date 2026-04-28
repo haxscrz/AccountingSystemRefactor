@@ -49,6 +49,17 @@ function SectionCard({ id, title, children }: { id: string, title: string, child
   )
 }
 
+function Screenshot({ src, caption }: { src: string, caption: string }) {
+  return (
+    <figure className="my-4 rounded-xl overflow-hidden border border-outline-variant/20 shadow-sm">
+      <img src={src} alt={caption} className="w-full object-cover" loading="lazy" />
+      <figcaption className="px-4 py-2 text-xs text-on-surface-variant/70 bg-surface-container border-t border-outline-variant/10 italic">
+        {caption}
+      </figcaption>
+    </figure>
+  )
+}
+
 
 
 export default function FSManual() {
@@ -72,12 +83,12 @@ export default function FSManual() {
 
       <div className="flex gap-5 items-start">
         {/* ── Sidebar TOC ── */}
-        <aside className="w-64 shrink-0 sticky top-4 bg-white border border-outline-variant/15 rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-4 py-3 border-b border-outline-variant/10">
-            <div className="flex items-center gap-2 px-3 py-2 bg-surface-container rounded-xl">
-              <span className="material-symbols-outlined text-[16px] text-on-surface-variant">search</span>
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search topics…"
-                className="flex-1 text-sm bg-transparent outline-none text-on-surface placeholder:text-on-surface-variant/50" />
+        <aside className="w-56 shrink-0 sticky top-4 bg-white border border-outline-variant/15 rounded-2xl shadow-sm overflow-hidden">
+          <div className="px-3 py-3 border-b border-outline-variant/10">
+            <div className="flex items-center gap-1.5 px-2.5 py-2 bg-surface-container rounded-xl w-full min-w-0">
+              <span className="material-symbols-outlined text-[15px] text-on-surface-variant shrink-0">search</span>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
+                className="min-w-0 flex-1 text-sm bg-transparent outline-none text-on-surface placeholder:text-on-surface-variant/50" />
             </div>
           </div>
           <nav className="py-2 max-h-[70vh] overflow-y-auto">
@@ -96,6 +107,7 @@ export default function FSManual() {
         <div className="flex-1 min-w-0 space-y-5">
 
           <SectionCard id="overview" title="1. System Overview">
+            <Screenshot src="/manual/fiscal_narrative.png" caption="Fiscal Narrative dashboard — shows active period, unposted transaction counts, and Advance CDV status for the current company." />
             <p>The <strong className="text-on-surface">Financial Statements (FS) module</strong> is the core accounting engine. It manages all check disbursements, journal entries, receipts, and month-end closing. Every action follows a strict <strong>lifecycle</strong>:</p>
             <div className="my-4 flex flex-col gap-1">
               {[
@@ -120,6 +132,7 @@ export default function FSManual() {
           </SectionCard>
 
           <SectionCard id="cdv" title="2. Check Disbursement (CDV)">
+            <Screenshot src="/manual/cdv_entry.png" caption="Check Disbursement entry form — fill in the header (Check No, Date, Bank, Pay To) then add account distribution lines below." />
             <p>A <strong className="text-on-surface">Check Disbursement Voucher (CDV)</strong> records money paid out via check. Use <strong>Data Entry → Check Disbursement</strong>.</p>
             <Step n={1} title="Open Check Disbursement">Click <em>Check Disbursement</em> in the sidebar under Data Entry.</Step>
             <Step n={2} title="Fill in the header">Enter: Check No, Date (must fall within the active period), Bank, and Pay To.</Step>
@@ -144,6 +157,7 @@ export default function FSManual() {
           </SectionCard>
 
           <SectionCard id="advance" title="3. Advance CDV — Enter Advance CDB">
+            <Screenshot src="/manual/advance_cdv.png" caption="Enter Advance CDB form — identical to the regular CDV form but allows dates beyond the current period end." />
             <p>An <strong className="text-on-surface">Advance CDV</strong> is a check <em>entered during February</em> but <em>dated in March or beyond</em>. It is used to pre-record future disbursements without disturbing the current period's books.</p>
             <Callout type="info">Go to <strong>Processing → Enter Advance CDB</strong> to create an advance check. This is identical to the regular CDV form but the date is allowed to exceed the period end.</Callout>
             <p><strong className="text-on-surface">How the system protects Advance CDVs:</strong></p>
@@ -163,6 +177,7 @@ export default function FSManual() {
           </SectionCard>
 
           <SectionCard id="transfer" title="4. Transfer Advance CDB">
+            <Screenshot src="/manual/transfer_advance.png" caption="Transfer Advance CDB page — click Transfer Now to strip the ADV prefix from checks dated within the current period." />
             <p>After closing February and opening March, your Advance CDVs dated in March still have the <code className="bg-surface-container px-1 rounded">ADV</code> prefix. Use <strong>Transfer Advance CDB</strong> to activate them for the current period.</p>
             <Callout type="danger"><strong>Run this at the very start of a new period</strong> — before entering any new transactions. Do not run it if the advance CDVs are for a future period.</Callout>
             <Step n={1} title="Confirm you are in the correct period">Fiscal Narrative shows March 2026 as active.</Step>
@@ -179,6 +194,7 @@ export default function FSManual() {
           </SectionCard>
 
           <SectionCard id="post" title="5. Post All Transactions">
+            <Screenshot src="/manual/posting.png" caption="Post All Transactions — shows a pre-posting summary with counts per transaction type. Click POST TRANSACTIONS to lock them into the ledger." />
             <p><strong className="text-on-surface">Posting</strong> permanently locks all unposted transactions into the General Ledger. Use <strong>Processing → Post All Transactions</strong>.</p>
             <Callout type="danger"><strong>This is irreversible.</strong> Once posted, transactions cannot be edited or deleted from the current period. Always review the Fiscal Narrative counts before posting.</Callout>
             <p><strong className="text-on-surface">What gets posted:</strong></p>
@@ -208,6 +224,7 @@ export default function FSManual() {
           </SectionCard>
 
           <SectionCard id="monthend" title="6. Month-End Processing">
+            <Screenshot src="/manual/month_end.png" caption="Month-End Processing — a 2-step wizard requiring period confirmation before executing the irreversible close." />
             <p><strong className="text-on-surface">Month-End Processing</strong> closes the current fiscal period, rolls all account balances forward, and prepares the system for the next month. Go to <strong>File → Month-End Processing</strong>.</p>
             <Callout type="danger"><strong>This cannot be undone.</strong> Ensure all transactions are posted and all Advance CDVs are correctly set before proceeding.</Callout>
             <p><strong className="text-on-surface">Step-by-step:</strong></p>
