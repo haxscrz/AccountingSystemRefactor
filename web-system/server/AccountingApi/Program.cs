@@ -29,8 +29,10 @@ builder.Services.AddScoped<ICompanyContextAccessor, CompanyContextAccessor>();
 // Resolve SQLite path relative to app root so Azure doesn't create a blank DB in the wrong directory
 // IMPORTANT: The filename must be changed to a NEW name each time we want Azure to deploy a fresh DB.
 // Azure App Service's persistent storage will keep the old DB file if the name stays the same.
-// Current: accounting_v7.db
-var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting_v7.db";
+// Current: accounting_v8.db — Gian fully restored from raw backup with:
+//   12 Feb checks (current period) + 18 ADV-prefixed advance CDVs
+//   16 journals + 3 cash receipts + 3 sales book + correct fs_sys_id (Feb 2026)
+var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting_v8.db";
 if (rawConnStr.Contains("Data Source=") && !Path.IsPathRooted(rawConnStr.Replace("Data Source=", "")))
 {
     var dbFileName = rawConnStr.Replace("Data Source=", "").Trim();
