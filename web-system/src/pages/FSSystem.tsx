@@ -19,6 +19,7 @@ import FSBanks from '../components/fs/FSBanks'
 import FSSuppliers from '../components/fs/FSSuppliers'
 import FSSignatories from '../components/fs/FSSignatories'
 import FSQueryBrowser from '../components/fs/FSQueryBrowser'
+import FSManual from '../components/fs/FSManual'
 
 export default function FSSystem() {
   const navigate = useNavigate()
@@ -182,6 +183,12 @@ export default function FSSystem() {
           { label: 'Enter Advance CDB', icon: 'forward_to_inbox', onClick: () => navigate('/fs/voucher/advance'), route: '/fs/voucher/advance' },
           { label: 'Transfer Advance CDB', icon: 'compare_arrows', onClick: () => navigate('/fs/transfer-advance'), route: '/fs/transfer-advance' }
         ]
+      },
+      {
+        title: 'Help',
+        items: [
+          { label: 'User Manual', icon: 'menu_book', onClick: () => navigate('/fs/manual'), route: '/fs/manual' }
+        ]
       }
     ],
     file: [
@@ -271,6 +278,7 @@ export default function FSSystem() {
           <Route path="/month-end" element={<FSMonthEnd />} />
           <Route path="/reports/:reportType" element={<FSReports />} />
           <Route path="/query/:queryType" element={<FSQueryBrowser />} />
+          <Route path="/manual" element={<FSManual />} />
           {/* Audit logs moved to Admin Hub */}
         </Routes>
 
