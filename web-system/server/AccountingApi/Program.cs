@@ -29,8 +29,8 @@ builder.Services.AddScoped<ICompanyContextAccessor, CompanyContextAccessor>();
 // Resolve SQLite path relative to app root so Azure doesn't create a blank DB in the wrong directory
 // IMPORTANT: The filename must be changed to a NEW name each time we want Azure to deploy a fresh DB.
 // Azure App Service's persistent storage will keep the old DB file if the name stays the same.
-// Current: accounting_v6.db — this contains: Gian (from backup, Feb 2026) + other companies as they were.
-var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting_v6.db";
+// Current: accounting_v7.db
+var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting_v7.db";
 if (rawConnStr.Contains("Data Source=") && !Path.IsPathRooted(rawConnStr.Replace("Data Source=", "")))
 {
     var dbFileName = rawConnStr.Replace("Data Source=", "").Trim();
@@ -670,6 +670,68 @@ using (var initScope = app.Services.CreateScope())
         });
     }
     db.SaveChanges();
+
+    // ── Period Correction ─────────────────────────────────────────────────────
+    // Gian's backup data belongs to February 2026. If a prior bad deployment or
+    // an incorrect startup seeding set the period to March/April, forcibly reset
+    // it back to February. This runs on every startup so it self-heals.
+    // Add other companies here if they also need a pinned period.
+    var periodCorrections = new Dictionary<string, (int Mo, int Yr)>
+    {
+        { "gian",     (2, 2026) },
+        { "3jcrt",   (2, 2026) },
+        { "jimi",    (2, 2026) },
+        { "lmjay",   (2, 2026) },
+        { "thermalex", (2, 2026) },
+    };
+
+    foreach (var (code, target) in periodCorrections)
+    {
+        var rows = db.FSSysId.IgnoreQueryFilters().Where(x => x.CompanyCode == code).ToList();
+
+        // Remove duplicates — keep only the most recently updated row
+        if (rows.Count > 1)
+        {
+            var keep = rows.OrderByDescending(r => r.UpdatedAt).First();
+            db.FSSysId.RemoveRange(rows.Where(r => r.Id != keep.Id));
+            rows = new List<AccountingApi.Models.FSSysId> { keep };
+        }
+
+        if (rows.Count == 1)
+        {
+            var row = rows[0];
+            if (row.PresMo != target.Mo || row.PresYr != target.Yr)
+            {
+                Console.WriteLine($"[startup] Correcting period for '{code}': {row.PresMo}/{row.PresYr} → {target.Mo}/{target.Yr}");
+                row.PresMo  = target.Mo;
+                row.PresYr  = target.Yr;
+                row.BegDate = new DateTime(target.Yr, target.Mo, 1);
+                row.EndDate = new DateTime(target.Yr, target.Mo, DateTime.DaysInMonth(target.Yr, target.Mo));
+                row.UpdatedAt = DateTime.UtcNow;
+                db.FSSysId.Update(row);
+            }
+            else
+            {
+                Console.WriteLine($"[startup] Period for '{code}' is already correct: {target.Mo}/{target.Yr}");
+            }
+        }
+        else if (rows.Count == 0)
+        {
+            // No row at all — insert the correct one
+            Console.WriteLine($"[startup] Inserting missing period row for '{code}': {target.Mo}/{target.Yr}");
+            db.FSSysId.Add(new AccountingApi.Models.FSSysId
+            {
+                CompanyCode = code,
+                PresMo    = target.Mo,
+                PresYr    = target.Yr,
+                BegDate   = new DateTime(target.Yr, target.Mo, 1),
+                EndDate   = new DateTime(target.Yr, target.Mo, DateTime.DaysInMonth(target.Yr, target.Mo)),
+                UpdatedAt = DateTime.UtcNow
+            });
+        }
+    }
+    db.SaveChanges();
+    // ── End Period Correction ──────────────────────────────────────────────────
 
     // Ensure pay_sys_id has at least one row (payroll module needs it)
     foreach (var companyCode in CompanyCatalog.AllCodes)
