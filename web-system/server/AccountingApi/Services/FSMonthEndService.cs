@@ -107,9 +107,15 @@ public class FSMonthEndService : IFSMonthEndService
     /// </summary>
     public async Task<MonthEndStatus> GetMonthEndStatusAsync()
     {
-        // Exclude Advance CDVs (ADV prefix) from unposted counts — they belong to the NEXT period
+        var sysId = await _postingService.GetSysIdAsync();
+        var endDate = sysId?.EndDate ?? new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month,
+            DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month));
+
+        // Exclude Advance CDVs from unposted counts:
+        // 1. ADV prefix (explicitly marked as advance)
+        // 2. j_date > period end_date (future-dated = advance, even without prefix)
         var checkCount = await _context.FSCheckMas
-            .CountAsync(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"));
+            .CountAsync(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV") && c.JDate <= endDate);
         var cashRcptCount = await _context.FSCashRcpt.CountAsync();
         var salesBookCount = await _context.FSSaleBook.CountAsync();
         var journalCount = await _context.FSJournals.CountAsync();
@@ -121,7 +127,7 @@ public class FSMonthEndService : IFSMonthEndService
 
         return new MonthEndStatus
         {
-            CanProceed = true, // Can proceed even with unposted transactions (they'll be posted)
+            CanProceed = true,
             Message = totalUnposted == 0 
                 ? "No transactions to post. Ready for month-end close."
                 : $"Found {totalUnposted} transactions to post before clearing.",
@@ -140,11 +146,15 @@ public class FSMonthEndService : IFSMonthEndService
     /// </summary>
     public async Task<UnpostedTransactionSummary> GetUnpostedTransactionSummaryAsync()
     {
+        var sysId = await _postingService.GetSysIdAsync();
+        var endDate = sysId?.EndDate ?? new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month,
+            DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month));
+
         return new UnpostedTransactionSummary
         {
-            // Exclude Advance CDVs (ADV prefix) — they belong to the NEXT period
+            // Exclude Advance CDVs: ADV prefix OR future-dated beyond period end
             UnpostedChecks = await _context.FSCheckMas.AsNoTracking()
-                .Where(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"))
+                .Where(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV") && c.JDate <= endDate)
                 .ToListAsync() ?? new(),
             UnpostedCashRcpts = await _context.FSCashRcpt.AsNoTracking().ToListAsync() ?? new(),
             UnpostedSalesBooks = await _context.FSSaleBook.AsNoTracking().ToListAsync() ?? new(),
@@ -314,14 +324,21 @@ public class FSMonthEndService : IFSMonthEndService
                 return -1;
             }
 
+            // Get the current period end date so we can protect future-dated checks
+            var sysId = await _postingService.GetSysIdAsync();
+            var endDate = sysId?.EndDate ?? new DateTime(fiscalYear, fiscalMonth,
+                DateTime.DaysInMonth(fiscalYear, fiscalMonth));
+            var endDateStr = endDate.ToString("yyyy-MM-dd");
+
             var clearCount = 0;
 
-            // Clear all transaction detail lines first, then masters
-            // IMPORTANT: Preserve Advance CDVs (ADV prefix) — they belong to the NEXT period
+            // Clear transaction detail lines, preserving Advance CDVs (two criteria):
+            // 1. ADV prefix on the check number (explicitly marked)
+            // 2. j_date > period end_date (future-dated = advance, even without prefix)
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"DELETE FROM fs_checkvou WHERE company_code = {companyCode} AND j_ck_no NOT IN (SELECT j_ck_no FROM fs_checkmas WHERE company_code = {companyCode} AND (j_jv_no LIKE 'ADV%' OR j_ck_no LIKE 'ADV%'))");
+                $"DELETE FROM fs_checkvou WHERE company_code = {companyCode} AND j_ck_no NOT IN (SELECT j_ck_no FROM fs_checkmas WHERE company_code = {companyCode} AND (j_jv_no LIKE 'ADV%' OR j_ck_no LIKE 'ADV%' OR j_date > {endDateStr}))");
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"DELETE FROM fs_checkmas WHERE company_code = {companyCode} AND j_jv_no NOT LIKE 'ADV%' AND j_ck_no NOT LIKE 'ADV%'");
+                $"DELETE FROM fs_checkmas WHERE company_code = {companyCode} AND j_jv_no NOT LIKE 'ADV%' AND j_ck_no NOT LIKE 'ADV%' AND j_date <= {endDateStr}");
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_cashrcpt WHERE company_code = {companyCode}");
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_salebook WHERE company_code = {companyCode}");
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_journals WHERE company_code = {companyCode}");
@@ -333,7 +350,7 @@ public class FSMonthEndService : IFSMonthEndService
         }
         catch
         {
-            return -1; // Error indicator
+            return -1;
         }
     }
 
