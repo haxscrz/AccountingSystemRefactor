@@ -183,6 +183,22 @@ export default function AppShell({
             </div>
           </div>
 
+          {/* Persistent Help / User Manual button — always visible in the ribbon */}
+          <div className="flex items-center ml-3">
+            <button
+              onClick={() => navigate('/fs/manual')}
+              title="Open User Manual"
+              className={`flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-semibold border transition-all
+                ${location.pathname === '/fs/manual'
+                  ? 'bg-primary text-white border-primary shadow-sm'
+                  : `border-outline-variant/30 ${darkMode ? 'text-gray-400 hover:text-primary hover:border-primary/50' : 'text-on-surface-variant/70 hover:text-primary hover:border-primary/50 hover:bg-primary/5'}`
+                }`}
+            >
+              <span className="material-symbols-outlined text-[15px]">menu_book</span>
+              <span>Help</span>
+            </button>
+          </div>
+
           {/* Topbar Right */}
           <div className="flex items-center gap-5">
             <GlobalNotificationBell />
