@@ -323,6 +323,18 @@ public sealed class FSReportService
         var capitalAccounts = BuildLines("BLSC", negateKeyword: "SUBSCRIPTION");
         var earningsAccounts = BuildLines("BLSE");
 
+        // FIX: The Balance Sheet must include the Current Period's Net Income in the Equity section to balance.
+        var incomeStmt = await GenerateIncomeStatementAsync(periodEnding);
+        if (incomeStmt.NetIncomeToDate != 0)
+        {
+            earningsAccounts.Add(new BalanceSheetLine
+            {
+                AccountCode = "NET-INC",
+                Description = "Current Period Net Income",
+                Amount = incomeStmt.NetIncomeToDate
+            });
+        }
+
         decimal totalCapital = capitalAccounts.Sum(a => a.Amount);
         decimal totalEarnings = earningsAccounts.Sum(a => a.Amount);
 
