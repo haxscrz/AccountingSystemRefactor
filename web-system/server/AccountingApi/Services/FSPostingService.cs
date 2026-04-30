@@ -49,8 +49,7 @@ public sealed class FSPostingService
     /// </summary>
     private static bool IsAdvanceCheck(FSCheckMas m, DateTime periodEndDate) =>
         m.JJvNo.StartsWith("ADV", StringComparison.OrdinalIgnoreCase) ||
-        m.JCkNo.StartsWith("ADV", StringComparison.OrdinalIgnoreCase) ||
-        m.JDate > periodEndDate;
+        m.JCkNo.StartsWith("ADV", StringComparison.OrdinalIgnoreCase);
 
     public async Task<int> GetTableCountAsync(string tableName, CancellationToken cancellationToken = default)
     {
@@ -62,12 +61,12 @@ public sealed class FSPostingService
 
             return tableName switch
             {
-                // Exclude Advance CDVs: ADV prefix OR future-dated beyond period end
+                // Exclude Advance CDVs: ADV prefix
                 "fs_checkmas" => await _context.FSCheckMas
-                    .CountAsync(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV") && c.JDate <= endDate, cancellationToken),
+                    .CountAsync(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"), cancellationToken),
                 "fs_checkvou" => await _context.FSCheckVou
                     .CountAsync(v => !_context.FSCheckMas.Any(m =>
-                        m.JCkNo == v.JCkNo && (m.JJvNo.StartsWith("ADV") || m.JCkNo.StartsWith("ADV") || m.JDate > endDate)), cancellationToken),
+                        m.JCkNo == v.JCkNo && (m.JJvNo.StartsWith("ADV") || m.JCkNo.StartsWith("ADV"))), cancellationToken),
                 "fs_cashrcpt" => await _context.FSCashRcpt.CountAsync(cancellationToken),
                 "fs_salebook" => await _context.FSSaleBook.CountAsync(cancellationToken),
                 "fs_journals" => await _context.FSJournals.CountAsync(cancellationToken),
@@ -100,12 +99,12 @@ public sealed class FSPostingService
             int totalRecords = 0;
 
             // Step 3: Post from Check Vouchers (checkvou + checkmas for dates)
-            // IMPORTANT: Skip Advance CDVs — checks with ADV prefix OR dated beyond period end
+            // IMPORTANT: Skip Advance CDVs — checks with ADV prefix
             var sysId = await GetSysIdAsync(cancellationToken);
             var periodEndDate = sysId?.EndDate ?? new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month,
                 DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month));
             var advanceCheckNos = await _context.FSCheckMas
-                .Where(m => m.JJvNo.StartsWith("ADV") || m.JCkNo.StartsWith("ADV") || m.JDate > periodEndDate)
+                .Where(m => m.JJvNo.StartsWith("ADV") || m.JCkNo.StartsWith("ADV"))
                 .Select(m => m.JCkNo)
                 .ToListAsync(cancellationToken);
 
