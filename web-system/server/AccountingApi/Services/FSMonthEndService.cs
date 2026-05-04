@@ -324,6 +324,7 @@ public class FSMonthEndService : IFSMonthEndService
             var endDateStr = endDate.ToString("yyyy-MM-dd");
 
             // Clear transaction detail lines
+            var clearCount = 0;
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_checkvou WHERE company_code = {companyCode}");
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_checkmas WHERE company_code = {companyCode}");
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_cashrcpt WHERE company_code = {companyCode}");
