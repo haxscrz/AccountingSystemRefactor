@@ -111,10 +111,7 @@ public class FSMonthEndService : IFSMonthEndService
         var endDate = sysId?.EndDate ?? new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month,
             DateTime.DaysInMonth(DateTime.UtcNow.Year, DateTime.UtcNow.Month));
 
-        // Exclude Advance CDVs from unposted counts:
-        // 1. ADV prefix (explicitly marked as advance)
-        var checkCount = await _context.FSCheckMas
-            .CountAsync(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"));
+        var checkCount = await _context.FSCheckMas.CountAsync();
         var cashRcptCount = await _context.FSCashRcpt.CountAsync();
         var salesBookCount = await _context.FSSaleBook.CountAsync();
         var journalCount = await _context.FSJournals.CountAsync();
@@ -151,10 +148,7 @@ public class FSMonthEndService : IFSMonthEndService
 
         return new UnpostedTransactionSummary
         {
-            // Exclude Advance CDVs: ADV prefix
-            UnpostedChecks = await _context.FSCheckMas.AsNoTracking()
-                .Where(c => !c.JJvNo.StartsWith("ADV") && !c.JCkNo.StartsWith("ADV"))
-                .ToListAsync() ?? new(),
+            UnpostedChecks = await _context.FSCheckMas.AsNoTracking().ToListAsync() ?? new(),
             UnpostedCashRcpts = await _context.FSCashRcpt.AsNoTracking().ToListAsync() ?? new(),
             UnpostedSalesBooks = await _context.FSSaleBook.AsNoTracking().ToListAsync() ?? new(),
             UnpostedJournals = await _context.FSJournals.AsNoTracking().ToListAsync() ?? new(),
@@ -329,14 +323,9 @@ public class FSMonthEndService : IFSMonthEndService
                 DateTime.DaysInMonth(fiscalYear, fiscalMonth));
             var endDateStr = endDate.ToString("yyyy-MM-dd");
 
-            var clearCount = 0;
-
-            // Clear transaction detail lines, preserving Advance CDVs (criteria):
-            // 1. ADV prefix on the check number (explicitly marked)
-            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"DELETE FROM fs_checkvou WHERE company_code = {companyCode} AND j_ck_no NOT IN (SELECT j_ck_no FROM fs_checkmas WHERE company_code = {companyCode} AND (j_jv_no LIKE 'ADV%' OR j_ck_no LIKE 'ADV%'))");
-            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync(
-                $"DELETE FROM fs_checkmas WHERE company_code = {companyCode} AND j_jv_no NOT LIKE 'ADV%' AND j_ck_no NOT LIKE 'ADV%'");
+            // Clear transaction detail lines
+            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_checkvou WHERE company_code = {companyCode}");
+            clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_checkmas WHERE company_code = {companyCode}");
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_cashrcpt WHERE company_code = {companyCode}");
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_salebook WHERE company_code = {companyCode}");
             clearCount += await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_journals WHERE company_code = {companyCode}");
