@@ -29,10 +29,10 @@ builder.Services.AddScoped<ICompanyContextAccessor, CompanyContextAccessor>();
 // Resolve SQLite path relative to app root so Azure doesn't create a blank DB in the wrong directory
 // IMPORTANT: The filename must be changed to a NEW name each time we want Azure to deploy a fresh DB.
 // Azure App Service's persistent storage will keep the old DB file if the name stays the same.
-// Current: accounting_v9.db — Gian fully restored from raw backup with:
+// Current: accounting_v8.db — Gian fully restored from raw backup with:
 //   12 Feb checks (current period) + 18 ADV-prefixed advance CDVs
 //   16 journals + 3 cash receipts + 3 sales book + correct fs_sys_id (Feb 2026)
-var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting_v9.db";
+var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=accounting_v8.db";
 if (rawConnStr.Contains("Data Source=") && !Path.IsPathRooted(rawConnStr.Replace("Data Source=", "")))
 {
     var dbFileName = rawConnStr.Replace("Data Source=", "").Trim();
@@ -184,6 +184,9 @@ using (var initScope = app.Services.CreateScope())
     // Creates ALL tables defined in DbContext if they don't exist yet.
     // Safe to call every startup — no-op when tables already exist.
     db.Database.EnsureCreated();
+
+    // Initialize the company catalog from the database
+    CompanyCatalog.LoadFromDatabaseAsync(db).GetAwaiter().GetResult();
 
     // ── Schema patches: add new columns to existing tables if they don't exist ──
     // SQLite doesn't support IF NOT EXISTS for ALTER TABLE, so we use PRAGMA to check.
@@ -782,9 +785,6 @@ using (var initScope = app.Services.CreateScope())
         });
     }
     db.SaveChanges();
-    
-    // Load all companies into memory catalog
-    CompanyCatalog.LoadFromDatabaseAsync(db).GetAwaiter().GetResult();
 }
 
 if (app.Environment.IsDevelopment())

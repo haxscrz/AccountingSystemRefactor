@@ -8,19 +8,7 @@ public static class CompanyCatalog
     public const string HeaderName = "X-Company-Code";
     public const string DefaultCompanyCode = "cyberfridge";
 
-    private static readonly HashSet<string> ValidCodes = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "cyberfridge",
-        "johntrix",
-        "thermalex",
-        "gmixteam",
-        "dynamiq",
-        "metaleon",
-        "lmjay",
-        "3jcrt",
-        "gian",
-        "jimi"    
-    };
+    private static readonly HashSet<string> ValidCodes = new(StringComparer.OrdinalIgnoreCase);
 
     private static readonly object _lock = new();
 
