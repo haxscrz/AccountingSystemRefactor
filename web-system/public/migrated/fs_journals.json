@@ -1,7 +1,7 @@
 {
   "tableName": "fs_journals",
-  "sourcePath": "Ellen's Data/Ellen/data/JOURNALS.DBF",
-  "rowCount": 25,
+  "sourcePath": "C:/Users/hans/.gemini/antigravity/brain/0d631ef8-0881-44fc-b979-6c30159195f0/scratch/gian_migration/GIAN/JOURNALS.DBF",
+  "rowCount": 27,
   "columns": [
     "J_JV_NO",
     "J_DATE",
@@ -11,178 +11,192 @@
   ],
   "rows": [
     {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02001",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "4719",
-      "J_CK_AMT": 100000,
+      "J_CK_AMT": 50000,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02001",
       "J_DATE": "2026-03-12",
-      "ACCT_CODE": "2120",
-      "J_CK_AMT": 100000,
-      "J_D_OR_C": "C"
-    },
-    {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "4727",
-      "J_CK_AMT": 140000,
+      "ACCT_CODE": "4726",
+      "J_CK_AMT": 90000,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "2120",
-      "J_CK_AMT": 140000,
-      "J_D_OR_C": "C"
-    },
-    {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "4727",
-      "J_CK_AMT": 60000,
-      "J_D_OR_C": "D"
-    },
-    {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "2120",
-      "J_CK_AMT": 60000,
-      "J_D_OR_C": "C"
-    },
-    {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02001",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "4708",
-      "J_CK_AMT": 80000,
+      "J_CK_AMT": 50000,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02001",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "2120",
-      "J_CK_AMT": 80000,
+      "J_CK_AMT": 190000,
       "J_D_OR_C": "C"
     },
     {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "4720",
-      "J_CK_AMT": 10000,
-      "J_D_OR_C": "D"
-    },
-    {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "2114",
-      "J_CK_AMT": 10000,
-      "J_D_OR_C": "C"
-    },
-    {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02002",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "4709",
-      "J_CK_AMT": 21341.14,
+      "J_CK_AMT": 10000,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "1151",
-      "J_CK_AMT": 21341.14,
-      "J_D_OR_C": "C"
-    },
-    {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02002",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "4717",
-      "J_CK_AMT": 18545.72,
+      "J_CK_AMT": 9600,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02002",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "1150",
-      "J_CK_AMT": 18545.72,
+      "J_CK_AMT": 19600,
       "J_D_OR_C": "C"
     },
     {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02003",
       "J_DATE": "2026-03-12",
-      "ACCT_CODE": "4706",
-      "J_CK_AMT": 4968.5,
+      "ACCT_CODE": "2164",
+      "J_CK_AMT": 13700.35,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "2120",
-      "J_CK_AMT": 4968.5,
-      "J_D_OR_C": "C"
-    },
-    {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "4720",
-      "J_CK_AMT": 568,
-      "J_D_OR_C": "D"
-    },
-    {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "2166",
-      "J_CK_AMT": 568,
-      "J_D_OR_C": "C"
-    },
-    {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "2120",
-      "J_CK_AMT": 2330,
-      "J_D_OR_C": "D"
-    },
-    {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02003",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "2165",
-      "J_CK_AMT": 2330,
-      "J_D_OR_C": "C"
+      "J_CK_AMT": 8472.82,
+      "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02003",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2166",
+      "J_CK_AMT": 423.97,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "26-02003",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2163",
+      "J_CK_AMT": 23655.68,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "26-02003",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "2161",
+      "J_CK_AMT": 3146,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "26-02003",
+      "J_DATE": "2026-03-12",
+      "ACCT_CODE": "4712",
+      "J_CK_AMT": 45382,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "26-02003",
       "J_DATE": "2026-03-12",
       "ACCT_CODE": "1112",
-      "J_CK_AMT": 276.87,
-      "J_D_OR_C": "D"
-    },
-    {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "2120",
-      "J_CK_AMT": 276.87,
+      "J_CK_AMT": 94780.82,
       "J_D_OR_C": "C"
     },
     {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02004",
       "J_DATE": "2026-03-12",
-      "ACCT_CODE": "4200",
-      "J_CK_AMT": 190277.26,
+      "ACCT_CODE": "1114",
+      "J_CK_AMT": 145096.73,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "JV#02",
+      "J_JV_NO": "26-02004",
       "J_DATE": "2026-03-12",
-      "ACCT_CODE": "2122",
-      "J_CK_AMT": 22833.27,
+      "ACCT_CODE": "2113",
+      "J_CK_AMT": 145096.73,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "26-02005",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "4500",
+      "J_CK_AMT": 303610,
       "J_D_OR_C": "D"
     },
     {
-      "J_JV_NO": "JV#02",
-      "J_DATE": "2026-03-12",
-      "ACCT_CODE": "1123",
-      "J_CK_AMT": 213110.53,
+      "J_JV_NO": "26-02005",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "2113",
+      "J_CK_AMT": 303610,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "26-02006",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "4727",
+      "J_CK_AMT": 85000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "26-02006",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "2113",
+      "J_CK_AMT": 65000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "26-02006",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 150000,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "26-02007",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "4725",
+      "J_CK_AMT": 30000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "26-02007",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "2190",
+      "J_CK_AMT": 30000,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "26-02007",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "2190",
+      "J_CK_AMT": 170000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "26-02007",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "2113",
+      "J_CK_AMT": 155960.54,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_JV_NO": "26-02007",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "1128",
+      "J_CK_AMT": 272294.54,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_JV_NO": "26-02007",
+      "J_DATE": "2026-04-16",
+      "ACCT_CODE": "1129",
+      "J_CK_AMT": 53666,
       "J_D_OR_C": "C"
     }
   ]

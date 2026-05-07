@@ -1,7 +1,7 @@
 {
   "tableName": "fs_acheckma",
-  "sourcePath": "Ellen's Data/Ellen/data/Acheckma.dbf",
-  "rowCount": 0,
+  "sourcePath": "C:/Users/hans/.gemini/antigravity/brain/0d631ef8-0881-44fc-b979-6c30159195f0/scratch/gian_migration/GIAN/ACHECKMA.DBF",
+  "rowCount": 9,
   "columns": [
     "J_JV_NO",
     "J_DATE",
@@ -12,5 +12,96 @@
     "BANK_NO",
     "SUP_NO"
   ],
-  "rows": []
+  "rows": [
+    {
+      "J_JV_NO": "183044",
+      "J_DATE": "2026-04-21",
+      "J_CK_NO": "183044",
+      "J_PAY_TO": "E. SANTOS",
+      "J_CK_AMT": 35000,
+      "J_DESC": "PS & ALLO FOR THE MONTH OF MARCH 2026.",
+      "BANK_NO": 0,
+      "SUP_NO": 0
+    },
+    {
+      "J_JV_NO": "183045",
+      "J_DATE": "2026-04-21",
+      "J_CK_NO": "183045",
+      "J_PAY_TO": "V.R. BATAN",
+      "J_CK_AMT": 13400,
+      "J_DESC": "PS & ALLO FOR THE MONTH OF MARCH 2026.",
+      "BANK_NO": 0,
+      "SUP_NO": 0
+    },
+    {
+      "J_JV_NO": "183046",
+      "J_DATE": "2026-04-21",
+      "J_CK_NO": "183046",
+      "J_PAY_TO": "BING",
+      "J_CK_AMT": 7091,
+      "J_DESC": "PS & REPLENISH PETTY CASH FUND.",
+      "BANK_NO": 0,
+      "SUP_NO": 0
+    },
+    {
+      "J_JV_NO": "183047",
+      "J_DATE": "2026-04-21",
+      "J_CK_NO": "183047",
+      "J_PAY_TO": "GIAN",
+      "J_CK_AMT": 64961,
+      "J_DESC": "OPEN SHARE FOR THE MONTH OF MARCH 2026.",
+      "BANK_NO": 0,
+      "SUP_NO": 0
+    },
+    {
+      "J_JV_NO": "183048",
+      "J_DATE": "2026-04-21",
+      "J_CK_NO": "183048",
+      "J_PAY_TO": "E. SANTOS",
+      "J_CK_AMT": 2837,
+      "J_DESC": "TO REPLENISH PETTY CASH FUND.",
+      "BANK_NO": 0,
+      "SUP_NO": 0
+    },
+    {
+      "J_JV_NO": "183049",
+      "J_DATE": "2026-04-21",
+      "J_CK_NO": "183049",
+      "J_PAY_TO": "LMJAY",
+      "J_CK_AMT": 33486.33,
+      "J_DESC": "SHARE FOR OFFICE EXPENSE FORT HE MONTH OF MARCH.",
+      "BANK_NO": 0,
+      "SUP_NO": 0
+    },
+    {
+      "J_JV_NO": "183050",
+      "J_DATE": "2026-04-21",
+      "J_CK_NO": "183050",
+      "J_PAY_TO": "GIAN DEN",
+      "J_CK_AMT": 321985.07,
+      "J_DESC": "PAYROLL FOR THE PERIOD APRIL 01 TO 15, 2026.",
+      "BANK_NO": 0,
+      "SUP_NO": 0
+    },
+    {
+      "J_JV_NO": "183051",
+      "J_DATE": "2026-04-21",
+      "J_CK_NO": "183051",
+      "J_PAY_TO": "E. SANTOS",
+      "J_CK_AMT": 3680,
+      "J_DESC": "GASOLINE & TOLL FEE ALLO FOR THE MONTH OF APRIL.",
+      "BANK_NO": 0,
+      "SUP_NO": 0
+    },
+    {
+      "J_JV_NO": "183052",
+      "J_DATE": "2026-04-21",
+      "J_CK_NO": "183052",
+      "J_PAY_TO": "V.R. BATAN",
+      "J_CK_AMT": 2500,
+      "J_DESC": "SHARE FOR BUILDING RENTAL FOR THE MONTH OF APRIL.",
+      "BANK_NO": 0,
+      "SUP_NO": 0
+    }
+  ]
 }

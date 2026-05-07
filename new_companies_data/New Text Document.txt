@@ -1,0 +1,18 @@
+I have found a bug, it doesn't seem like the "create new organization" even works.
+
+i have tried making new organizations, but when i press create, it does not do anything and does not go into the list of organizations.
+
+please fix this bug.
+
+after you fix this issue, you must make 4 new organizations:
+
+Kotemaster General Services Inc.
+Jemtroil General Services Inc.
+Ricenz Coil Maker Inc and
+Jessley Aircool Solutions Corp.
+
+The details of the companies can be found under PATHFILE.DBF
+
+Try to migrate these @contextScopeItemMention data, and scour every single file and apply it to the new FS system, and check every single file to be imported.
+
+please fix this issue.

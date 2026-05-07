@@ -1,12 +1,259 @@
 {
   "tableName": "fs_acheckvo",
-  "sourcePath": "Ellen's Data/Ellen/data/Acheckvo.dbf",
-  "rowCount": 0,
+  "sourcePath": "C:/Users/hans/.gemini/antigravity/brain/0d631ef8-0881-44fc-b979-6c30159195f0/scratch/gian_migration/GIAN/ACHECKVO.DBF",
+  "rowCount": 41,
   "columns": [
     "J_CK_NO",
     "ACCT_CODE",
     "J_CK_AMT",
     "J_D_OR_C"
   ],
-  "rows": []
+  "rows": [
+    {
+      "J_CK_NO": "183044",
+      "ACCT_CODE": "4702",
+      "J_CK_AMT": 2000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183044",
+      "ACCT_CODE": "4722",
+      "J_CK_AMT": 1000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183044",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 32000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183044",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 35000,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183045",
+      "ACCT_CODE": "4705",
+      "J_CK_AMT": 5000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183045",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 8400,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183045",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 13400,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183046",
+      "ACCT_CODE": "4705",
+      "J_CK_AMT": 150,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183046",
+      "ACCT_CODE": "4722",
+      "J_CK_AMT": 307,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183046",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 2800,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183046",
+      "ACCT_CODE": "4708",
+      "J_CK_AMT": 978,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183046",
+      "ACCT_CODE": "4716",
+      "J_CK_AMT": 2556,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183046",
+      "ACCT_CODE": "4706",
+      "J_CK_AMT": 300,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183046",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 7091,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183047",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 64961,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183047",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 64961,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183048",
+      "ACCT_CODE": "4710",
+      "J_CK_AMT": 2837,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183048",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 2837,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183049",
+      "ACCT_CODE": "4702",
+      "J_CK_AMT": 20762.4,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183049",
+      "ACCT_CODE": "4714",
+      "J_CK_AMT": 5678.93,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183049",
+      "ACCT_CODE": "4722",
+      "J_CK_AMT": 1000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183049",
+      "ACCT_CODE": "4702",
+      "J_CK_AMT": 1500,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183049",
+      "ACCT_CODE": "4708",
+      "J_CK_AMT": 2000,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183049",
+      "ACCT_CODE": "4710",
+      "J_CK_AMT": 2545,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183049",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 33486.33,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183050",
+      "ACCT_CODE": "4701",
+      "J_CK_AMT": 33455,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183050",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 10237.75,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183050",
+      "ACCT_CODE": "2120",
+      "J_CK_AMT": 41839,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183050",
+      "ACCT_CODE": "4727",
+      "J_CK_AMT": 236453.32,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183050",
+      "ACCT_CODE": "2165",
+      "J_CK_AMT": 9109.52,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183050",
+      "ACCT_CODE": "2163",
+      "J_CK_AMT": 15400,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183050",
+      "ACCT_CODE": "2164",
+      "J_CK_AMT": 9061.24,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183050",
+      "ACCT_CODE": "2161",
+      "J_CK_AMT": 2973,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183050",
+      "ACCT_CODE": "1127",
+      "J_CK_AMT": 7112.5,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183050",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 278328.81,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183051",
+      "ACCT_CODE": "4702",
+      "J_CK_AMT": 3680,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183051",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 3680,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183052",
+      "ACCT_CODE": "4715",
+      "J_CK_AMT": 2232.14,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183052",
+      "ACCT_CODE": "1142",
+      "J_CK_AMT": 267.86,
+      "J_D_OR_C": "D"
+    },
+    {
+      "J_CK_NO": "183052",
+      "ACCT_CODE": "2166",
+      "J_CK_AMT": 111.61,
+      "J_D_OR_C": "C"
+    },
+    {
+      "J_CK_NO": "183052",
+      "ACCT_CODE": "1112",
+      "J_CK_AMT": 2388.39,
+      "J_D_OR_C": "C"
+    }
+  ]
 }

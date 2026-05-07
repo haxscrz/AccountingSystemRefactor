@@ -1,12 +1,25 @@
 {
   "tableName": "fs_banks",
-  "sourcePath": "Ellen's Data/Ellen/data/BANKS.DBF",
-  "rowCount": 0,
+  "sourcePath": "C:/Users/hans/.gemini/antigravity/brain/0d631ef8-0881-44fc-b979-6c30159195f0/scratch/gian_migration/GIAN/BANKS.DBF",
+  "rowCount": 2,
   "columns": [
     "BANK_NO",
     "BANK_NAME",
     "BANK_ADDR",
     "BANK_ACCT"
   ],
-  "rows": []
+  "rows": [
+    {
+      "BANK_NO": 1,
+      "BANK_NAME": "",
+      "BANK_ADDR": "",
+      "BANK_ACCT": ""
+    },
+    {
+      "BANK_NO": 2,
+      "BANK_NAME": "",
+      "BANK_ADDR": "",
+      "BANK_ACCT": ""
+    }
+  ]
 }

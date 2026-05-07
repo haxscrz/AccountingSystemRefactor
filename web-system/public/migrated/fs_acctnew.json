@@ -1,6 +1,6 @@
 {
   "tableName": "fs_acctnew",
-  "sourcePath": "Ellen's Data/Ellen/data/ACCTNEW.DBF",
+  "sourcePath": "C:/Users/hans/.gemini/antigravity/brain/0d631ef8-0881-44fc-b979-6c30159195f0/scratch/gian_migration/GIAN/ACCTNEW.DBF",
   "rowCount": 113,
   "columns": [
     "ACCT_CODE",

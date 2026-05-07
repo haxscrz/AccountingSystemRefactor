@@ -1,6 +1,6 @@
 {
   "tableName": "fs_supplier",
-  "sourcePath": "Ellen's Data/Ellen/data/SUPPLIER.DBF",
+  "sourcePath": "C:/Users/hans/.gemini/antigravity/brain/0d631ef8-0881-44fc-b979-6c30159195f0/scratch/gian_migration/GIAN/SUPPLIER.DBF",
   "rowCount": 1,
   "columns": [
     "SUP_NO",
