@@ -63,8 +63,7 @@ public class CompaniesController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost]
-    [Route("/api/admin/companies")]
+    [HttpPost("/api/admin/companies")]
     [Authorize(Policy = "SuperAdminOnly")]
     public async Task<IActionResult> CreateCompany([FromBody] CreateCompanyRequest request)
     {
@@ -83,8 +82,7 @@ public class CompaniesController : ControllerBase
         return Ok(new { message = "Company created." });
     }
 
-    [HttpDelete("{code}")]
-    [Route("/api/admin/companies/{code}")]
+    [HttpDelete("/api/admin/companies/{code}")]
     [Authorize(Policy = "SuperAdminOnly")]
     public async Task<IActionResult> DeleteCompany(string code)
     {

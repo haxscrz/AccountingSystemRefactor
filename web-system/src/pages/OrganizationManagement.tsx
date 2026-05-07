@@ -56,14 +56,14 @@ export default function OrganizationManagement() {
     
     setCompanyLoading(true); setError(''); setSuccess('')
     try {
-      await axios.post(`${ADMIN_API}/companies`, { code: cleanCode, name: newCompanyName.trim() }, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      })
-      setSuccess(`Organization "${newCompanyName.trim()}" created.`)
+      await axios.post(`${ADMIN_API}/companies`, { code: cleanCode, name: newCompanyName.trim() })
+      setSuccess(`Organization "${newCompanyName.trim()}" created successfully!`)
       setNewCompanyCode(''); setNewCompanyName('')
-      fetchCompanies()
+      await fetchCompanies()
     } catch (e: any) {
-      setError(e?.response?.data?.message || 'Failed to create organization')
+      console.error('[OrganizationManagement] Create failed:', e)
+      const msg = e?.response?.data?.message || e?.message || 'Failed to create organization'
+      setError(`Error: ${msg} (Status: ${e?.response?.status || 'network error'})`)
     } finally {
       setCompanyLoading(false)
     }
@@ -75,12 +75,11 @@ export default function OrganizationManagement() {
 
     setError(''); setSuccess('')
     try {
-      await axios.delete(`${ADMIN_API}/companies/${code}`, {
-        headers: { Authorization: `Bearer ${accessToken}` }
-      })
+      await axios.delete(`${ADMIN_API}/companies/${code}`)
       setSuccess(`Organization "${code}" deleted cleanly.`)
-      fetchCompanies()
+      await fetchCompanies()
     } catch (e: any) {
+      console.error('[OrganizationManagement] Delete failed:', e)
       setError(e?.response?.data?.message || 'Failed to delete organization')
     }
   }
