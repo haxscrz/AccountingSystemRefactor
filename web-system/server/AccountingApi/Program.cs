@@ -36,8 +36,32 @@ var rawConnStr = builder.Configuration.GetConnectionString("DefaultConnection") 
 if (rawConnStr.Contains("Data Source=") && !Path.IsPathRooted(rawConnStr.Replace("Data Source=", "")))
 {
     var dbFileName = rawConnStr.Replace("Data Source=", "").Trim();
-    var absoluteDbPath = Path.Combine(builder.Environment.ContentRootPath, dbFileName);
-    rawConnStr = $"Data Source={absoluteDbPath}";
+    var sourceDbPath = Path.Combine(builder.Environment.ContentRootPath, dbFileName);
+    var azureHomePath = Environment.GetEnvironmentVariable("HOME");
+    
+    if (!string.IsNullOrEmpty(azureHomePath))
+    {
+        var dataDir = Path.Combine(azureHomePath, "Data");
+        if (!Directory.Exists(dataDir))
+        {
+            Directory.CreateDirectory(dataDir);
+        }
+        var persistentDbPath = Path.Combine(dataDir, dbFileName);
+        
+        if (!File.Exists(persistentDbPath) && File.Exists(sourceDbPath))
+        {
+            File.Copy(sourceDbPath, persistentDbPath);
+            Console.WriteLine($"[startup] Copied seed DB from {sourceDbPath} to {persistentDbPath}");
+        }
+        
+        rawConnStr = $"Data Source={persistentDbPath}";
+        Console.WriteLine($"[startup] Using persistent Azure DB: {persistentDbPath}");
+    }
+    else
+    {
+        rawConnStr = $"Data Source={sourceDbPath}";
+        Console.WriteLine($"[startup] Using local DB: {sourceDbPath}");
+    }
 }
 builder.Services.AddDbContext<AccountingDbContext>(options => options.UseSqlite(rawConnStr));
 
