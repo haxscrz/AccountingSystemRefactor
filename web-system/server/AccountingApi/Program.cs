@@ -782,6 +782,9 @@ using (var initScope = app.Services.CreateScope())
         });
     }
     db.SaveChanges();
+    
+    // Load all companies into memory catalog
+    CompanyCatalog.LoadFromDatabaseAsync(db).GetAwaiter().GetResult();
 }
 
 if (app.Environment.IsDevelopment())

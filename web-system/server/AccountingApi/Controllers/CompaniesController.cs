@@ -64,6 +64,7 @@ public class CompaniesController : ControllerBase
     }
 
     [HttpPost]
+    [Route("/api/admin/companies")]
     [Authorize(Policy = "SuperAdminOnly")]
     public async Task<IActionResult> CreateCompany([FromBody] CreateCompanyRequest request)
     {
@@ -75,15 +76,24 @@ public class CompaniesController : ControllerBase
         if (exists > 0) return BadRequest(new { message = "Company code already exists." });
 
         await conn.ExecuteAsync("INSERT INTO app_companies (code, name, created_at_utc) VALUES (@Code, @Name, datetime('now'))", new { request.Code, request.Name });
+        
+        // Update in-memory catalog
+        CompanyCatalog.AddCode(request.Code);
+        
         return Ok(new { message = "Company created." });
     }
 
     [HttpDelete("{code}")]
+    [Route("/api/admin/companies/{code}")]
     [Authorize(Policy = "SuperAdminOnly")]
     public async Task<IActionResult> DeleteCompany(string code)
     {
         using var conn = _db.Database.GetDbConnection();
         await conn.ExecuteAsync("DELETE FROM app_companies WHERE code = @code", new { code });
+        
+        // Update in-memory catalog
+        CompanyCatalog.RemoveCode(code);
+        
         return Ok(new { message = "Company deleted." });
     }
 
