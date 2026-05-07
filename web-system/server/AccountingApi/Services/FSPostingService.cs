@@ -77,6 +77,15 @@ public sealed class FSPostingService
                 return (false, "Invalid company context.", 0);
             }
 
+            // Get the active month period boundaries from fs_sys_id
+            var sysId = await GetSysIdAsync(cancellationToken);
+            if (sysId == null)
+            {
+                return (false, "System period not configured. Cannot post.", 0);
+            }
+            var periodStart = sysId.BegDate;
+            var periodEnd = sysId.EndDate.AddDays(1); // inclusive end
+
             // Step 1: Clear posted journals table
             await _context.Database.ExecuteSqlInterpolatedAsync($"DELETE FROM fs_pournals WHERE company_code = {companyCode}", cancellationToken);
 
@@ -86,14 +95,23 @@ public sealed class FSPostingService
                 cancellationToken);
 
             int totalRecords = 0;
+            int skippedOutOfPeriod = 0;
 
             // Step 3: Post from Check Vouchers (checkvou + checkmas for dates)
+            // Only post vouchers whose master date falls within the active month
             var checkVouchers = await _context.FSCheckVou
                 .ToListAsync(cancellationToken);
             foreach (var voucher in checkVouchers)
             {
                 var checkMaster = await _context.FSCheckMas
                     .FirstOrDefaultAsync(m => m.JCkNo == voucher.JCkNo, cancellationToken);
+
+                // Filter by active month period — only post if the master date is within the current period
+                if (checkMaster?.JDate != null && (checkMaster.JDate < periodStart || checkMaster.JDate >= periodEnd))
+                {
+                    skippedOutOfPeriod++;
+                    continue;
+                }
 
                 var postedJournal = new FSPostedJournal
                 {
@@ -112,8 +130,10 @@ public sealed class FSPostingService
                 totalRecords++;
             }
 
-            // Step 4: Post from Cash Receipts
-            var cashReceipts = await _context.FSCashRcpt.ToListAsync(cancellationToken);
+            // Step 4: Post from Cash Receipts (filtered by active month)
+            var cashReceipts = await _context.FSCashRcpt
+                .Where(r => r.JDate >= periodStart && r.JDate < periodEnd)
+                .ToListAsync(cancellationToken);
             foreach (var receipt in cashReceipts)
             {
                 var postedJournal = new FSPostedJournal
@@ -132,8 +152,10 @@ public sealed class FSPostingService
                 totalRecords++;
             }
 
-            // Step 5: Post from Sales Book
-            var saleBooks = await _context.FSSaleBook.ToListAsync(cancellationToken);
+            // Step 5: Post from Sales Book (filtered by active month)
+            var saleBooks = await _context.FSSaleBook
+                .Where(s => s.JDate >= periodStart && s.JDate < periodEnd)
+                .ToListAsync(cancellationToken);
             foreach (var sale in saleBooks)
             {
                 var postedJournal = new FSPostedJournal
@@ -152,8 +174,10 @@ public sealed class FSPostingService
                 totalRecords++;
             }
 
-            // Step 6: Post from Journals
-            var journals = await _context.FSJournals.ToListAsync(cancellationToken);
+            // Step 6: Post from Journals (filtered by active month)
+            var journals = await _context.FSJournals
+                .Where(j => j.JDate >= periodStart && j.JDate < periodEnd)
+                .ToListAsync(cancellationToken);
             foreach (var journal in journals)
             {
                 var postedJournal = new FSPostedJournal
@@ -172,8 +196,10 @@ public sealed class FSPostingService
                 totalRecords++;
             }
 
-            // Step 7: Post from Purchase Book
-            var purcBooks = await _context.FSPurcBook.ToListAsync(cancellationToken);
+            // Step 7: Post from Purchase Book (filtered by active month)
+            var purcBooks = await _context.FSPurcBook
+                .Where(p => p.JDate >= periodStart && p.JDate < periodEnd)
+                .ToListAsync(cancellationToken);
             foreach (var purchase in purcBooks)
             {
                 var postedJournal = new FSPostedJournal
@@ -192,8 +218,10 @@ public sealed class FSPostingService
                 totalRecords++;
             }
 
-            // Step 8: Post from Adjustments
-            var adjustments = await _context.FSAdjustment.ToListAsync(cancellationToken);
+            // Step 8: Post from Adjustments (filtered by active month)
+            var adjustments = await _context.FSAdjustment
+                .Where(a => a.JDate >= periodStart && a.JDate < periodEnd)
+                .ToListAsync(cancellationToken);
             foreach (var adjustment in adjustments)
             {
                 var postedJournal = new FSPostedJournal
