@@ -12,8 +12,11 @@ test.describe('QA Agent: Financial System Audit', () => {
     // 2. Wait for successful login and navigation to system options
     await expect(page).toHaveURL(/.*\/system-options/);
     
-    // 3. Select a company (e.g. JEMT)
-    // Assuming there's a button or link with the company name on the system options page
+    // 3. Navigate to company selection
+    await page.click('text=Financial & Payroll System');
+    await expect(page).toHaveURL(/.*\/select-company/);
+
+    // 4. Select a company (e.g. JEMT)
     await page.click('text=JEMT');
     
     // 4. Verify routing to FS Dashboard
