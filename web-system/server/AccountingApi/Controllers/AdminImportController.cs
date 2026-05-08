@@ -160,8 +160,9 @@ public sealed class AdminImportController : ControllerBase
                 int seededCount = 0;
                 try
                 {
+                    bool append = tableResults.ContainsKey(mapping.TargetTable);
                     seededCount = await SeedTableAsync(
-                        mapping.TargetTable, dbfData.Rows, normalizedCompany, now, ct);
+                        mapping.TargetTable, dbfData.Rows, normalizedCompany, now, ct, append);
                 }
                 catch (Exception ex)
                 {
@@ -174,7 +175,11 @@ public sealed class AdminImportController : ControllerBase
                     continue;
                 }
 
-                tableResults[mapping.TargetTable] = seededCount;
+                if (tableResults.ContainsKey(mapping.TargetTable))
+                    tableResults[mapping.TargetTable] += seededCount;
+                else
+                    tableResults[mapping.TargetTable] = seededCount;
+                
                 totalFilesProcessed++;
                 totalRecordsImported += seededCount;
 
@@ -364,11 +369,15 @@ public sealed class AdminImportController : ControllerBase
         List<Dictionary<string, object?>> rows,
         string companyCode,
         DateTime now,
-        CancellationToken ct)
+        CancellationToken ct,
+        bool append = false)
     {
-        // Delete existing data for this company+table first
-        var deleteCmd = $"DELETE FROM {targetTable} WHERE company_code = @p0";
-        await _db.Database.ExecuteSqlRawAsync(deleteCmd, new object[] { companyCode }, ct);
+        // Delete existing data for this company+table first (unless appending)
+        if (!append)
+        {
+            var deleteCmd = $"DELETE FROM {targetTable} WHERE company_code = @p0";
+            await _db.Database.ExecuteSqlRawAsync(deleteCmd, new object[] { companyCode }, ct);
+        }
 
         switch (targetTable)
         {
