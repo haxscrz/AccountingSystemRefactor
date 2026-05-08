@@ -80,6 +80,9 @@ public sealed class AdminImportController : ControllerBase
 
             // Override the company context so EF Core's ApplyCompanyScope uses the correct code
             HttpContext.Items[CompanyContextKeys.SelectedCompanyCodeItem] = normalizedCompany;
+            
+            // Bypass UserId assignment for legacy data so all company accountants can see it
+            _db.BypassUserIdAssignment = true;
 
             var now = DateTime.UtcNow;
             int totalFilesProcessed = 0;
@@ -252,6 +255,9 @@ public sealed class AdminImportController : ControllerBase
         if (!CompanyCatalog.IsValid(normalizedCompany)) return BadRequest(new { message = "Invalid company code." });
 
         HttpContext.Items[CompanyContextKeys.SelectedCompanyCodeItem] = normalizedCompany;
+        
+        // Bypass UserId assignment for legacy data so all company accountants can see it
+        _db.BypassUserIdAssignment = true;
 
         var now = DateTime.UtcNow;
         var tableResults = new Dictionary<string, int>();

@@ -14,6 +14,8 @@ public sealed class AccountingDbContext : DbContext
         _companyContextAccessor = companyContextAccessor;
     }
 
+    public bool BypassUserIdAssignment { get; set; } = false;
+
     // FS System Tables
     public DbSet<FSAccount> FSAccounts { get; set; } = null!;
     public DbSet<FSCheckMas> FSCheckMas { get; set; } = null!;
@@ -190,7 +192,7 @@ public sealed class AccountingDbContext : DbContext
             {
                 entry.Entity.CompanyCode = companyCode;
                 // Only assign CreatedByUserId if it hasn't been explicitly set
-                if (entry.Entity is CompanyScopedEntity companyScopedDb && !companyScopedDb.CreatedByUserId.HasValue && _companyContextAccessor.UserId.HasValue)
+                if (!BypassUserIdAssignment && entry.Entity is CompanyScopedEntity companyScopedDb && !companyScopedDb.CreatedByUserId.HasValue && _companyContextAccessor.UserId.HasValue)
                 {
                     companyScopedDb.CreatedByUserId = _companyContextAccessor.UserId.Value;
                 }
