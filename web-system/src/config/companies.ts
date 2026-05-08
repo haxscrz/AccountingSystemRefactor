@@ -9,9 +9,13 @@ export type CompanyCode =
   | 'gian'
   | 'jimi'
   | 'lmjay'
+  | 'jemt'
+  | 'jasc'
+  | 'rcmi'
+  | 'kote'
 
 export interface Company {
-  code: CompanyCode
+  code: CompanyCode | string
   name: string
 }
 
@@ -25,7 +29,11 @@ export const COMPANIES: Company[] = [
   { code: '3jcrt', name: '3JCRT GENERAL SERVICES INC' },
   { code: 'gian', name: 'GIAN GENERAL SERVICES INC' },
   { code: 'jimi', name: 'JIMI GENERAL SERVICES INC' },
-  { code: 'lmjay', name: 'LMJAY GENERAL SERVICES INC' }
+  { code: 'lmjay', name: 'LMJAY GENERAL SERVICES INC' },
+  { code: 'jemt', name: 'JEMT GENERAL SERVICES INC' },
+  { code: 'jasc', name: 'JASC GENERAL SERVICES INC' },
+  { code: 'rcmi', name: 'RCMI GENERAL SERVICES INC' },
+  { code: 'kote', name: 'KOTE GENERAL SERVICES INC' }
 ]
 
 export const COMPANY_HEADER_NAME = 'X-Company-Code'
