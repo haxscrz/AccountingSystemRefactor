@@ -17,6 +17,102 @@ namespace AccountingApi.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
+            modelBuilder.Entity("AccountingApi.Models.AppAnnouncement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("author_id");
+
+                    b.Property<string>("AuthorUsername")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("author_username");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("body");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<DateTime?>("ExpiresAtUtc")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("expires_at_utc");
+
+                    b.Property<string>("ImageData")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("image_data");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("priority");
+
+                    b.Property<string>("TargetType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("target_type");
+
+                    b.Property<string>("TargetUsersJson")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("target_users_json");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("title");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("app_announcements");
+                });
+
+            modelBuilder.Entity("AccountingApi.Models.AppAnnouncementReaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AnnouncementId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("announcement_id");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("ReactionType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("reaction_type");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("username");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("app_announcement_reactions");
+                });
+
             modelBuilder.Entity("AccountingApi.Models.AppAuditLog", b =>
                 {
                     b.Property<long>("Id")
@@ -129,11 +225,62 @@ namespace AccountingApi.Data.Migrations
                     b.ToTable("app_refresh_tokens");
                 });
 
+            modelBuilder.Entity("AccountingApi.Models.AppSupportTicket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AdminNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("admin_notes");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("created_at_utc");
+
+                    b.Property<string>("FromUsername")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("from_username");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("message");
+
+                    b.Property<DateTime?>("ResolvedAtUtc")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("resolved_at_utc");
+
+                    b.Property<string>("ResolvedBy")
+                        .HasMaxLength(80)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("resolved_by");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("TEXT")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("app_support_tickets");
+                });
+
             modelBuilder.Entity("AccountingApi.Models.AppUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("AssignedCompaniesJson")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("assigned_companies_json");
 
                     b.Property<bool>("CanAccessFs")
                         .HasColumnType("INTEGER")
@@ -654,6 +801,8 @@ namespace AccountingApi.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyCode", "JCkNo");
+
                     b.HasIndex("CompanyCode", "JCkNo", "AcctCode");
 
                     b.ToTable("fs_checkvou");
@@ -818,6 +967,8 @@ namespace AccountingApi.Data.Migrations
                         .HasColumnName("j_jv_no");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyCode", "JJvNo");
 
                     b.HasIndex("CompanyCode", "JJvNo", "AcctCode");
 

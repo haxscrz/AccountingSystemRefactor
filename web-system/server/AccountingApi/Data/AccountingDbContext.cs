@@ -157,6 +157,28 @@ public sealed class AccountingDbContext : DbContext
 
         modelBuilder.Entity<AppAuditLog>()
             .HasIndex(l => new { l.Username, l.CreatedAtUtc });
+
+        // FS System Performance Indexes
+        modelBuilder.Entity<FSCheckVou>()
+            .HasIndex(c => new { c.CompanyCode, c.JCkNo });
+            
+        modelBuilder.Entity<FSJournal>()
+            .HasIndex(j => new { j.CompanyCode, j.JJvNo });
+            
+        modelBuilder.Entity<FSPostedJournal>()
+            .HasIndex(p => new { p.CompanyCode, p.JJvNo });
+            
+        modelBuilder.Entity<FSCashRcpt>()
+            .HasIndex(c => new { c.CompanyCode, c.JJvNo });
+            
+        modelBuilder.Entity<FSSaleBook>()
+            .HasIndex(s => new { s.CompanyCode, s.JJvNo });
+            
+        modelBuilder.Entity<FSPurcBook>()
+            .HasIndex(p => new { p.CompanyCode, p.JJvNo });
+            
+        modelBuilder.Entity<FSAdjustment>()
+            .HasIndex(a => new { a.CompanyCode, a.JJvNo });
     }
 
     public override int SaveChanges()

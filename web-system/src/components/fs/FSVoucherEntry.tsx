@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import axios from 'axios'
-
 import { useFsUnsavedStore } from '../../stores/fsUnsavedStore'
+import { useDebounce } from '../../hooks/useDebounce'
 
 // --- Types ---
 interface CheckMaster {
@@ -134,7 +134,9 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
   const [findDate, setFindDate] = useState('')
   const [findPayee, setFindPayee] = useState('')
 
-  // Account browse & master lookups
+  const debouncedFindJv = useDebounce(findJv, 500)
+  const debouncedFindCk = useDebounce(findCk, 500)
+  const debouncedFindPayee = useDebounce(findPayee, 500)
   const [showAcctBrowse, setShowAcctBrowse] = useState(false)
   const [accounts, setAccounts] = useState<AccountLookup[]>([])
   const [banks, setBanks] = useState<BankLookup[]>([])
@@ -374,7 +376,14 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
     }
     setShowFind(false)
     setFindJv(''); setFindCk(''); setFindDate(''); setFindPayee('')
-  }
+  // Auto-search for Debounced Search Inputs
+  useEffect(() => {
+    if (showFind) {
+      if (findMode === 'cdv' && debouncedFindJv) handleFind()
+      else if (findMode === 'check' && debouncedFindCk) handleFind()
+      else if (findMode === 'payee' && debouncedFindPayee) handleFind()
+    }
+  }, [debouncedFindJv, debouncedFindCk, debouncedFindPayee])
 
   // ---- ADD master ----
   const handleAddMaster = () => {

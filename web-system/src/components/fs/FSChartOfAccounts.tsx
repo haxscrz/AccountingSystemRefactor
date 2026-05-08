@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import PageHeader from '../PageHeader'
+import { useDebounce } from '../../hooks/useDebounce'
 
 interface Account {
   acctCode: string
@@ -49,6 +50,7 @@ export default function FSChartOfAccounts() {
   const [findCode, setFindCode] = useState('')
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['asset']))
+  const debouncedFindCode = useDebounce(findCode, 300)
 
   // Form state
   const [acctCode, setAcctCode] = useState('')
@@ -97,18 +99,28 @@ export default function FSChartOfAccounts() {
     setGlReport(''); setGlEffect(''); setFormula('DC'); setInitialize(false)
   }
 
-  const handleFind = async () => {
-    if (!findCode.trim()) return
+  const handleFind = async (codeToSearch: string) => {
+    if (!codeToSearch.trim()) return
     try {
-      const res = await axios.get(`${API_BASE}/accounts/navigation/seek/${findCode}`)
+      const res = await axios.get(`${API_BASE}/accounts/navigation/seek/${codeToSearch}`)
       const account = res.data?.data
       if (account) {
         const idx = accounts.findIndex(a => a.acctCode === account.acctCode)
-        if (idx >= 0) setCurrentAccountIndex(idx)
+        if (idx >= 0) {
+          setCurrentAccountIndex(idx)
+          setSelectedGroup(getGroup(account))
+          setExpandedGroups(prev => new Set([...prev, getGroup(account)]))
+        }
       }
     } catch (e: any) { setMessage(`Find failed: ${e.message}`) }
-    setShowFindDialog(false); setFindCode('')
   }
+
+  // Auto-search when debounced string changes
+  useEffect(() => {
+    if (debouncedFindCode.trim()) {
+      handleFind(debouncedFindCode)
+    }
+  }, [debouncedFindCode])
 
   const handleSave = async () => {
     if (!acctCode.trim()) { setMessage('Account Code is required'); return }
@@ -505,10 +517,10 @@ export default function FSChartOfAccounts() {
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-96" onClick={e => e.stopPropagation()}>
             <h2 className="font-headline font-bold text-lg text-on-surface mb-4">Find Account</h2>
             <label className="block text-[10px] uppercase tracking-widest font-bold text-on-surface-variant/60 mb-1.5">Account Code (Soft-Seek)</label>
-            <input autoFocus className="w-full px-3 py-2.5 border border-outline-variant/20 rounded-lg text-sm font-mono bg-surface-container-lowest mb-4 focus:outline-none focus:ring-2 focus:ring-primary/30" value={findCode} onChange={e => setFindCode(e.target.value.toUpperCase())} maxLength={4} placeholder="Enter code" onKeyDown={e => { if (e.key === 'Enter') handleFind() }} />
+            <input autoFocus className="w-full px-3 py-2.5 border border-outline-variant/20 rounded-lg text-sm font-mono bg-surface-container-lowest mb-4 focus:outline-none focus:ring-2 focus:ring-primary/30" value={findCode} onChange={e => setFindCode(e.target.value.toUpperCase())} maxLength={4} placeholder="Enter code (auto-searches)" />
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setShowFindDialog(false)} className="px-4 py-2 border border-outline-variant/20 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container">Cancel</button>
-              <button onClick={handleFind} className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary/90">Find</button>
+              <button onClick={() => { setShowFindDialog(false); setFindCode('') }} className="px-4 py-2 border border-outline-variant/20 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container">Close</button>
+              <button onClick={() => { handleFind(findCode); setShowFindDialog(false); setFindCode('') }} className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:bg-primary/90">Find</button>
             </div>
           </div>
         </div>
