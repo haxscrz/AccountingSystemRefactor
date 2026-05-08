@@ -88,6 +88,7 @@ public sealed class AdminImportController : ControllerBase
             int totalFilesProcessed = 0;
             int totalRecordsImported = 0;
             var tableResults = new Dictionary<string, int>();
+            var clearedTables = new HashSet<string>();
 
             await SendEvent("start", new
             {
@@ -160,9 +161,9 @@ public sealed class AdminImportController : ControllerBase
                 int seededCount = 0;
                 try
                 {
-                    bool append = tableResults.ContainsKey(mapping.TargetTable);
+                    bool shouldClear = clearedTables.Add(mapping.TargetTable);
                     seededCount = await SeedTableAsync(
-                        mapping.TargetTable, dbfData.Rows, normalizedCompany, now, ct, append);
+                        mapping.TargetTable, dbfData.Rows, normalizedCompany, now, shouldClear, ct);
                 }
                 catch (Exception ex)
                 {
@@ -175,11 +176,7 @@ public sealed class AdminImportController : ControllerBase
                     continue;
                 }
 
-                if (tableResults.ContainsKey(mapping.TargetTable))
-                    tableResults[mapping.TargetTable] += seededCount;
-                else
-                    tableResults[mapping.TargetTable] = seededCount;
-                
+                tableResults[mapping.TargetTable] = tableResults.GetValueOrDefault(mapping.TargetTable) + seededCount;
                 totalFilesProcessed++;
                 totalRecordsImported += seededCount;
 
@@ -266,13 +263,15 @@ public sealed class AdminImportController : ControllerBase
 
         var now = DateTime.UtcNow;
         var tableResults = new Dictionary<string, int>();
+        var clearedTables = new HashSet<string>();
 
         try
         {
             foreach (var table in request.Tables)
             {
-                var seededCount = await SeedTableAsync(table.Key, table.Value, normalizedCompany, now, ct);
-                tableResults[table.Key] = seededCount;
+                bool shouldClear = clearedTables.Add(table.Key);
+                var seededCount = await SeedTableAsync(table.Key, table.Value, normalizedCompany, now, shouldClear, ct);
+                tableResults[table.Key] = tableResults.GetValueOrDefault(table.Key) + seededCount;
             }
 
             // Ensure fs_sys_id row exists for this company
@@ -369,12 +368,12 @@ public sealed class AdminImportController : ControllerBase
         List<Dictionary<string, object?>> rows,
         string companyCode,
         DateTime now,
-        CancellationToken ct,
-        bool append = false)
+        bool clearTable,
+        CancellationToken ct)
     {
-        // Delete existing data for this company+table first (unless appending)
-        if (!append)
+        if (clearTable)
         {
+            // Delete existing data for this company+table first
             var deleteCmd = $"DELETE FROM {targetTable} WHERE company_code = @p0";
             await _db.Database.ExecuteSqlRawAsync(deleteCmd, new object[] { companyCode }, ct);
         }
