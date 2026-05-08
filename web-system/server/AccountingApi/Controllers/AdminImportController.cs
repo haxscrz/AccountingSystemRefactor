@@ -225,12 +225,33 @@ public sealed class AdminImportController : ControllerBase
         public Dictionary<string, List<Dictionary<string, object?>>> Tables { get; set; } = new();
     }
 
+    [HttpPost("import/cleanup-mistake")]
+    [Authorize(Policy = "SuperAdminOnly")]
+    public async Task<IActionResult> CleanupMistake()
+    {
+        var thresholdStart = new DateTime(2026, 5, 8, 0, 10, 0, DateTimeKind.Utc);
+        var thresholdEnd = new DateTime(2026, 5, 8, 0, 20, 0, DateTimeKind.Utc);
+        int count = 0;
+        count += await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_accounts WHERE company_code = 'cyberfridge' AND created_at >= {0} AND created_at <= {1}", thresholdStart, thresholdEnd);
+        count += await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_checkmas WHERE company_code = 'cyberfridge' AND created_at >= {0} AND created_at <= {1}", thresholdStart, thresholdEnd);
+        count += await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_checkvou WHERE company_code = 'cyberfridge' AND created_at >= {0} AND created_at <= {1}", thresholdStart, thresholdEnd);
+        count += await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_cashrcpt WHERE company_code = 'cyberfridge' AND created_at >= {0} AND created_at <= {1}", thresholdStart, thresholdEnd);
+        count += await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_salebook WHERE company_code = 'cyberfridge' AND created_at >= {0} AND created_at <= {1}", thresholdStart, thresholdEnd);
+        count += await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_purcbook WHERE company_code = 'cyberfridge' AND created_at >= {0} AND created_at <= {1}", thresholdStart, thresholdEnd);
+        count += await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_journals WHERE company_code = 'cyberfridge' AND created_at >= {0} AND created_at <= {1}", thresholdStart, thresholdEnd);
+        count += await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_effects WHERE company_code = 'cyberfridge' AND created_at >= {0} AND created_at <= {1}", thresholdStart, thresholdEnd);
+        count += await _db.Database.ExecuteSqlRawAsync("DELETE FROM fs_schedule WHERE company_code = 'cyberfridge' AND created_at >= {0} AND created_at <= {1}", thresholdStart, thresholdEnd);
+        return Ok(new { deleted = count });
+    }
+
     [HttpPost("import/json")]
     [Authorize(Policy = "SuperAdminOnly")]
     public async Task<IActionResult> ImportJson([FromBody] JsonImportRequest request, CancellationToken ct)
     {
         var normalizedCompany = CompanyCatalog.NormalizeOrDefault(request.CompanyCode);
         if (!CompanyCatalog.IsValid(normalizedCompany)) return BadRequest(new { message = "Invalid company code." });
+
+        HttpContext.Items[CompanyContextKeys.SelectedCompanyCodeItem] = normalizedCompany;
 
         var now = DateTime.UtcNow;
         var tableResults = new Dictionary<string, int>();
