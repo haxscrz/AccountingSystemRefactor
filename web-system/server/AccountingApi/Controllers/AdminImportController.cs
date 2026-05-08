@@ -219,6 +219,64 @@ public sealed class AdminImportController : ControllerBase
         }
     }
 
+    public class JsonImportRequest
+    {
+        public string CompanyCode { get; set; } = string.Empty;
+        public Dictionary<string, List<Dictionary<string, object?>>> Tables { get; set; } = new();
+    }
+
+    [HttpPost("import/json")]
+    [Authorize(Policy = "SuperAdminOnly")]
+    public async Task<IActionResult> ImportJson([FromBody] JsonImportRequest request, CancellationToken ct)
+    {
+        var normalizedCompany = CompanyCatalog.NormalizeOrDefault(request.CompanyCode);
+        if (!CompanyCatalog.IsValid(normalizedCompany)) return BadRequest(new { message = "Invalid company code." });
+
+        var now = DateTime.UtcNow;
+        var tableResults = new Dictionary<string, int>();
+
+        try
+        {
+            foreach (var table in request.Tables)
+            {
+                var seededCount = await SeedTableAsync(table.Key, table.Value, normalizedCompany, now, ct);
+                tableResults[table.Key] = seededCount;
+            }
+
+            // Ensure fs_sys_id row exists for this company
+            var hasSysId = await _db.FSSysId
+                .IgnoreQueryFilters()
+                .AnyAsync(x => x.CompanyCode == normalizedCompany, ct);
+
+            if (!hasSysId)
+            {
+                _db.FSSysId.Add(new FSSysId
+                {
+                    CompanyCode = normalizedCompany,
+                    PresMo = now.Month,
+                    PresYr = now.Year,
+                    BegDate = new DateTime(now.Year, now.Month, 1),
+                    EndDate = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month)),
+                    UpdatedAt = now
+                });
+                await _db.SaveChangesAsync(ct);
+            }
+
+            return Ok(new
+            {
+                company = normalizedCompany,
+                totalTablesProcessed = request.Tables.Count,
+                totalRecordsImported = tableResults.Values.Sum(),
+                tables = tableResults,
+                message = $"Successfully imported JSON data for {normalizedCompany}!"
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message, inner = ex.InnerException?.Message });
+        }
+    }
+
     // ── Per-table seeding logic ──────────────────────────────────────────────
 
     private static string Str(Dictionary<string, object?> row, string key, string def = "")
