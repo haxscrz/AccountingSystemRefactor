@@ -47,6 +47,7 @@ export default function SystemOptions() {
         
         {/* Module Entry */}
         <div 
+          data-testid="enter-modules-card"
           onClick={() => navigate('/select-company')}
           className={`group relative rounded-[24px] p-8 flex flex-col items-center text-center cursor-pointer transition-all duration-500 hover:-translate-y-2 border shadow-xl overflow-hidden ${
             darkMode 
@@ -73,6 +74,7 @@ export default function SystemOptions() {
 
         {/* Settings / Admin Hub */}
         <div 
+          data-testid="open-settings-card"
           onClick={() => navigate('/admin-settings')}
           className={`group relative rounded-[24px] p-8 flex flex-col items-center text-center cursor-pointer transition-all duration-500 hover:-translate-y-2 border shadow-xl overflow-hidden ${
             darkMode 

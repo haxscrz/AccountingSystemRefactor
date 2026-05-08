@@ -12,11 +12,13 @@ const PUBLIC_API = '/api'
 function SpotlightCard({ 
   children, 
   onClick, 
-  className = "" 
+  className = "",
+  testId
 }: { 
   children: React.ReactNode, 
   onClick: () => void, 
-  className?: string 
+  className?: string,
+  testId?: string
 }) {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [cardCenter, setCardCenter] = useState({ x: 0, y: 0 })
@@ -37,6 +39,7 @@ function SpotlightCard({
 
   return (
     <div 
+      data-testid={testId}
       onClick={onClick}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -160,6 +163,7 @@ export default function CompanySelection() {
               companies.filter(c => user?.role === 'superadmin' || !user?.assignedCompanies || user.assignedCompanies.includes(c.code)).map((company) => (
                 <SpotlightCard 
                   key={company.code} 
+                  testId={`company-card-${company.code}`}
                   onClick={() => handleSelectCompany(company.code as any)}
                 >
                   <div className="flex justify-between items-start mb-6">

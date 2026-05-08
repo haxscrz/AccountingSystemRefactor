@@ -13,11 +13,14 @@ test.describe('QA Agent: Financial System Audit', () => {
     await expect(page).toHaveURL(/.*\/system-options/);
     
     // 3. Navigate to company selection
-    await page.click('text=Financial & Payroll System');
+    // Use data-testid to target the card's root div directly, bypassing the CSS overlay child divs
+    // that intercept pointer events with "opacity-0 group-hover:opacity-100"
+    await page.click('[data-testid="enter-modules-card"]');
     await expect(page).toHaveURL(/.*\/select-company/);
 
-    // 4. Select a company (e.g. JEMT)
-    await page.click('text=JEMT');
+    // 4. Select JEMT company using its data-testid
+    await page.waitForSelector('[data-testid="company-card-JEMT"]', { state: 'visible' });
+    await page.click('[data-testid="company-card-JEMT"]');
     
     // 4. Verify routing to FS Dashboard
     await expect(page).toHaveURL(/.*\/fs/);
