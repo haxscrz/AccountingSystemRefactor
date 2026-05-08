@@ -64,7 +64,15 @@ public static class DbfReader
 
             // Clean field name: strip null bytes and non-printable characters
             var name = Encoding.ASCII.GetString(nameBytes);
-            var cleanName = new string(name.Where(c => c > 31 && c < 127 && c != '\0').ToArray()).Trim();
+            
+            // Terminate at the first null byte, just like python's split(b'\x00')[0]
+            var nullIndex = name.IndexOf('\0');
+            if (nullIndex >= 0)
+            {
+                name = name.Substring(0, nullIndex);
+            }
+            
+            var cleanName = new string(name.Where(c => c > 31 && c < 127).ToArray()).Trim();
 
             if (string.IsNullOrEmpty(cleanName))
             {
