@@ -376,6 +376,7 @@ export default function FSVoucherEntry({ type }: FSVoucherEntryProps) {
     }
     setShowFind(false)
     setFindJv(''); setFindCk(''); setFindDate(''); setFindPayee('')
+  }
   // Auto-search for Debounced Search Inputs
   useEffect(() => {
     if (showFind) {
