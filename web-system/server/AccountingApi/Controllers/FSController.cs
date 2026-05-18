@@ -1183,6 +1183,45 @@ public sealed class FSController : ControllerBase
 
     #region System Info / Dashboard
 
+    /// <summary>Admin: set the fiscal period for the current company</summary>
+    [HttpPost("set-period")]
+    [Authorize(Policy = "SuperAdminOnly")]
+    public async Task<IActionResult> SetPeriod([FromQuery] int year, [FromQuery] int month, CancellationToken ct)
+    {
+        if (month < 1 || month > 12) return BadRequest(new { error = "Month must be 1-12" });
+        if (year < 2020 || year > 2100) return BadRequest(new { error = "Year must be 2020-2100" });
+
+        var companyCode = _companyContextAccessor.CompanyCode;
+        var sysId = await _db.FSSysId
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(x => x.CompanyCode == companyCode, ct);
+
+        if (sysId == null)
+        {
+            sysId = new Models.FSSysId
+            {
+                CompanyCode = companyCode,
+                PresMo = month,
+                PresYr = year,
+                BegDate = new DateTime(year, month, 1),
+                EndDate = new DateTime(year, month, DateTime.DaysInMonth(year, month)),
+                UpdatedAt = DateTime.UtcNow
+            };
+            _db.FSSysId.Add(sysId);
+        }
+        else
+        {
+            sysId.PresMo = month;
+            sysId.PresYr = year;
+            sysId.BegDate = new DateTime(year, month, 1);
+            sysId.EndDate = new DateTime(year, month, DateTime.DaysInMonth(year, month));
+            sysId.UpdatedAt = DateTime.UtcNow;
+        }
+        await _db.SaveChangesAsync(ct);
+
+        return Ok(new { company = companyCode, month, year, message = $"Fiscal period set to {month}/{year}" });
+    }
+
     /// <summary>Get current system period and transaction counts for the main menu</summary>
     [HttpGet("system-info")]
     public async Task<IActionResult> GetSystemInfo(CancellationToken cancellationToken)
