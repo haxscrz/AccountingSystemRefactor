@@ -9,9 +9,15 @@ sys.stdout.reconfigure(encoding='utf-8')
 TOKEN_FILE = r'd:\DOWNLOADS\Accounting System\new_companies_data\live_token_clean.txt'
 BASE_URL = 'https://acctng-api-demo-2026-hxgyfdf3eeg6hycq.indonesiacentral-01.azurewebsites.net'
 
-with open(TOKEN_FILE, 'r', encoding='utf-8-sig') as f:
-    token = f.read().strip()
+def get_token():
+    auth_data = {
+        'username': 'superadmin',
+        'password': 'SUPERadmin!234'
+    }
+    r = requests.post(f"{BASE_URL}/api/auth/login", json=auth_data)
+    return r.json()['tokens']['accessToken']
 
+token = get_token()
 headers = {
     'Authorization': f'Bearer {token}'
 }
@@ -66,7 +72,7 @@ def upload_company_data(company_code, folder_path):
 
 # Companies to migrate
 migration_targets = {
-    'cyber': r'd:\DOWNLOADS\Accounting System\thermalex,john,cyber\Cyberfridge\data',
+    'cyberfridge': r'd:\DOWNLOADS\Accounting System\thermalex,john,cyber\Cyberfridge\data',
     'johntrix': r'd:\DOWNLOADS\Accounting System\thermalex,john,cyber\Johntrix\data',
     'thermalex': r'd:\DOWNLOADS\Accounting System\thermalex,john,cyber\Thermalex\data'
 }

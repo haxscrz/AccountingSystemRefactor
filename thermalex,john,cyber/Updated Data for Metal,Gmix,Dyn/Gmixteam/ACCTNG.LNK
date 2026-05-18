@@ -1,0 +1,35 @@
+noextdictionary
+virtualize code
+codeclass code
+
+clipperspec
+verbose
+
+vcache onlyconventional         5.%, 150.k
+vcache noexpanded               20.k, 150.k
+vcache conventional             10.k, 105.k
+vcache extended                 75.%
+vmreload 100.
+
+autolocal
+autobp
+restoreterminateaddress dbginit
+
+output ACCTNG.EXE
+
+lib clipper
+lib novterm
+lib dbfntx
+lib terminal
+lib extend
+lib nanfor
+
+fi ACCTNG
+fi USERFUNC
+fi A_EDTCOD
+fi A_EDTCHK
+fi A_EDTJNL
+fi A_REPVSM
+fi A_REPCDS
+fi A_REPVOU
+fi A_QUEACT

@@ -189,25 +189,43 @@ public sealed class AdminImportController : ControllerBase
                 });
             }
 
-            // Ensure fs_sys_id row exists for this company
-            var hasSysId = await _db.FSSysId
+            // Ensure fs_sys_id row exists for this company — derive period from the latest check date
+            var latestCheck = await _db.FSCheckMas
                 .IgnoreQueryFilters()
-                .AnyAsync(x => x.CompanyCode == normalizedCompany, ct);
+                .Where(x => x.CompanyCode == normalizedCompany)
+                .OrderByDescending(x => x.JDate)
+                .FirstOrDefaultAsync(ct);
 
-            if (!hasSysId)
+            var periodDate = latestCheck?.JDate ?? now;
+
+            var existingSysId = await _db.FSSysId
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(x => x.CompanyCode == normalizedCompany, ct);
+
+            if (existingSysId == null)
             {
                 _db.FSSysId.Add(new FSSysId
                 {
                     CompanyCode = normalizedCompany,
-                    PresMo = now.Month,
-                    PresYr = now.Year,
-                    BegDate = new DateTime(now.Year, now.Month, 1),
-                    EndDate = new DateTime(now.Year, now.Month,
-                        DateTime.DaysInMonth(now.Year, now.Month)),
+                    PresMo = periodDate.Month,
+                    PresYr = periodDate.Year,
+                    BegDate = new DateTime(periodDate.Year, periodDate.Month, 1),
+                    EndDate = new DateTime(periodDate.Year, periodDate.Month,
+                        DateTime.DaysInMonth(periodDate.Year, periodDate.Month)),
                     UpdatedAt = now
                 });
-                await _db.SaveChangesAsync(ct);
             }
+            else
+            {
+                // Update existing period to match the imported data
+                existingSysId.PresMo = periodDate.Month;
+                existingSysId.PresYr = periodDate.Year;
+                existingSysId.BegDate = new DateTime(periodDate.Year, periodDate.Month, 1);
+                existingSysId.EndDate = new DateTime(periodDate.Year, periodDate.Month,
+                    DateTime.DaysInMonth(periodDate.Year, periodDate.Month));
+                existingSysId.UpdatedAt = now;
+            }
+            await _db.SaveChangesAsync(ct);
 
             await SendEvent("complete", new
             {
@@ -274,24 +292,42 @@ public sealed class AdminImportController : ControllerBase
                 tableResults[table.Key] = tableResults.GetValueOrDefault(table.Key) + seededCount;
             }
 
-            // Ensure fs_sys_id row exists for this company
-            var hasSysId = await _db.FSSysId
+            // Ensure fs_sys_id row exists for this company — derive period from data
+            var latestCheck = await _db.FSCheckMas
                 .IgnoreQueryFilters()
-                .AnyAsync(x => x.CompanyCode == normalizedCompany, ct);
+                .Where(x => x.CompanyCode == normalizedCompany)
+                .OrderByDescending(x => x.JDate)
+                .FirstOrDefaultAsync(ct);
 
-            if (!hasSysId)
+            var periodDate = latestCheck?.JDate ?? now;
+
+            var existingSysId = await _db.FSSysId
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(x => x.CompanyCode == normalizedCompany, ct);
+
+            if (existingSysId == null)
             {
                 _db.FSSysId.Add(new FSSysId
                 {
                     CompanyCode = normalizedCompany,
-                    PresMo = now.Month,
-                    PresYr = now.Year,
-                    BegDate = new DateTime(now.Year, now.Month, 1),
-                    EndDate = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month)),
+                    PresMo = periodDate.Month,
+                    PresYr = periodDate.Year,
+                    BegDate = new DateTime(periodDate.Year, periodDate.Month, 1),
+                    EndDate = new DateTime(periodDate.Year, periodDate.Month,
+                        DateTime.DaysInMonth(periodDate.Year, periodDate.Month)),
                     UpdatedAt = now
                 });
-                await _db.SaveChangesAsync(ct);
             }
+            else
+            {
+                existingSysId.PresMo = periodDate.Month;
+                existingSysId.PresYr = periodDate.Year;
+                existingSysId.BegDate = new DateTime(periodDate.Year, periodDate.Month, 1);
+                existingSysId.EndDate = new DateTime(periodDate.Year, periodDate.Month,
+                    DateTime.DaysInMonth(periodDate.Year, periodDate.Month));
+                existingSysId.UpdatedAt = now;
+            }
+            await _db.SaveChangesAsync(ct);
 
             return Ok(new
             {
